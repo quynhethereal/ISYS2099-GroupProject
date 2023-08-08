@@ -6,33 +6,38 @@ const User = function(user){
     this.password = Helpers.createHash(user.password);
 }
 
-User.findByUsernamePassword = (username, password, result) => {
-    connection.execute(
-        'SELECT * FROM `users` WHERE username = ?',
-        [username],
-        (err, results) => {
-            if (err){
-                console.log('Unable to find user.');
-                result(err, null);
-            }
+User.findByUsernamePassword = (username, password) => {
+    return new Promise((resolve, reject) => {
+        connection.execute(
+            'SELECT * FROM `users` WHERE username = ?',
+            [username],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to find user.');
+                    reject(err);
+                    return;
+                }
 
-            if (results.length ===0) {
-                console.log('No user with this username.');
-                result(null, null);
-            }
+                if (results.length === 0) {
+                    console.log('No user with this username.');
+                    resolve(null);
+                    return;
+                }
 
-            const user = results[0];
-            const hashedPassword = Helpers.createHash(password, user.salt_value);
+                const user = results[0];
+                const hashedPassword = Helpers.createHash(password, user.salt_value);
 
-            if (hashedPassword.hash === user.hashed_password) {
-                console.log("User found.");
-                result(null, user);
-            } else {
-                console.log("Incorrect password.");
-                result(null, null);
+                if (hashedPassword.hash === user.hashed_password) {
+                    console.log("User found.");
+                    resolve(user);
+                } else {
+                    console.log("Incorrect password.");
+                    resolve(null);
+                }
             }
-        }
-    )
-}
+        );
+    });
+};
+
 
 module.exports = User;
