@@ -2,7 +2,6 @@ const User = require("../models/user.model");
 
 // find user by username and password
 exports.findByUsernamePassword = (req, res) => {
-    console.log("h");
     User.findByUsernamePassword(
         req.body.username,
         req.body.password,

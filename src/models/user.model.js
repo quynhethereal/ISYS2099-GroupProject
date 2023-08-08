@@ -22,10 +22,16 @@ User.findByUsernamePassword = (username, password, result) => {
             }
 
             const user = results[0];
-            const hashedPassword = Helpers.createHash(password, user.salt);
+            const hashedPassword = Helpers.createHash(password, user.salt_value);
 
-            if (hashedPassword.hash !== user.password) {
+            console.log(hashedPassword.hash);
+            console.log(user.password);
+            if (hashedPassword.hash === user.hashed_password) {
+                console.log("User found.");
                 return result(null, user);
+            } else {
+                console.log("Incorrect password.");
+                return result(null, null);
             }
         }
     )

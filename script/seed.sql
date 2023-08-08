@@ -44,4 +44,4 @@ CREATE TABLE IF NOT EXISTS `inventory` (
 
 -- Insert dummy data
 -- Dummy user has password "password" by default
-INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) VALUES ('admin', 'YY+VBzdozws1MArZCZ/dqA==', '123456');
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) VALUES ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
