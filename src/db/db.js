@@ -17,11 +17,13 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
+module.exports = connection;
+
 // Close the connection when done
-connection.end((err) => {
-  if (err) {
-    console.error('Error closing MySQL connection:', err);
-    return;
-  }
-  console.log('MySQL connection closed');
-});
+// connection.end((err) => {
+//   if (err) {
+//     console.error('Error closing MySQL connection:', err);
+//     return;
+//   }
+//   console.log('MySQL connection closed');
+// });
