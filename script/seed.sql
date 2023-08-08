@@ -1,4 +1,32 @@
 CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+
+-- Create role
+CREATE ROLE 'admin', 'customer', 'seller';
+
+-- Grant permission for each user role
+-- Admin: All rights
+GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'seller';
+
+-- Customer: SELECT product, CRUD order, CRU customer (for their specific account)
+GRANT SELECT ON lazada_ecommerce.product TO 'customer';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order TO 'customer';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.product TO 'customer';
+
+-- Seller: CRUD product, CRUD order, CRUD seller (for their specific account)
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.product TO 'seller';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order TO 'customer';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.seller TO 'seller';
+
+-- Create user
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
+CREATE USER 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
+CREATE USER 'seller'@'localhost' IDENTIFIED BY 'Lseller';
+
+-- Set role to user
+GRANT 'admin' TO 'admin'@'localhost';
+GRANT 'customer' TO 'customer'@'localhost';
+GRANT 'seller' TO 'seller'@'localhost';
+
 USE `lazada_ecommerce`;
 
 -- Path: script/seed.sql
@@ -24,7 +52,6 @@ CREATE TABLE IF NOT EXISTS `users_info`(
 PRIMARY KEY (`id`),
 FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-)
 
 CREATE TABLE IF NOT EXISTS `product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
