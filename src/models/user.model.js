@@ -13,25 +13,23 @@ User.findByUsernamePassword = (username, password, result) => {
         (err, results) => {
             if (err){
                 console.log('Unable to find user.');
-                return result(err, null);
+                result(err, null);
             }
 
             if (results.length ===0) {
                 console.log('No user with this username.');
-                return result(null, null);
+                result(null, null);
             }
 
             const user = results[0];
             const hashedPassword = Helpers.createHash(password, user.salt_value);
 
-            console.log(hashedPassword.hash);
-            console.log(user.password);
             if (hashedPassword.hash === user.hashed_password) {
                 console.log("User found.");
-                return result(null, user);
+                result(null, user);
             } else {
                 console.log("Incorrect password.");
-                return result(null, null);
+                result(null, null);
             }
         }
     )
