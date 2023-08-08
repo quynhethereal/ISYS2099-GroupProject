@@ -3,7 +3,7 @@ const Helpers = require('../helpers/helpers');
 // UserModel model
 const User = function(user){
     this.username = user.username;
-    this.password = createHash(user.password);
+    this.password = Helpers.createHash(user.password);
 }
 
 User.findByUsernamePassword = (username, password, result) => {
