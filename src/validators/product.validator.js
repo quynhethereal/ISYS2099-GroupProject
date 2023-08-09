@@ -18,11 +18,11 @@ ProductValidator.validatePrice = (price) => {
     }
 };
 
-ProductValidator.validateQuantity = (quantity) => {
-    if (typeof quantity !== 'number' || quantity < 0) {
-        throw new Error('Product quantity must be a non-negative number');
-    }
-};
+// ProductValidator.validateQuantity = (quantity) => {
+//     if (typeof quantity !== 'number' || quantity < 0) {
+//         throw new Error('Product quantity must be a non-negative number');
+//     }
+// };
 
 ProductValidator.validateImage = (image) => {
     if (!image || image.trim() === '') {
@@ -33,7 +33,6 @@ ProductValidator.validateImage = (image) => {
 ProductValidator.validateUpdateParams = (params) => {
     const { name, description, price, quantity, image } = params;
 
-    ProductValidator.validateQuantity(quantity);
     ProductValidator.validatePrice(price);
     ProductValidator.validateDescription(description);
     ProductValidator.validateName(name);

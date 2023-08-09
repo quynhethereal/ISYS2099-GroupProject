@@ -17,7 +17,7 @@ module.exports = app => {
 
     // product-related API
     router.get("/category/:id/products", authMiddleware.verifyToken, products.findAllByCategory);
-
+    router.put("/product/:id", authMiddleware.verifyToken, products.update);
 
     app.use('/api', router);
 }

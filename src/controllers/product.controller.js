@@ -2,7 +2,7 @@ const Product = require('../models/product.model');
 
 exports.findAllByCategory = async (req, res) => {
     try {
-        const { limit, nextId } = req.body;
+        const {limit, nextId} = req.body;
         const categoryId = parseInt(req.params.id);
 
         // validate presence of params
@@ -21,7 +21,7 @@ exports.findAllByCategory = async (req, res) => {
             return;
         }
 
-        const params = { limit, categoryId, nextId };
+        const params = {limit, categoryId, nextId};
 
         console.log(params);
 
@@ -34,3 +34,29 @@ exports.findAllByCategory = async (req, res) => {
     }
 }
 
+exports.update = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+        const {title, description, price, categoryId} = req.body;
+
+        // validate presence of params
+        if (productId === null || title === null || description === null || price === null || categoryId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        const params = {
+            productId,
+            ... req.body
+        }
+
+        const updatedProduct = await Product.update(params);
+        res.status(200).json(updatedProduct);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error updating product."
+        });
+    }
+}

@@ -6,7 +6,6 @@ class Product {
         this.name = params.name;
         this.description = params.description;
         this.price = params.price;
-        this.quantity = params.quantity;
         this.image = params.image;
         // TODO: add category
         this.category = params.category;
@@ -63,7 +62,7 @@ Product.count = () => {
 Product.findByCategory = async (params) => {
     try {
         const limit = parseInt(params.limit) || 10;
-        const nextId= parseInt(params.nextId) || 0;
+        const nextId = parseInt(params.nextId) || 0;
         const categoryId = parseInt(params.categoryId) || 1;
 
         const productCount = await Product.count();
@@ -87,7 +86,7 @@ Product.findByCategory = async (params) => {
 
         // get max ID from results
         // return 1 means that results is empty
-        const resNextId = res.reduce((max, p) => p.id > max ? p.id : max,  -1);
+        const resNextId = res.reduce((max, p) => p.id > max ? p.id : max, -1);
 
         return {
             products: res,
@@ -251,28 +250,57 @@ Product.updateCategory = (params) => {
 }
 
 
-Product.update = (params) => {
-    productValidator.validateUpdateParams(params);
+// example payload
+// {
+//   "name": "Updated Product Name",
+//   "description": "Updated product description.",
+//   "price": 29.99,
+//   "image": "updated.jpg",
+//   "category": "Electronics"
+// }
 
-    Product.findById(params.id).then((product) => {
+Product.update = async (params) => {
+    let updatedProduct;
+    try {
+        // validate params
+        productValidator.validateUpdateParams(params);
+        console.log(params);
+        const title = params.title + "";
+        const description = params.description + "";
+        const price = parseFloat(params.price);
+        const category = params.category + "";
+        const id = params.productId;
+
+        console.log(price);
+
+        const product = await Product.findById(id);
+
         if (!product) {
             console.log("Product not found.");
-            return;
+        } else {
+            await new Promise((resolve, reject) => {
+                connection.execute(
+                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ? WHERE id = ?',
+                    [title, description, price, category, id],
+                    (err, results) => {
+                        if (err) {
+                            console.log('Unable to update product.');
+                            reject(err);
+                            return;
+                        }
+                        console.log("Product updated.");
+                        resolve(results);
+                    }
+                );
+            });
         }
 
-        connection.execute(
-            'UPDATE `products` SET name = ?, description = ?, price = ?, quantity = ?, image = ?, category_id = ? WHERE id = ?',
-            [params.name, params.description, params.price, params.quantity, params.image, params.category, params.id],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to update product.');
-                    return;
-                }
-                console.log("Product updated.");
-                return results;
-            }
-        );
-    });
+        return new Product(params);
+
+    } catch (err) {
+        console.log('Unable to update product.');
+        throw err;
+    }
 }
 
 module.exports = Product;
