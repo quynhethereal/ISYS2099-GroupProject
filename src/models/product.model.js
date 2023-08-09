@@ -63,7 +63,9 @@ Product.count = () => {
 Product.findByCategory = async (params) => {
     try {
         const limit = parseInt(params.limit) || 10;
-        const largestId = parseInt(params.largestId) || 0;
+        const nextId= parseInt(params.nextId) || 0;
+        const categoryId = parseInt(params.categoryId) || 1;
+
         const productCount = await Product.count();
 
         const totalPages = Math.ceil(productCount / limit);
@@ -71,7 +73,7 @@ Product.findByCategory = async (params) => {
         const res = await new Promise((resolve, reject) => {
             connection.execute(
                 "SELECT * FROM `products` WHERE category_id = ? AND id > ? ORDER BY id ASC LIMIT ?",
-                [params.category + "", largestId + "", limit + ""],
+                [categoryId + "", nextId + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -85,12 +87,12 @@ Product.findByCategory = async (params) => {
 
         // get max ID from results
         // return 1 means that results is empty
-        const nextId = res.reduce((max, p) => p.id > max ? p.id : max,  -1);
+        const resNextId = res.reduce((max, p) => p.id > max ? p.id : max,  -1);
 
         return {
             products: res,
             limit: limit,
-            nextId: nextId,
+            nextId: resNextId,
             totalPages: totalPages,
         };
 
