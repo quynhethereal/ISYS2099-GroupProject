@@ -204,28 +204,42 @@ Product.updateQuantity = (params) => {
         );
     });
 }
+Product.updateImage = async (params) => {
+    try {
+        const product = await Product.findById(params.productId);
 
-Product.updateImage = (params) => {
-    Product.findById(params.id).then((product) => {
         if (!product) {
             console.log("Product not found.");
-            return;
+            throw new Error("Product not found.");
+        } else {
+            await new Promise((resolve, reject) => {
+                connection.execute(
+                    'UPDATE `products` SET image = ?, image_name = ? WHERE id = ?',
+                    [params.image, params.imageName, params.productId],
+                    (err, results) => {
+                        if (err) {
+                            console.log('Unable to update product.');
+                            reject(err);
+                            return;
+                        }
+                        console.log("Product image updated.");
+                        resolve(results);
+                    }
+                );
+            });
         }
 
-        connection.execute(
-            'UPDATE `products` SET image = ? WHERE id = ?',
-            [params.image, params.id],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to update product.');
-                    return;
-                }
-                console.log("Product updated.");
-                return results;
-            }
-        );
-    });
-}
+        return {
+            productId: params.productId,
+            imageName: params.imageName,
+        };
+    } catch (err) {
+        console.log('Unable to update product image.');
+        // rethrow error
+        throw err;
+    }
+};
+
 
 Product.updateCategory = (params) => {
     Product.findById(params.id).then((product) => {
@@ -260,7 +274,6 @@ Product.updateCategory = (params) => {
 // }
 
 Product.update = async (params) => {
-    let updatedProduct;
     try {
         // validate params
         productValidator.validateUpdateParams(params);

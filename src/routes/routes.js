@@ -1,5 +1,16 @@
+const multer = require("multer");
+const path = require('path');
 
 module.exports = app => {
+    //Set Storage Engine
+    const storage = multer.diskStorage({
+        destination: './public/uploads/images',
+        filename: function (req, file, cb) {
+            cb(null, file.fieldname + '-' + Date.now() +
+                path.extname(file.originalname));
+        }
+    });
+    const upload = multer({ storage: storage, limits: { fieldSize: 10 * 1024 * 1024 } }); //10MB
     const users = require("../controllers/user.controller.js");
     const auth = require("../controllers/auth.controller.js");
     const products = require("../controllers/product.controller.js");
@@ -18,6 +29,7 @@ module.exports = app => {
     // product-related API
     router.get("/category/:id/products", authMiddleware.verifyToken, products.findAllByCategory);
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
+    router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
     app.use('/api', router);
 }

@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
 const dotenv = require('dotenv');
 const cors = require('cors');
 dotenv.config();
+
+const multer = require('multer');
 
 const dbConfig = require('./src/db/db');
 const authMiddleware = require('./src/middlewares/auth.middleware');

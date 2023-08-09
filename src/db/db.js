@@ -17,7 +17,7 @@ admin_pool.getConnection(function (err, connection) {
         throw err;
     }
 
-    console.log('Connected admin to MySQL:', err);
+    console.log('Connected admin pool to MySQL!');
     connection.on('error', function (err) {
         throw err;
     });
@@ -37,12 +37,12 @@ const customer_pool = mysql.createPool({
 
 customer_pool.getConnection(function (err, connection) {
   if (err) {
-      console.error('Error connecting customer to MySQL:', err);
+      console.error('Error connecting customer pool to MySQL:', err);
       connection.release();
       throw err;
   }
 
-  console.log('Connected customer to MySQL:', err);
+  console.log('Connected customer pool to MySQL!');
   connection.on('error', function (err) {
       throw err;
   });
@@ -67,7 +67,7 @@ seller_pool.getConnection(function (err, connection) {
       throw err;
   }
 
-  console.log('Connected seller to MySQL:', err);
+  console.log('Connected seller pool to MySQL!');
   connection.on('error', function (err) {
       throw err;
   });

@@ -31,7 +31,8 @@ create TABLE IF NOT EXISTS `products` (
   `title` varchar(255) NOT NULL,
   `description` varchar(255) NOT NULL,
   `price` DECIMAL(10, 2),
-  `image` varchar(255) NOT NULL,
+  `image` LONGBLOB,
+  `image_name` varchar(255),
   `length` DECIMAL(10, 2),
   `width` DECIMAL(10, 2),
   `height` DECIMAL(10, 2),
@@ -97,17 +98,30 @@ insert into `users` (`username`, `hashed_password`, `salt_value`) VALUES ('admin
 insert into `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`) VALUES (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
 -- Dummy products
-insert into `products` (`title`, `description`, `price`, `image`, `length`, `width`, `height`, `category_id`) VALUES
-('Smartphone Model X', 'Experience the latest technology with our powerful smartphone.', 699.99, 'smartphone_model_x.jpg', 15.0, 7.5, 0.8, 1),
-('Ultra HD Smart TV', 'Immerse yourself in stunning visuals with our Ultra HD smart TV.', 999.99, 'ultra_hd_tv.jpg', 45.6, 25.8, 5.3, 2),
-('Gaming Laptop Pro', 'Unleash your gaming potential with our high-performance gaming laptop.', 1499.99, 'gaming_laptop_pro.jpg', 14.7, 10.2, 1.1, 3),
-('Wireless Noise-Cancelling Headphones', 'Enjoy your favorite music with crystal-clear sound and noise cancellation.', 249.99, 'wireless_headphones.jpg', 7.8, 6.4, 3.2, 4),
-('Home Security Camera System', 'Keep your home safe and secure with our advanced camera system.', 349.99, 'security_camera_system.jpg', 8.5, 8.5, 6.0, 5),
-('Stylish Smartwatch', 'Stay connected and track your fitness goals with our sleek smartwatch.', 199.99, 'stylish_smartwatch.jpg', 9.2, 7.0, 1.5, 1),
-('Professional DSLR Camera', 'Capture life''s moments in stunning detail with our professional DSLR camera.', 1299.99, 'professional_dslr_camera.jpg', 14.0, 9.7, 6.2, 2),
-('Portable Bluetooth Speaker', 'Take your music anywhere with our compact and powerful Bluetooth speaker.', 79.99, 'bluetooth_speaker.jpg', 6.5, 6.5, 4.0, 3),
-('Fitness Tracker Band', 'Monitor your health and stay active with our comfortable fitness tracker.', 49.99, 'fitness_tracker_band.jpg', 7.0, 0.9, 0.4, 4),
-('Home Espresso Machine', 'Brew cafe-quality espresso at home with our easy-to-use espresso machine.', 399.99, 'home_espresso_machine.jpg', 11.3, 9.8, 14.5, 5);
+-- Insert 20 dummy records into the products table
+INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
+VALUES
+  ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, NULL, 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, NOW(), NOW()),
+  ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, NULL, 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, NOW(), NOW()),
+  ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, NULL, 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, NOW(), NOW()),
+  ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, NULL, 'earbuds.jpg', 2.0, 1.5, 0.5, 1, NOW(), NOW()),
+  ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, NULL, 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, NOW(), NOW()),
+  ('Gaming Console', 'Experience immersive gaming adventures.', 299.00, NULL, 'gaming_console.jpg', 12.0, 8.0, 2.5, 2, NOW(), NOW()),
+  ('Portable Speaker', 'Take your music anywhere with this portable speaker.', 59.95, NULL, 'speaker.jpg', 4.5, 3.5, 1.0, 1, NOW(), NOW()),
+  ('Smart Watch', 'Stay connected and track your health on the go.', 199.50, NULL, 'smart_watch.jpg', 1.8, 1.5, 0.4, 3, NOW(), NOW()),
+  ('Digital Camera', 'Capture stunning photos and memories.', 499.99, NULL, 'camera.jpg', 5.2, 3.8, 2.2, 2, NOW(), NOW()),
+  ('Blender', 'Blend your favorite fruits into delicious smoothies.', 79.00, NULL, 'blender.jpg', 8.0, 6.5, 10.0, 4, NOW(), NOW()),
+  ('Fitness Treadmill', 'Stay fit with this advanced treadmill.', 1299.00, NULL, 'treadmill.jpg', 6.5, 3.0, 4.5, 3, NOW(), NOW()),
+  ('Wireless Mouse', 'Enhance your productivity with a wireless mouse.', 29.99, NULL, 'mouse.jpg', 4.0, 2.5, 1.0, 2, NOW(), NOW()),
+  ('LED TV', 'Enjoy your favorite shows and movies in high definition.', 599.95, NULL, 'tv.jpg', 40.0, 25.0, 4.0, 1, NOW(), NOW()),
+  ('Cookware Set', 'Upgrade your kitchen with this comprehensive cookware set.', 149.95, NULL, 'cookware.jpg', 14.0, 10.0, 6.0, 4, NOW(), NOW()),
+  ('Wireless Headphones', 'Immerse yourself in music with wireless headphones.', 119.99, NULL, 'headphones.jpg', 3.0, 2.5, 1.5, 1, NOW(), NOW()),
+  ('Home Security Camera', 'Monitor your home with a smart security camera.', 89.50, NULL, 'security_camera.jpg', 3.5, 2.0, 2.0, 3, NOW(), NOW()),
+  ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, NULL, 'vacuum.jpg', 12.0, 9.0, 3.0, 2, NOW(), NOW()),
+  ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, NULL, 'tablet.jpg', 9.5, 7.0, 0.4, 1, NOW(), NOW()),
+  ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, NULL, 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
+  ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, NULL, 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
+
 
 -- Dummy data for warehouses
 INSERT INTO `warehouses` (`name`, `address`, `length`, `width`, `available_length`, `available_width`)
