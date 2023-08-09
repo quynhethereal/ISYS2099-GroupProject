@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { login } from "../../action/auth.js";
+import { useAuth } from "../../hook/AuthHook.js";
 
 import background from "../../assets/image/background.webp";
 const Login = () => {
@@ -16,8 +16,9 @@ const Login = () => {
     },
   });
 
+  const { login } = useAuth();
+
   const handleForm = (value) => {
-    console.log(value);
     login(value);
   };
   return (
