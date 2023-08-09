@@ -90,7 +90,7 @@ Product.findByCategory = async (params) => {
         return {
             products: res,
             limit: limit,
-            largestId: nextId,
+            nextId: nextId,
             totalPages: totalPages,
         };
 
