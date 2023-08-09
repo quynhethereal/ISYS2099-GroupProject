@@ -70,7 +70,7 @@ Product.findByCategory = async (params) => {
 
         const res = await new Promise((resolve, reject) => {
             connection.execute(
-                "SELECT * FROM `products` WHERE category_id = ? AND id > ? ORDER BY id DESC LIMIT ?",
+                "SELECT * FROM `products` WHERE category_id = ? AND id > ? ORDER BY id ASC LIMIT ?",
                 [params.category + "", largestId + "", limit + ""],
                 (err, results) => {
                     if (err) {
