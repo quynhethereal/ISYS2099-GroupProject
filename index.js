@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const dbConfig = require('./src/db/db');
+const authMiddleware = require('./src/middlewares/auth.middleware');
 
 const app = express();
 

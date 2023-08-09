@@ -1,6 +1,7 @@
 module.exports = app => {
     const users = require("../controllers/user.controller.js");
     const auth = require("../controllers/auth.controller.js");
+    const authMiddleware = require('../middlewares/auth.middleware');
 
     let router = require("express").Router();
     // authenticate a user
@@ -9,6 +10,8 @@ module.exports = app => {
 
     // get a user by username and password
     router.post("/user", users.findByUsernamePassword);
+
+    router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     app.use('/api', router);
 }

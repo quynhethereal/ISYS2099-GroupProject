@@ -1,9 +1,15 @@
 const connection = require("../db/db");
 const Helpers = require('../helpers/helpers');
 // UserModel model
-const User = function(user){
-    this.username = user.username;
-    this.password = Helpers.createHash(user.password);
+
+class User {
+    constructor(params) {
+        this.username = params.username;
+        this.firstName = params.firstName;
+        this.lastName = params.lastName;
+        this.email = params.email;
+        this.role = params.role;
+    }
 }
 
 User.findByUsernamePassword = (username, password) => {

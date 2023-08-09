@@ -3,9 +3,10 @@ const UserInfo = require("../models/user_info.model");
 const jwt = require('jsonwebtoken');
 
 // 90 days
-const privateKey = process.env.PRIVATE_KEY;
+const privateKey = process.env.PRIVATE_KEY.replace(/\\n/g, '\n');
 
 exports.authenticate = async (req, res) => {
+    console.log(privateKey);
     try {
         const user = await User.findByUsernamePassword(req.body.username, req.body.password);
 
@@ -29,7 +30,7 @@ exports.authenticate = async (req, res) => {
             }
         } else {
             res.status(401).send({
-                message: "Unauthorized"
+                message: "Unauthorized. Invalid username or password."
             });
         }
     } catch (err) {

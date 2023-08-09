@@ -18,3 +18,10 @@ exports.findByUsernamePassword = async (req, res) => {
         });
     }
 };
+
+
+exports.findAll = async (req, res) => {
+    res.status(200).send({
+        message: "Success"
+    });
+}
