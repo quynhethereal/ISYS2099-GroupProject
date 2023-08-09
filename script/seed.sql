@@ -59,8 +59,8 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`product_id`) REFERENCES `product`(`id`),
-  FOREIGN KEY (`warehouse_id`) REFERENCES `warehouse`(`id`)
+  FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+  FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- Create role
@@ -124,3 +124,4 @@ INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`) VALUES
 (5, 4, 300), 
 (5, 3, 22), 
 (6, 1, 400);
+

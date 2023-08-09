@@ -36,11 +36,10 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) {
-    console.error('Error connecting to MySQL:', err);
-    return;
-  }
-  console.log('Connected to MySQL database');
-});
+    console.error('Error connecting admin to MySQL:', err);
+    connection.release();
+    throw err;
+  }   
 
 module.exports = connection;
 
@@ -51,4 +50,7 @@ connection.end((err) => {
     return;
   }
   console.log('MySQL connection closed');
+
 });
+
+module.exports = admin_pool;
