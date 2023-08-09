@@ -16,7 +16,7 @@ module.exports = app => {
     router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     // product-related API
-    router.get("/products", authMiddleware.verifyToken, products.findAll);
+    router.get("/category/:id/products", authMiddleware.verifyToken, products.findAllByCategory);
 
 
     app.use('/api', router);
