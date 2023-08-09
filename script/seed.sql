@@ -1,32 +1,4 @@
 CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
-
--- Create role
-CREATE ROLE 'admin', 'customer', 'seller';
-
--- Grant permission for each user role
--- Admin: All rights
-GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'seller';
-
--- Customer: SELECT product, CRUD order, CRU customer (for their specific account)
-GRANT SELECT ON lazada_ecommerce.product TO 'customer';
-GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order TO 'customer';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.product TO 'customer';
-
--- Seller: CRUD product, CRUD order, CRUD seller (for their specific account)
-GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.product TO 'seller';
-GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order TO 'customer';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.seller TO 'seller';
-
--- Create user
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
-CREATE USER 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
-CREATE USER 'seller'@'localhost' IDENTIFIED BY 'Lseller';
-
--- Set role to user
-GRANT 'admin' TO 'admin'@'localhost';
-GRANT 'customer' TO 'customer'@'localhost';
-GRANT 'seller' TO 'seller'@'localhost';
-
 USE `lazada_ecommerce`;
 
 -- Path: script/seed.sql
@@ -45,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `users_info`(
 `user_id` int(11) NOT NULL,
 `first_name` varchar(255) NOT NULL,
 `last_name` varchar(255) NOT NULL,
+`role` varchar(255) NOT NULL,
 `email` varchar(255) NOT NULL,
 `phone` varchar(255) NOT NULL,
 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -90,10 +63,35 @@ CREATE TABLE IF NOT EXISTS `inventory` (
   FOREIGN KEY (`warehouse_id`) REFERENCES `warehouse`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+-- Create role
+CREATE ROLE 'admin', 'customer', 'seller';
+
+-- Grant permission for each user role
+-- Admin: All rights
+GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
+
+-- Customer: SELECT product, CRU user (its account)
+GRANT SELECT ON lazada_ecommerce.products TO 'customer';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'customer';
+
+-- Seller: CRUD product, CRU user (its account)
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
+
+-- Create user
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
+CREATE USER 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
+CREATE USER 'seller'@'localhost' IDENTIFIED BY 'Lseller';
+
+-- Set role to user
+GRANT 'admin' TO 'admin'@'localhost';
+GRANT 'customer' TO 'customer'@'localhost';
+GRANT 'seller' TO 'seller'@'localhost';
+
 -- Insert dummy data
 -- Dummy user has password "password" by default
 INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) VALUES ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
-INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `email`, `phone`) VALUES (1, 'Admin', 'User', 'admin@gmail.com', '0123456789');
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`) VALUES (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
 -- Dummy products
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `length`, `width`, `height`, `category_id`) VALUES
@@ -108,4 +106,21 @@ INSERT INTO `products` (`title`, `description`, `price`, `image`, `length`, `wid
 ('Fitness Tracker Band', 'Monitor your health and stay active with our comfortable fitness tracker.', 49.99, 'fitness_tracker_band.jpg', 7.0, 0.9, 0.4, 4),
 ('Home Espresso Machine', 'Brew cafe-quality espresso at home with our easy-to-use espresso machine.', 399.99, 'home_espresso_machine.jpg', 11.3, 9.8, 14.5, 5);
 
+-- Dummy data for warehouses
+INSERT INTO `warehouses` (`name`, `address`, `area`) VALUES
+('Binh Thanh WH', '28 Diên Hồng, Phường 1, Bình Thạnh, Thành phố Hồ Chí Minh, Việt Nam', 106.69),
+('Binh Tan WH', '175 Lê Đình Cẩn, Tân Tạo, Bình Tân, Thành phố Hồ Chí Minh, Việt Nam', 106.59), 
+('Doi Can WH', '173 P. Đội Cấn, Đội Cấn, Ba Đình, Hà Nội, Việt Nam', 105.82),
+('Thanh Xuan WH', '275 Nguyễn Trãi, Thanh Xuân Trung, Thanh Xuân, Hà Nội, Việt Nam', 105.8);
 
+-- Dummy data for inventories
+INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`) VALUES
+(1, 3, 100), 
+(1, 4, 233),
+(2, 1, 84),
+(3, 4, 200), 
+(4, 2, 110), 
+(4, 3, 12), 
+(5, 4, 300), 
+(5, 3, 22), 
+(6, 1, 400);
