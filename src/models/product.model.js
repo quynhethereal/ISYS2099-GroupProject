@@ -1,4 +1,4 @@
-const connection = require("../db/db");
+const {admin_pool} = require("../db/db");
 const productValidator = require('../validators/product.validator');
 
 class Product {
@@ -14,7 +14,7 @@ class Product {
 
 Product.findById = (productId) => {
     return new Promise((resolve, reject) => {
-        connection.execute(
+        admin_pool.execute(
             'SELECT * FROM `products` WHERE id = ?',
             [productId],
             (err, results) => {
@@ -40,7 +40,7 @@ Product.findById = (productId) => {
 
 Product.count = () => {
     return new Promise((resolve, reject) => {
-        connection.execute(
+        admin_pool.execute(
             'SELECT COUNT(*) as count FROM `products`',
             (err, results) => {
                 if (err) {
@@ -70,7 +70,7 @@ Product.findByCategory = async (params) => {
         const totalPages = Math.ceil(productCount / limit);
 
         const res = await new Promise((resolve, reject) => {
-            connection.execute(
+            admin_pool.execute(
                 "SELECT * FROM `products` WHERE category_id = ? AND id > ? ORDER BY id ASC LIMIT ?",
                 [categoryId + "", nextId + "", limit + ""],
                 (err, results) => {
@@ -112,7 +112,7 @@ Product.updateName = (params) => {
             return;
         }
 
-        connection.execute(
+        admin_pool.execute(
             'UPDATE `products` SET name = ? WHERE id = ?',
             [name, id],
             (err, results) => {
@@ -138,7 +138,7 @@ Product.updateDescription = (params) => {
             return;
         }
 
-        connection.execute(
+        admin_pool.execute(
             'UPDATE `products` SET description = ? WHERE id = ?',
             [description, id],
             (err, results) => {
@@ -164,7 +164,7 @@ Product.updatePrice = (params) => {
             return;
         }
 
-        connection.execute(
+        admin_pool.execute(
             'UPDATE `products` SET price = ? WHERE id = ?',
             [price, id],
             (err, results) => {
@@ -190,7 +190,7 @@ Product.updateQuantity = (params) => {
             return;
         }
 
-        connection.execute(
+        admin_pool.execute(
             'UPDATE `products` SET quantity = ? WHERE id = ?',
             [quantity, id],
             (err, results) => {
@@ -213,7 +213,7 @@ Product.updateImage = async (params) => {
             throw new Error("Product not found.");
         } else {
             await new Promise((resolve, reject) => {
-                connection.execute(
+                admin_pool.execute(
                     'UPDATE `products` SET image = ?, image_name = ? WHERE id = ?',
                     [params.image, params.imageName, params.productId],
                     (err, results) => {
@@ -248,7 +248,7 @@ Product.updateCategory = (params) => {
             return;
         }
 
-        connection.execute(
+        admin_pool.execute(
             'UPDATE `products` SET category = ? WHERE id = ?',
             [params.category, params.id],
             (err, results) => {
@@ -292,7 +292,7 @@ Product.update = async (params) => {
             console.log("Product not found.");
         } else {
             await new Promise((resolve, reject) => {
-                connection.execute(
+                admin_pool.execute(
                     'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ? WHERE id = ?',
                     [title, description, price, category, id],
                     (err, results) => {

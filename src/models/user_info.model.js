@@ -1,4 +1,4 @@
-const connection = require("../db/db");
+const {admin_pool} = require("../db/db");
 const Helpers = require('../helpers/helpers');
 // UserModel model
 const UserInfo = function(userInfo){
@@ -7,7 +7,7 @@ const UserInfo = function(userInfo){
 
 UserInfo.findByUserId = (userId) => {
     return new Promise((resolve, reject) => {
-        connection.execute(
+        admin_pool.execute(
             'SELECT * FROM `users_info` WHERE user_id = ?',
             [userId],
             (err, results) => {
