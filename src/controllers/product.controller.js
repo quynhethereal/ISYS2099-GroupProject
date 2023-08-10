@@ -64,7 +64,6 @@ exports.update = async (req, res) => {
 
 exports.updateImage = async (req, res) => {
     try {
-
         const productId = parseInt(req.params.id);
         const imageName = req.file.originalname || "default.jpg";
         const image = Helper.encodeImage(req.file.path);

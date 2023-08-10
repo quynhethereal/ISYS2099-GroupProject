@@ -10,19 +10,6 @@ const admin_pool = mysql.createPool({
     debug: false
 });
 
-admin_pool.getConnection(function (err, connection) {
-    if (err) {
-        console.error('Error connecting admin to MySQL:', err);
-        connection.release();
-        throw err;
-    }
-
-    console.log('Connected admin pool to MySQL!');
-    connection.on('error', function (err) {
-        throw err;
-    });
-});
-
 module.exports = admin_pool;
 
 // Create a customer connection pool to the MySQL database
@@ -35,20 +22,20 @@ const customer_pool = mysql.createPool({
   debug: false
 });
 
-customer_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting customer pool to MySQL:', err);
-      connection.release();
-      throw err;
-  }
+// customer_pool.getConnection(function (err, connection) {
+//   if (err) {
+//       console.error('Error connecting customer pool to MySQL:', err);
+//       connection.release();
+//       throw err;
+//   }
+//
+//   console.log('Connected customer pool to MySQL!');
+//   connection.on('error', function (err) {
+//       throw err;
+//   });
+// });
 
-  console.log('Connected customer pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
-});
-
-module.exports = customer_pool;
+// module.exports = customer_pool;
 
 // Create a seller connection pool to the MySQL database
 const seller_pool = mysql.createPool({
@@ -60,17 +47,17 @@ const seller_pool = mysql.createPool({
   debug: false
 });
 
-seller_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting seller to MySQL:', err);
-      connection.release();
-      throw err;
-  }
+// seller_pool.getConnection(function (err, connection) {
+//   if (err) {
+//       console.error('Error connecting seller to MySQL:', err);
+//       connection.release();
+//       throw err;
+//   }
+//
+//   console.log('Connected seller pool to MySQL!');
+//   connection.on('error', function (err) {
+//       throw err;
+//   });
+// });
 
-  console.log('Connected seller pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
-});
-
-module.exports = seller_pool;
+// module.exports = seller_pool;

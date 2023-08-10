@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const privateKey = process.env.PRIVATE_KEY.replace(/\\n/g, '\n');
 
 exports.authenticate = async (req, res) => {
-    console.log(privateKey);
     try {
         const user = await User.findByUsernamePassword(req.body.username, req.body.password);
 

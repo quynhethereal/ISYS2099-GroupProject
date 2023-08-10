@@ -7,8 +7,8 @@ dotenv.config();
 
 const multer = require('multer');
 
-const dbConfig = require('./src/db/db');
 const authMiddleware = require('./src/middlewares/auth.middleware');
+const dbConfig = require('./src/db/db');
 
 const app = express();
 app.use(cors());

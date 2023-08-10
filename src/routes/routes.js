@@ -14,6 +14,7 @@ module.exports = app => {
     const users = require("../controllers/user.controller.js");
     const auth = require("../controllers/auth.controller.js");
     const products = require("../controllers/product.controller.js");
+    const orders = require("../controllers/order.controller.js");
     const authMiddleware = require('../middlewares/auth.middleware');
 
     let router = require("express").Router();
@@ -24,6 +25,7 @@ module.exports = app => {
     // get a user by username and password
     router.post("/user", users.findByUsernamePassword);
 
+    // TODO: dummy route for testing
     router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     // product-related API
@@ -31,5 +33,7 @@ module.exports = app => {
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
+    // order-related API
+    router.post("/product/:id/order", authMiddleware.verifyToken, orders.createOrder);
     app.use('/api', router);
 }

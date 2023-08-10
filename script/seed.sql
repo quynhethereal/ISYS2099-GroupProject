@@ -46,10 +46,8 @@ create TABLE IF NOT EXISTS `warehouses` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
 `name` varchar(255) NOT NULL,
 `address` varchar(255) NOT NULL,
-`length` DECIMAL(10, 2),
-`width` DECIMAL(10, 2),
-`available_length` DECIMAL(10, 2),
-`available_width` DECIMAL(10, 2),
+`total_volume` DECIMAL(10, 2),
+`available_volume` DECIMAL(10, 2),
 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -62,10 +60,12 @@ create TABLE IF NOT EXISTS `inventory` (
   `quantity` int(11) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`product_id`) REFERENCES `product`(`id`),
-  FOREIGN KEY (`warehouse_id`) REFERENCES `warehouse`(`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- add foreign keys
+ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
+ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
 -- Create role
 create role 'admin', 'customer', 'seller';
@@ -124,22 +124,26 @@ VALUES
 
 
 -- Dummy data for warehouses
-INSERT INTO `warehouses` (`name`, `address`, `length`, `width`, `available_length`, `available_width`)
+-- Insert 5 dummy records into the warehouses table
+INSERT INTO `warehouses` (`name`, `address`, `total_volume`, `available_volume`, `created_at`, `updated_at`)
 VALUES
-('Warehouse A', '123 Main Street', 100.0, 80.0, 50.0, 30.0),
-('Warehouse B', '456 Elm Avenue', 150.0, 120.0, 100.0, 80.0),
-('Warehouse C', '789 Oak Road', 200.0, 160.0, 150.0, 120.0),
-('Warehouse D', '321 Maple Lane', 120.0, 100.0, 70.0, 50.0),
-('Warehouse E', '654 Pine Boulevard', 180.0, 140.0, 130.0, 110.0);
-
+  ('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
+  ('Warehouse B', '456 Elm St, City B', 1500.00, 1000.00, NOW(), NOW()),
+  ('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
+  ('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
+  ('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
 -- Dummy data for inventories
-insert into `inventory` (`product_id`, `warehouse_id`, `quantity`) VALUES
-(1, 3, 100),
-(1, 4, 233),
-(2, 1, 84),
-(3, 4, 200),
-(4, 2, 110),
-(4, 3, 12),
-(5, 4, 300),
-(5, 3, 22),
-(6, 1, 400);
+-- Insert 10 dummy records into the inventory table
+INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `created_at`, `updated_at`)
+VALUES
+  (1, 1, 100, NOW(), NOW()),
+  (2, 2, 50, NOW(), NOW()),
+  (3, 3, 200, NOW(), NOW()),
+  (4, 4, 75, NOW(), NOW()),
+  (5, 5, 120, NOW(), NOW()),
+  (6, 1, 30, NOW(), NOW()),
+  (7, 2, 80, NOW(), NOW()),
+  (8, 3, 150, NOW(), NOW()),
+  (9, 4, 90, NOW(), NOW()),
+  (10, 5, 110, NOW(), NOW());
+
