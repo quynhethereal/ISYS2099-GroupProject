@@ -1,19 +1,3 @@
-// create TABLE IF NOT EXISTS `products` (
-//   `id` int(11) NOT NULL AUTO_INCREMENT,
-//   `title` varchar(255) NOT NULL,
-//   `description` varchar(255) NOT NULL,
-//   `price` DECIMAL(10, 2),
-//   `image` LONGBLOB,
-//   `image_name` varchar(255),
-//   `length` DECIMAL(10, 2),
-//   `width` DECIMAL(10, 2),
-//   `height` DECIMAL(10, 2),
-//   `category_id` int(11) NOT NULL,
-//   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//   PRIMARY KEY (`id`)
-// ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
 const ProductValidator = {};
 
 ProductValidator.validateName = (name) => {

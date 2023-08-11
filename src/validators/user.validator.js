@@ -40,13 +40,12 @@ const validateEmail = (email) => {
     }
 };
 
-// Validate that phone consists of exactly 10 digits
+// Validate that phone consists of numbers only
 const validatePhone = (phone) => {
-    if (!/^[0-9]{10}$/.test(phone)) {
-        throw new Error('Phone number must have exactly 10 digits');
+    if (!/^[0-9]+$/.test(phone)) {
+        throw new Error('Invalid phone format');
     }
 };
-
 
 // Export the UserValidator object containing all validation functions
 module.exports = UserValidator;
