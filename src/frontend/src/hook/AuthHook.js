@@ -17,8 +17,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      navigate("/customer");
+      // navigate("/customer");
+      console.log(user);
     }
+    // eslint-disable-next-line
   }, [setUser]);
 
   const logout = () => {};
