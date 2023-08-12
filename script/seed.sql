@@ -68,7 +68,7 @@ ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
 -- Create role
-create role 'admin', 'customer', 'seller';
+create role if not exists 'admin', 'customer', 'seller';
 
 -- Grant permission for each user role
 -- Admin: All rights
@@ -83,9 +83,9 @@ grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
 
 -- Create user
-create user 'admin'@'localhost' identified by 'Ladmin';
-create user 'customer'@'localhost' identified by 'Lcustomer';
-create user 'seller'@'localhost' identified by 'Lseller';
+create user if not exists 'admin'@'localhost' identified by 'Ladmin';
+create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
+create user if not exists 'seller'@'localhost' identified by 'Lseller';
 
 -- Set role to user
 grant 'admin' to 'admin'@'localhost';
