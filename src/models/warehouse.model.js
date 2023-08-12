@@ -1,4 +1,4 @@
-const connection = require("../db/db");
+const {admin_pool} = require("../db/db");
 class Warehouse {
     constructor(params) {
         this.name = params.name;
@@ -11,7 +11,7 @@ class Warehouse {
 
 Warehouse.findById = (warehouseId) => {
     return new Promise((resolve, reject) => {
-        connection.execute(
+        admin_pool.execute(
             'SELECT * FROM `warehouses` WHERE id = ?',
             [warehouseId],
             (err, results) => {
