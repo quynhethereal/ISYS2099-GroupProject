@@ -2,7 +2,6 @@ const {customer_pool} = require("../db/db");
 const OrderItem = require("./order_item.model");
 
 
-
 class Order {
     constructor(params = {}) {
         this.id = params.id;
