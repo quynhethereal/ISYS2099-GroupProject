@@ -20,8 +20,8 @@ exports.verifyToken = (req, res, next) => {
             });
         }
 
-        const { username, firstName, lastName, email, role } = decoded;
-        req.currentUser = new User({username, firstName, lastName, email, role});
+        const { id, username, firstName, lastName, email, role } = decoded;
+        req.currentUser = new User({ id, username, firstName, lastName, email, role});
 
         next();
     });

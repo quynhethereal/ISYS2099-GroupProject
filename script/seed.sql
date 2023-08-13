@@ -54,18 +54,61 @@ create TABLE IF NOT EXISTS `warehouses` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 create TABLE IF NOT EXISTS `inventory` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `product_id` int(11) NOT NULL,
   `warehouse_id` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
+  `reserved_quantity` int(11) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+   `id` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- add foreign keys
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
+
+-- triggers for func
+-- SET GLOBAL log_bin_trust_function_creators = 1; // run this if you have error
+DELIMITER //
+DROP trigger IF EXISTS before_inventory_insert;
+CREATE TRIGGER before_inventory_insert
+BEFORE INSERT ON inventory
+FOR EACH ROW
+BEGIN
+  SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
+END;
+//
+DELIMITER ;
+
+create table if not exists `orders` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `total_price` DECIMAL(10, 2),
+    `status` varchar(255) NOT NULL,
+    `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `orders` ALTER `status` SET DEFAULT 'pending';
+
+-- add foreign keys
+alter table `orders` add foreign key (`user_id`) references `users`(`id`);
+
+create table if not exists `order_items` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`order_id` int(11) NOT NULL,
+`inventory_id` VARCHAR(255),
+`quantity` int(11) NOT NULL,
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+alter table `order_items` add foreign key (`order_id`) references `orders`(`id`);
+alter table `order_items` add foreign key (`inventory_id`) references `inventory`(`id`);
 
 -- Create role
 create role if not exists 'admin', 'customer', 'seller';
@@ -137,16 +180,15 @@ VALUES
   ('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
 -- Dummy data for inventories
 -- Insert 10 dummy records into the inventory table
-INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `created_at`, `updated_at`)
+INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `reserved_quantity`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, 100, NOW(), NOW()),
-  (2, 2, 50, NOW(), NOW()),
-  (3, 3, 200, NOW(), NOW()),
-  (4, 4, 75, NOW(), NOW()),
-  (5, 5, 120, NOW(), NOW()),
-  (6, 1, 30, NOW(), NOW()),
-  (7, 2, 80, NOW(), NOW()),
-  (8, 3, 150, NOW(), NOW()),
-  (9, 4, 90, NOW(), NOW()),
-  (10, 5, 110, NOW(), NOW());
-
+  (1, 1, 100, 0, NOW(), NOW()),
+  (2, 2, 50, 0, NOW() - INTERVAL 1 HOUR, NOW() - INTERVAL 1 HOUR),
+  (3, 3, 200, 0, NOW() - INTERVAL 2 HOUR, NOW() - INTERVAL 2 HOUR),
+  (4, 4, 75, 0, NOW() - INTERVAL 3 HOUR, NOW() - INTERVAL 3 HOUR),
+  (5, 5, 120, 0, NOW() - INTERVAL 4 HOUR, NOW() - INTERVAL 4 HOUR),
+  (6, 1, 30, 0, NOW() - INTERVAL 5 HOUR, NOW() - INTERVAL 5 HOUR),
+  (7, 2, 80, 0, NOW() - INTERVAL 6 HOUR, NOW() - INTERVAL 6 HOUR),
+  (8, 3, 150, 0, NOW() - INTERVAL 7 HOUR, NOW() - INTERVAL 7 HOUR),
+  (9, 4, 90, 0, NOW() - INTERVAL 8 HOUR, NOW() - INTERVAL 8 HOUR),
+  (10, 5, 110, 0, NOW() - INTERVAL 9 HOUR, NOW() - INTERVAL 9 HOUR);
