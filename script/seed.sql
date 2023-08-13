@@ -108,7 +108,6 @@ create table if not exists `order_items` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 alter table `order_items` add foreign key (`order_id`) references `orders`(`id`);
 alter table `order_items` add foreign key (`inventory_id`) references `inventory`(`id`);
 
