@@ -112,12 +112,19 @@ alter table `order_items` add foreign key (`order_id`) references `orders`(`id`)
 alter table `order_items` add foreign key (`inventory_id`) references `inventory`(`id`);
 
 -- Create role
-create role if not exists 'admin', 'customer', 'seller';
+create role if not exists 'admin', 'customer', 'seller', 'wh_admin';
+
+-- Create user
+create user if not exists 'admin'@'localhost' identified by 'Ladmin';
+create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
+create user if not exists 'seller'@'localhost' identified by 'Lseller';
+create user if not exists 'wh_admin'@'localhost' identified by 'Lwhadmin';
 
 -- Revoke all the privileges from all roles
 revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
 revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
 revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'wh_admin'@'localhost';
 
 -- Grant permission for each user role
 -- Admin: All rights
@@ -127,24 +134,28 @@ grant all privileges on lazada_ecommerce.* TO 'admin';
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 grant insert, select, update on lazada_ecommerce.orders to 'customer';
-grant insert, select, update on lazada_ecommerce.order_items to 'customer';
+grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
+grant select on lazada_ecommerce.inventory to 'customer';
+-- grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'customer';
 
 -- Seller: CRUD product, CRU user (its account)
 grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
 grant select, update on lazada_ecommerce.orders to 'seller';
+grant select on lazada_ecommerce.inventory to 'seller';
 
--- Create user
-create user if not exists 'admin'@'localhost' identified by 'Ladmin';
-create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
-create user if not exists 'seller'@'localhost' identified by 'Lseller';
+-- Warehouse admin: All privilege related to warehouse and inventory, select and update products (if needed)
+grant all on lazada_ecommerce.inventory to 'wh_admin';
+grant all on lazada_ecommerce.warehouses to 'wh_admin';
+grant select, update on lazada_ecommerce.products to 'wh_admin';
 
 -- Set role to user
 grant 'admin' to 'admin'@'localhost';
 grant 'customer' to 'customer'@'localhost';
 grant 'seller' to 'seller'@'localhost';
+grant 'wh_admin' to 'wh_admin'@'localhost';
 
-flush priviledges;
+flush privileges;
 
 -- Insert 10 dummy data for users and users_info
 -- Dummy user's default password: "password"

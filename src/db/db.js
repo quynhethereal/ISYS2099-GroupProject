@@ -50,8 +50,6 @@ customer_pool.getConnection(function (err, connection) {
     });
 });
 
-
-
 // Create a seller connection pool to the MySQL database
 const seller_pool = mysql.createPool({
   connectionLimit: 10,
@@ -75,5 +73,28 @@ seller_pool.getConnection(function (err, connection) {
   });
 });
 
-module.exports = {admin_pool, customer_pool, seller_pool};
+// Create a warehouse admin connection pool to the MySQL database
+const wh_pool = mysql.createPool({
+  connectionLimit: 10,
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_WH_USER,
+  password: process.env.MYSQL_WH_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  debug: false
+});
+
+wh_pool.getConnection(function (err, connection) {
+  if (err) {
+      console.error('Error connecting customer pool to MySQL:', err);
+      connection.release();
+      throw err;
+  }
+
+  console.log('Connected customer pool to MySQL!');
+  connection.on('error', function (err) {
+      throw err;
+  });
+});
+
+module.exports = {wh_pool, admin_pool, customer_pool, seller_pool};
 
