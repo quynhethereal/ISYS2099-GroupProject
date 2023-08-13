@@ -18,8 +18,7 @@ User.findByUsernamePassword = (username, password) => {
     // console.log(admin_pool)
     return new Promise((resolve, reject) => {
         admin_pool.execute(
-            // 'SELECT * FROM `users` WHERE username = ?'
-            'SELECT users.* FROM `users` INNER JOIN `users_info` ON users.username = users_info.username WHERE users.username = ?',
+            'SELECT * FROM `users` WHERE username = ?',
             [username],
             function(err, results) {
                 if (err) {
