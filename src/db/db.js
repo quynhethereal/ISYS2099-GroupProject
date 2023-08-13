@@ -1,4 +1,19 @@
 const mysql = require('mysql2');
+const mongoose = require('mongoose');
+
+// Create connection to mongodb in localhost
+const mongodb_uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+
+// Check whether connection is valid
+mongodb_connection = mongoose.createConnection(mongodb_uri);
+mongodb_connection.on('connected', function (ref) {
+  console.log("Connected to MongoDB database!");
+});
+
+// Check whether connection is failed
+mongodb_connection.on('error', function (err) {
+  console.log("Fail to connect to MongoDB database...", err);
+});
 
 // Create admin connection pool to the MySQL database
 const admin_pool = mysql.createPool({
@@ -73,28 +88,5 @@ seller_pool.getConnection(function (err, connection) {
   });
 });
 
-// Create a warehouse admin connection pool to the MySQL database
-const wh_pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_WH_USER,
-  password: process.env.MYSQL_WH_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  debug: false
-});
-
-wh_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting customer pool to MySQL:', err);
-      connection.release();
-      throw err;
-  }
-
-  console.log('Connected customer pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
-});
-
-module.exports = {wh_pool, admin_pool, customer_pool, seller_pool};
+module.exports = {admin_pool, customer_pool, seller_pool};
 

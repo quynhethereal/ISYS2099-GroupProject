@@ -130,7 +130,7 @@ revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'wh_admin'@'localhost
 -- Admin: All rights
 grant all privileges on lazada_ecommerce.* TO 'admin';
 
--- Customer: SELECT product, CRU user (its account)
+-- Customer: SELECT product, CRU users_info, orders, order_items and inventory
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 grant insert, select, update on lazada_ecommerce.orders to 'customer';
@@ -138,7 +138,7 @@ grant insert, select, update, delete on lazada_ecommerce.order_items to 'custome
 grant select on lazada_ecommerce.inventory to 'customer';
 -- grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'customer';
 
--- Seller: CRUD product, CRU user (its account)
+-- Seller: CRUD product, CRU users_info, orders and inventory
 grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
 grant select, update on lazada_ecommerce.orders to 'seller';

@@ -1,4 +1,6 @@
 const createOrderService = require('../services/createOrder.service');
+const acceptOrderService = require('../services/acceptOrder.service');
+const rejectOrderService = require('../services/rejectOrder.service');
 const validateCart = require('../validators/createOrder.validator').validateCartPayload;
 const Order = require('../models/order.model');
 // example payload
@@ -37,7 +39,12 @@ exports.createOrder = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.getAll(req.currentUser.id);
+        // validate status
+        if (req.query.status && !Order.isValidStatus(req.query.status)) {
+            return res.status(400).json({ message: "Invalid status." });
+        }
+
+        const orders = await Order.getAll(req.currentUser.id, req.query.status);
         res.status(200).json(orders);
     } catch (err) {
         res.status(500).send({
@@ -53,6 +60,30 @@ exports.getOrder = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error retrieving order."
+        });
+    }
+}
+
+exports.acceptOrder = async (req, res) => {
+    try {
+        const order = await acceptOrderService(req.params.id, req.currentUser.id);
+
+        res.status(200).json(order);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error accepting order."
+        });
+    }
+}
+
+exports.rejectOrder = async (req, res) => {
+    try {
+        const order = await rejectOrderService(req.params.id, req.currentUser.id);
+
+        res.status(200).json(order);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error rejecting order."
         });
     }
 }

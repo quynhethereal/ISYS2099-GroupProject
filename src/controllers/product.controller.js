@@ -1,7 +1,7 @@
 const Product = require('../models/product.model');
 const Helper = require('../helpers/helpers');
 
-exports.findAllByCategory = async (req, res) => {
+exports.findAll = async (req, res) => {
     try {
         const {limit, nextId} = req.body;
         const categoryId = parseInt(req.params.id);
@@ -24,9 +24,26 @@ exports.findAllByCategory = async (req, res) => {
 
         const params = {limit, categoryId, nextId};
 
-        console.log(params);
+        const products = await Product.findAll(params);
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving products."
+        });
+    }
+}
+
+exports.findAllByCategory = async (req, res) => {
+    try {
+        const categoryId = parseInt(req.params.id);
+
+        const params = {
+            categoryId,
+            queryParams: req.query
+        }
 
         const products = await Product.findByCategory(params);
+
         res.status(200).json(products);
     } catch (err) {
         res.status(500).send({
