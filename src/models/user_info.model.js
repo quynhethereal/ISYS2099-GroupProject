@@ -1,8 +1,15 @@
 const {admin_pool} = require("../db/db");
 const Helpers = require('../helpers/helpers');
+
 // UserModel model
+
 const UserInfo = function(userInfo){
-    //TODO
+    // TODO: NEED CHECKING
+    this.first_name = userInfo.first_name;
+    this.last_name = userInfo.last_name;
+    this.role = userInfo.role;
+    this.email = userInfo.email;
+    this.phone = userInfo.phone;
 }
 
 UserInfo.findByUserId = (userId) => {

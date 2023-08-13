@@ -204,6 +204,7 @@ Product.updateQuantity = (params) => {
         );
     });
 }
+
 Product.updateImage = async (params) => {
     try {
         const product = await Product.findById(params.productId);

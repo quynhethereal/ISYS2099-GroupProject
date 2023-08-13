@@ -1,12 +1,13 @@
 const {admin_pool} = require("../db/db");
 const Helpers = require('../helpers/helpers');
+const userValidator = require('../validators/user.validator');
 // UserModel model
 
 class User {
     constructor(params) {
         this.username = params.username;
-        this.firstName = params.firstName;
-        this.lastName = params.lastName;
+        this.first_name = params.first_name;
+        this.last_name = params.last_name;
         this.email = params.email;
         this.role = params.role;
     }
@@ -17,7 +18,8 @@ User.findByUsernamePassword = (username, password) => {
     // console.log(admin_pool)
     return new Promise((resolve, reject) => {
         admin_pool.execute(
-            'SELECT * FROM `users` WHERE username = ?',
+            // 'SELECT * FROM `users` WHERE username = ?'
+            'SELECT users.* FROM `users` INNER JOIN `users_info` ON users.username = users_info.username WHERE users.username = ?',
             [username],
             function(err, results) {
                 if (err) {
@@ -45,7 +47,81 @@ User.findByUsernamePassword = (username, password) => {
             }
         );
     });
-};
+}
 
+// TODO: NEED CHECKING
+User.updateFirstName = (params) => {
+    const {first_name, username, hashed_password} = params;
+
+    User.findByUsernamePassword(username, hashed_password).then((user) => {
+        if (!user) {
+            console.log("User not found.");
+            return;
+        }
+
+        admin_pool.execute(
+            'UPDATE `users_info` SET first_name = ? WHERE username = ?',
+            [first_name, username],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to update user.');
+                    return;
+                }
+                console.log("User updated.");
+                return results;
+            }
+        );
+    });
+}
+
+// TODO: NEED CHECKING
+User.updateLastName = (params) => {
+    const {last_name, username, hashed_password} = params;
+
+    User.findByUsernamePassword(username, hashed_password).then((user) => {
+        if (!user) {
+            console.log("User not found.");
+            return;
+        }
+
+        admin_pool.execute(
+            'UPDATE `users_info` SET first_name = ? WHERE username = ?',
+            [last_name, username],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to update user.');
+                    return;
+                }
+                console.log("User updated.");
+                return results;
+            }
+        );
+    });
+}
+
+// TODO: NEED CHECKING
+User.updateEmail = (params) => {
+    const {email, username, hashed_password} = params;
+
+    User.findByUsernamePassword(username, hashed_password).then((user) => {
+        if (!user) {
+            console.log("User not found.");
+            return;
+        }
+
+        admin_pool.execute(
+            'UPDATE `users_info` SET first_name = ? WHERE username = ?',
+            [email, username],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to update user.');
+                    return;
+                }
+                console.log("User updated.");
+                return results;
+            }
+        );
+    });
+}
 
 module.exports = User;

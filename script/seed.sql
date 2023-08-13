@@ -1,104 +1,134 @@
-create DATABASE IF NOT EXISTS `lazada_ecommerce`;
+-- PATH: script/seed.sql
+
+-- Create and use the database
+CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
 USE `lazada_ecommerce`;
 
--- Path: script/seed.sql
-create TABLE IF NOT EXISTS `users`(
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`username` varchar(255) NOT NULL,
-`hashed_password` varchar(255) NOT NULL,
-`salt_value` varchar(255) NOT NULL,
-`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`)
+-- Create 'users' table
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(255) NOT NULL,
+  `hashed_password` VARCHAR(255) NOT NULL,
+  `salt_value` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-create TABLE IF NOT EXISTS `users_info`(
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`user_id` int(11) NOT NULL,
-`first_name` varchar(255) NOT NULL,
-`last_name` varchar(255) NOT NULL,
-`role` varchar(255) NOT NULL,
-`email` varchar(255) NOT NULL,
-`phone` varchar(255) NOT NULL,
-`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`),
-FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+-- Create 'users_info' table
+CREATE TABLE IF NOT EXISTS `users_info` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `first_name` VARCHAR(255) NOT NULL,
+  `last_name` VARCHAR(255) NOT NULL,
+  `role` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `phone` VARCHAR(255) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-create TABLE IF NOT EXISTS `products` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` varchar(255) NOT NULL,
+-- Create 'products' table
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
   `price` DECIMAL(10, 2),
   `image` LONGBLOB,
-  `image_name` varchar(255),
+  `image_name` VARCHAR(255),
   `length` DECIMAL(10, 2),
   `width` DECIMAL(10, 2),
   `height` DECIMAL(10, 2),
-  `category_id` int(11) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `category_id` INT(11) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-create TABLE IF NOT EXISTS `warehouses` (
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`name` varchar(255) NOT NULL,
-`address` varchar(255) NOT NULL,
-`total_volume` DECIMAL(10, 2),
-`available_volume` DECIMAL(10, 2),
-`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- Create 'warehouses' table
+CREATE TABLE IF NOT EXISTS `warehouses` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `address` VARCHAR(255) NOT NULL,
+  `total_volume` DECIMAL(10, 2),
+  `available_volume` DECIMAL(10, 2),
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-create TABLE IF NOT EXISTS `inventory` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NOT NULL,
-  `warehouse_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- Create 'inventory' table
+CREATE TABLE IF NOT EXISTS `inventory` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `product_id` INT(11) NOT NULL,
+  `warehouse_id` INT(11) NOT NULL,
+  `quantity` INT(11) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- add foreign keys
+-- Add foreign keys for 'inventory' table
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
--- Create role
-create role if not exists 'admin', 'customer', 'seller';
+-- Create roles
+CREATE ROLE IF NOT EXISTS 'admin', 'customer', 'seller';
 
--- Grant permission for each user role
+-- Grant permissions for each user role
 -- Admin: All rights
-grant all privileges on lazada_ecommerce.* TO 'admin';
+GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
 
 -- Customer: SELECT product, CRU user (its account)
-grant select on lazada_ecommerce.products to 'customer';
-grant insert, select, update on lazada_ecommerce.users_info to 'customer';
+GRANT SELECT ON lazada_ecommerce.products TO 'customer';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'customer';
 
 -- Seller: CRUD product, CRU user (its account)
-grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
-grant insert, select, update on lazada_ecommerce.users_info to 'seller';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
 
--- Create user
-create user if not exists 'admin'@'localhost' identified by 'Ladmin';
-create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
-create user if not exists 'seller'@'localhost' identified by 'Lseller';
+-- Create users
+CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
+CREATE USER IF NOT EXISTS 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
+CREATE USER IF NOT EXISTS 'seller'@'localhost' IDENTIFIED BY 'Lseller';
 
--- Set role to user
-grant 'admin' to 'admin'@'localhost';
-grant 'customer' to 'customer'@'localhost';
-grant 'seller' to 'seller'@'localhost';
+-- Assign roles to users
+GRANT 'admin' TO 'admin'@'localhost';
+GRANT 'customer' TO 'customer'@'localhost';
+GRANT 'seller' TO 'seller'@'localhost';
 
--- Insert dummy data
--- Dummy user has password "password" by default
-insert into `users` (`username`, `hashed_password`, `salt_value`) VALUES ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
-insert into `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`) VALUES (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
+-- Insert 10 dummy data for users and users_info
+-- Dummy user's default password: "password"
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) 
+VALUES 
+  ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456'),
+  ('user1', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '654321'),
+  ('user2', '819b064537cd93268a25ee61493120c1f01a1e59a1543654b9a7ceabf965c1c3', '987654'),
+  ('customer1', '4d282c57150ab1b99e36f0f10dd99f47e745f7c086e6b7a8eb3d8ef4f10c7d45', '135792'),
+  ('customer2', '7096459323b3d17ec937b59ec570b12ecbc7bb6f9c401c622b55f84f9f9d8722', '246813'),
+  ('seller1', '22e54b96c5883a7b71663b4ce4f9dcbf1d6b1941a82b5765055b572d6fb665ea', '567890'),
+  ('seller2', 'd3df5d729601c1551283e7816d5d2434bc6162b03c9805b3d98ce6e63b8b3e92', '543210'),
+  ('user3', '319f4d26e3c536b5dd871bb2c52e3178d5b582cdaab4628106a1d3ee9d4c9b43', '111111'),
+  ('user4', '462a63d6af1a4d9d6d93e8e98da10a7c424d6c1d9e1f3b8962a4d403edabddaf', '222222'),
+  ('admin2', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824', '654321');
 
--- Dummy products
--- Insert 20 dummy records into the products table
+-- Insert corresponding dummy data for users_info
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`) 
+VALUES 
+  (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789'),
+  (2, 'User', 'One', 'user', 'user1@example.com', '9876543210'),
+  (3, 'User', 'Two', 'user', 'user2@example.com', '5555555555'),
+  (4, 'Customer', 'One', 'customer', 'customer1@rmit.com', '1111111111'),
+  (5, 'Customer', 'Two', 'customer', 'customer2@apple.com', '2222222222'),
+  (6, 'Seller', 'A', 'seller', 'seller1@example.com', '3333333333'),
+  (7, 'Seller', 'B', 'seller', 'seller2@example.com', '4444444444'),
+  (8, 'User', 'Three', 'user', 'user3@gmail.com', '6666666666'),
+  (9, 'User', 'Four', 'user', 'user4@yahoo.com', '7777777777'),
+  (10, 'Admin', 'User2', 'admin', 'admin2@gmail.com', '9876543210');
+
+-- Insert 20 dummy data for products
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
 VALUES
   ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, NULL, 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, NOW(), NOW()),
@@ -122,9 +152,7 @@ VALUES
   ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, NULL, 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
   ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, NULL, 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
 
-
--- Dummy data for warehouses
--- Insert 5 dummy records into the warehouses table
+-- Insert 5 dummy data for warehouses
 INSERT INTO `warehouses` (`name`, `address`, `total_volume`, `available_volume`, `created_at`, `updated_at`)
 VALUES
   ('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
@@ -132,8 +160,8 @@ VALUES
   ('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
   ('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
   ('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
--- Dummy data for inventories
--- Insert 10 dummy records into the inventory table
+
+-- Insert 10 dummy data for inventory
 INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `created_at`, `updated_at`)
 VALUES
   (1, 1, 100, NOW(), NOW()),

@@ -1,7 +1,7 @@
 const ProductValidator = {};
 
-ProductValidator.validateName = (name) => {
-    if (!name || name.trim() === '') {
+ProductValidator.validateTitle = (title) => {
+    if (!title || title.trim() === '') {
         throw new Error('Product name is required');
     }
 };
@@ -37,8 +37,6 @@ ProductValidator.validateUpdateParams = (params) => {
     ProductValidator.validateDescription(description);
     ProductValidator.validateName(name);
     ProductValidator.validateImage(image);
-
-
 }
 
 module.exports = ProductValidator;
