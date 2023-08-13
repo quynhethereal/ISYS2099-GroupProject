@@ -29,7 +29,8 @@ module.exports = app => {
     router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     // product-related API
-    router.get("/category/:id/products", authMiddleware.verifyToken, products.findAllByCategory);
+    router.get("/products", products.findAll);
+    router.get("/category/:id/products", products.findAllByCategory);
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
