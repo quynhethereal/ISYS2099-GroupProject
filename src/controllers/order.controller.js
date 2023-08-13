@@ -1,5 +1,6 @@
 const createOrderService = require('../services/createOrder.service');
 const acceptOrderService = require('../services/acceptOrder.service');
+const rejectOrderService = require('../services/rejectOrder.service');
 const validateCart = require('../validators/createOrder.validator').validateCartPayload;
 const Order = require('../models/order.model');
 // example payload
@@ -71,6 +72,18 @@ exports.acceptOrder = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error accepting order."
+        });
+    }
+}
+
+exports.rejectOrder = async (req, res) => {
+    try {
+        const order = await rejectOrderService(req.params.id, req.currentUser.id);
+
+        res.status(200).json(order);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error rejecting order."
         });
     }
 }

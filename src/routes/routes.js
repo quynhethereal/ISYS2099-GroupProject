@@ -42,6 +42,8 @@ module.exports = app => {
     router.get("/order/:id", authMiddleware.verifyToken, orders.getOrder);
     // ---- accept an order ----
     router.put("/order/:id/accept", authMiddleware.verifyToken, orders.acceptOrder);
+    // ---- reject an order ----
+    router.put("/order/:id/reject", authMiddleware.verifyToken, orders.rejectOrder);
 
     app.use('/api', router);
 }
