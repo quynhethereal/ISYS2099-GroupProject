@@ -77,10 +77,13 @@ grant all privileges on lazada_ecommerce.* TO 'admin';
 -- Customer: SELECT product, CRU user (its account)
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
+grant insert, select, update on lazada_ecommerce.orders to 'customer';
+grant insert, select, update on lazada_ecommerce.order_items to 'customer';
 
 -- Seller: CRUD product, CRU user (its account)
 grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
+grant select, update on lazada_ecommerce.orders to 'seller';
 
 -- Create user
 create user if not exists 'admin'@'localhost' identified by 'Ladmin';
