@@ -123,16 +123,18 @@ revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
 -- Admin: All rights
 grant all privileges on lazada_ecommerce.* TO 'admin';
 
--- Customer: SELECT product, CRU user (its account)
+-- Customer: SELECT product, CRU users_info, orders, order_items and inventory
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 grant insert, select, update on lazada_ecommerce.orders to 'customer';
-grant insert, select, update on lazada_ecommerce.order_items to 'customer';
+grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
+grant select on lazada_ecommerce.inventory to 'customer';
 
--- Seller: CRUD product, CRU user (its account)
+-- Seller: CRUD product, CRU users_info, orders and inventory
 grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
 grant select, update on lazada_ecommerce.orders to 'seller';
+grant select on lazada_ecommerce.inventory to 'customer';
 
 -- Create user
 create user if not exists 'admin'@'localhost' identified by 'Ladmin';
