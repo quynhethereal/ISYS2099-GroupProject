@@ -68,7 +68,7 @@ create TABLE IF NOT EXISTS `inventory` (
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
--- triggers for func
+-- triggers to create ULID for inventory on insert
 -- SET GLOBAL log_bin_trust_function_creators = 1; // run this if you have error
 DELIMITER //
 DROP trigger IF EXISTS before_inventory_insert;

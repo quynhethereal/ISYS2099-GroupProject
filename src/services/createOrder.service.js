@@ -19,6 +19,7 @@ CreateOrderService.createOrder = async (params) => {
 
     try {
         let transactionResult = {};
+        transactionResult.unfulfilledProducts = [];
 
         await connection.query('BEGIN');
         // build Order object
@@ -52,10 +53,12 @@ CreateOrderService.createOrder = async (params) => {
         // get inventory mapping for each order item
         const inventoryMapping = checkAllInventory(order, inventories);
 
+        console.log(inventoryMapping);
+
         // create order item records + update the inventories in the database
         for (const productId in inventoryMapping) {
-            if (inventoryMapping[productId] === []){
-                transactionResult.incompleteOrder = [...transactionResult.incompleteOrder, productId];
+            if (inventoryMapping[productId].length === 0){
+                transactionResult.unfulfilledProducts.push(parseInt(productId));
                 continue;
             }
             // create order item record

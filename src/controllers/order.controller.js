@@ -1,4 +1,5 @@
 const createOrderService = require('../services/createOrder.service');
+const checkForDuplicateProductIds = require('../validators/createOrder.validator').checkForDuplicateProductIds;
 
 // example payload
 // {
@@ -13,6 +14,13 @@ exports.createOrder = async (req, res) => {
     // TODO: validate params
     try {
         const cart = req.body.cart;
+
+        // Validate the payload for duplicate product IDs
+        const hasDuplicates = checkForDuplicateProductIds(cart);
+
+        if (hasDuplicates) {
+            return res.status(400).json({ message: "Payload contains duplicate product IDs." });
+        }
 
         const params = {
             userId: parseInt(req.currentUser.id),
