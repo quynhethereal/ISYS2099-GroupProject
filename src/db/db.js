@@ -1,4 +1,19 @@
 const mysql = require('mysql2');
+const mongoose = require('mongoose');
+
+// Create connection to mongodb in localhost
+const mongodb_uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+
+// Check whether connection is valid
+mongodb_connection = mongoose.createConnection(mongodb_uri);
+mongodb_connection.on('connected', function (ref) {
+  console.log("Connected to MongoDB database!");
+});
+
+// Check whether connection is failed
+mongodb_connection.on('error', function (err) {
+  console.log("Fail to connect to MongoDB database...", err);
+});
 
 // Create admin connection pool to the MySQL database
 const admin_pool = mysql.createPool({
@@ -75,5 +90,5 @@ seller_pool.getConnection(function (err, connection) {
   });
 });
 
-module.exports = {admin_pool, customer_pool, seller_pool};
+module.exports = {mongodb_connection, admin_pool, customer_pool, seller_pool};
 
