@@ -35,5 +35,11 @@ module.exports = app => {
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);
+
+    // ---- view all orders of a user ----
+    router.get("/order", authMiddleware.verifyToken, orders.getAllOrders);
+    // ---- view a specific order of a user ----
+    router.get("/order/:id", authMiddleware.verifyToken, orders.getOrder);
+    
     app.use('/api', router);
 }

@@ -42,7 +42,6 @@ CreateOrderService.createOrder = async (params) => {
 
         const inventoriesResult = await connection.query('SELECT * FROM inventory WHERE product_id IN (?) ORDER BY product_id ASC FOR SHARE', [productIds]);
 
-
         // build Inventory list
         const inventories = [];
         for (const row of inventoriesResult[0]) {
@@ -52,8 +51,6 @@ CreateOrderService.createOrder = async (params) => {
 
         // get inventory mapping for each order item
         const inventoryMapping = checkAllInventory(order, inventories);
-
-        console.log(inventoryMapping);
 
         // create order item records + update the inventories in the database
         for (const productId in inventoryMapping) {
@@ -70,6 +67,13 @@ CreateOrderService.createOrder = async (params) => {
             }
         }
 
+        // if the order contains only unfulfilledProducts, roll back
+        if (transactionResult.unfulfilledProducts.length === params.order.length) {
+            console.log("All products are unfulfilled. Rolling back...");
+            await connection.query('ROLLBACK');
+            return transactionResult;
+        }
+
         // calculate total price
         const productPriceQuery = await connection.execute('SELECT o.quantity AS order_quantity, p.price FROM order_items o join inventory i on o.inventory_id = i.id join products p on i.product_id = p.id WHERE o.order_id = ?', [order.id]);
 
@@ -78,6 +82,9 @@ CreateOrderService.createOrder = async (params) => {
 
         // update order record with total price
         await connection.execute('UPDATE orders SET total_price = ? WHERE id = ?', [transactionResult.totalPrice, order.id]);
+
+        // add orderId to transactionResult
+        transactionResult.orderId = order.id;
 
         // finally, commit transaction
         await connection.query('COMMIT');
