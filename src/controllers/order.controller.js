@@ -1,5 +1,5 @@
 const createOrderService = require('../services/createOrder.service');
-const checkForDuplicateProductIds = require('../validators/createOrder.validator').checkForDuplicateProductIds;
+const validateCart = require('../validators/createOrder.validator').validateCartPayload;
 const Order = require('../models/order.model');
 // example payload
 // {
@@ -16,10 +16,10 @@ exports.createOrder = async (req, res) => {
         const cart = req.body.cart;
 
         // Validate the payload for duplicate product IDs
-        const hasDuplicates = checkForDuplicateProductIds(cart);
+        const isValid = validateCart(cart);
 
-        if (hasDuplicates) {
-            return res.status(400).json({ message: "Payload contains duplicate product IDs." });
+        if (!isValid) {
+            return res.status(400).json({ message: "Cart's payload is invalid. Maximum 30 items are allowed per order and cart shouldn't contain duplicate product IDs" });
         }
 
         const params = {

@@ -8,6 +8,7 @@ class Order {
         this.userId = params.user_id;
         this.totalPrice = params.total_price;
         this.status = params.status;
+        this.orderItems = [];
     }
 }
 
