@@ -12,11 +12,15 @@ class Order {
     }
 }
 
-Order.getAll = async (userId) => {
+Order.isValidStatus = (status) => {
+    return ['pending', 'paid', 'shipped', 'cancelled'].includes(status);
+}
+
+Order.getAll = async (userId, status) => {
     const connection = await customer_pool.promise().getConnection();
 
     try {
-        const [rows] = await connection.execute('SELECT * FROM `orders` WHERE user_id = ?', [userId]);
+        const [rows] = await connection.execute('SELECT * FROM `orders` WHERE user_id = ? AND STATUS = ?', [userId, status]);
 
         const orders = [];
         for (const row of rows) {
@@ -38,11 +42,11 @@ Order.getById = async (orderId, userId) => {
     const connection = await customer_pool.promise().getConnection();
 
     try {
-        const [rows] = await connection.execute('SELECT * FROM `orders` WHERE id = ? AND user_id = ?', [orderId, userId]);
+        const [rows] = await connection.execute('SELECT * FROM `orders` WHERE id = ? AND user_id = ? ', [orderId, userId]);
 
         if (rows.length === 0) {
             console.log('Order not found.');
-            return null;
+            return {};
         }
 
         const order = new Order(rows[0]);
