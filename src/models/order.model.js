@@ -49,8 +49,6 @@ Order.getById = async (orderId, userId) => {
 
         const [orderItems] = await connection.execute('SELECT p.title, o.quantity as order_quantity, p.description FROM `order_items` o JOIN inventory i ON o.inventory_id = i.id JOIN products p ON i.product_id = p.id WHERE order_id = ?', [orderId]);
 
-        console.log(orderItems);
-
         for (const row of orderItems) {
             const orderItem = new OrderItem(row);
             orderItem.quantity = row.order_quantity;
