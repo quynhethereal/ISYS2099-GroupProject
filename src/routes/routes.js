@@ -34,6 +34,12 @@ module.exports = app => {
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
     // order-related API
-    router.post("/product/:id/order", authMiddleware.verifyToken, orders.createOrder);
+    router.post("/order", authMiddleware.verifyToken, orders.createOrder);
+
+    // ---- view all orders of a user ----
+    router.get("/order", authMiddleware.verifyToken, orders.getAllOrders);
+    // ---- view a specific order of a user ----
+    router.get("/order/:id", authMiddleware.verifyToken, orders.getOrder);
+
     app.use('/api', router);
 }
