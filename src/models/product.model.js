@@ -1,4 +1,4 @@
-const {admin_pool} = require("../db/db");
+const {customer_pool, seller_pool} = require("../db/db");
 const productValidator = require('../validators/product.validator');
 
 class Product {
@@ -14,7 +14,7 @@ class Product {
 
 Product.findById = (productId) => {
     return new Promise((resolve, reject) => {
-        admin_pool.execute(
+        customer_pool.execute(
             'SELECT * FROM `products` WHERE id = ?',
             [productId],
             (err, results) => {
@@ -40,7 +40,7 @@ Product.findById = (productId) => {
 
 Product.count = () => {
     return new Promise((resolve, reject) => {
-        admin_pool.execute(
+        customer_pool.execute(
             'SELECT COUNT(*) as count FROM `products`',
             (err, results) => {
                 if (err) {
@@ -57,9 +57,66 @@ Product.count = () => {
     });
 }
 
-// use pagination
-// example params = { category: 1, largestId: 10, limit: 10 }
+Product.countByCategory = (categoryId) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) as count FROM `products` WHERE category_id = ?',
+            [categoryId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products.');
+                    reject(err);
+                    return;
+                }
+
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        );
+    });
+}
+
+// use offset - limit
+// example params = { category: 1, limit: 10, currentPage: 1 }
 Product.findByCategory = async (params) => {
+    try {
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+        const categoryId = parseInt(params.categoryId) || 1;
+        const offset = (currentPage - 1) * limit;
+        const productCount = await Product.countByCategory(categoryId);
+        const totalPages = Math.ceil(productCount / limit);
+
+        const res = await new Promise((resolve, reject) => {
+            customer_pool.execute(
+                "SELECT * FROM `products` WHERE category_id = ? ORDER BY id ASC LIMIT ?,?",
+                [categoryId + "" , offset + "", limit + ""],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to find products.');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages
+        }
+    } catch (err) {
+        console.log('Unable to find products.');
+        throw err;
+    }
+}
+
+// use largestID for infinite scrolling landing page
+Product.findAll = async (params) => {
     try {
         const limit = parseInt(params.limit) || 10;
         const nextId = parseInt(params.nextId) || 0;
@@ -70,9 +127,9 @@ Product.findByCategory = async (params) => {
         const totalPages = Math.ceil(productCount / limit);
 
         const res = await new Promise((resolve, reject) => {
-            admin_pool.execute(
-                "SELECT * FROM `products` WHERE category_id = ? AND id > ? ORDER BY id ASC LIMIT ?",
-                [categoryId + "", nextId + "", limit + ""],
+            customer_pool.execute(
+                "SELECT * FROM `products` WHERE id > ? ORDER BY id ASC LIMIT ?",
+                [nextId +"" , limit+"" ],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -112,7 +169,7 @@ Product.updateName = (params) => {
             return;
         }
 
-        admin_pool.execute(
+        seller_pool.execute(
             'UPDATE `products` SET name = ? WHERE id = ?',
             [name, id],
             (err, results) => {
@@ -138,7 +195,7 @@ Product.updateDescription = (params) => {
             return;
         }
 
-        admin_pool.execute(
+        seller_pool.execute(
             'UPDATE `products` SET description = ? WHERE id = ?',
             [description, id],
             (err, results) => {
@@ -164,7 +221,7 @@ Product.updatePrice = (params) => {
             return;
         }
 
-        admin_pool.execute(
+        seller_pool.execute(
             'UPDATE `products` SET price = ? WHERE id = ?',
             [price, id],
             (err, results) => {
@@ -190,7 +247,7 @@ Product.updateQuantity = (params) => {
             return;
         }
 
-        admin_pool.execute(
+        seller_pool.execute(
             'UPDATE `products` SET quantity = ? WHERE id = ?',
             [quantity, id],
             (err, results) => {
@@ -213,7 +270,7 @@ Product.updateImage = async (params) => {
             throw new Error("Product not found.");
         } else {
             await new Promise((resolve, reject) => {
-                admin_pool.execute(
+                seller_pool.execute(
                     'UPDATE `products` SET image = ?, image_name = ? WHERE id = ?',
                     [params.image, params.imageName, params.productId],
                     (err, results) => {
@@ -248,7 +305,7 @@ Product.updateCategory = (params) => {
             return;
         }
 
-        admin_pool.execute(
+        seller_pool.execute(
             'UPDATE `products` SET category = ? WHERE id = ?',
             [params.category, params.id],
             (err, results) => {
@@ -292,7 +349,7 @@ Product.update = async (params) => {
             console.log("Product not found.");
         } else {
             await new Promise((resolve, reject) => {
-                admin_pool.execute(
+                seller_pool.execute(
                     'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ? WHERE id = ?',
                     [title, description, price, category, id],
                     (err, results) => {
