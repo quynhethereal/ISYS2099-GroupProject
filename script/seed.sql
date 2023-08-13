@@ -1,103 +1,96 @@
--- PATH: script/seed.sql
-
--- Create and use the database
-CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+create DATABASE IF NOT EXISTS `lazada_ecommerce`;
 USE `lazada_ecommerce`;
 
--- Create 'users' table
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(255) NOT NULL,
-  `hashed_password` VARCHAR(255) NOT NULL,
-  `salt_value` VARCHAR(255) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+-- Path: script/seed.sql
+create TABLE IF NOT EXISTS `users`(
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`username` varchar(255) NOT NULL,
+`hashed_password` varchar(255) NOT NULL,
+`salt_value` varchar(255) NOT NULL,
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'users_info' table
-CREATE TABLE IF NOT EXISTS `users_info` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT(11) NOT NULL,
-  `first_name` VARCHAR(255) NOT NULL,
-  `last_name` VARCHAR(255) NOT NULL,
-  `role` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) NOT NULL,
-  `phone` VARCHAR(255) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+create TABLE IF NOT EXISTS `users_info`(
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`user_id` int(11) NOT NULL,
+`first_name` varchar(255) NOT NULL,
+`last_name` varchar(255) NOT NULL,
+`role` varchar(255) NOT NULL,
+`email` varchar(255) NOT NULL,
+`phone` varchar(255) NOT NULL,
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (`id`),
+FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'products' table
-CREATE TABLE IF NOT EXISTS `products` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(255) NOT NULL,
-  `description` VARCHAR(255) NOT NULL,
+create TABLE IF NOT EXISTS `products` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
   `price` DECIMAL(10, 2),
   `image` LONGBLOB,
-  `image_name` VARCHAR(255),
+  `image_name` varchar(255),
   `length` DECIMAL(10, 2),
   `width` DECIMAL(10, 2),
   `height` DECIMAL(10, 2),
-  `category_id` INT(11) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `category_id` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'warehouses' table
-CREATE TABLE IF NOT EXISTS `warehouses` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `address` VARCHAR(255) NOT NULL,
-  `total_volume` DECIMAL(10, 2),
-  `available_volume` DECIMAL(10, 2),
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+create TABLE IF NOT EXISTS `warehouses` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`name` varchar(255) NOT NULL,
+`address` varchar(255) NOT NULL,
+`total_volume` DECIMAL(10, 2),
+`available_volume` DECIMAL(10, 2),
+`created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'inventory' table
-CREATE TABLE IF NOT EXISTS `inventory` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `product_id` INT(11) NOT NULL,
-  `warehouse_id` INT(11) NOT NULL,
-  `quantity` INT(11) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+create TABLE IF NOT EXISTS `inventory` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NOT NULL,
+  `warehouse_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Add foreign keys for 'inventory' table
+-- add foreign keys
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
--- Create roles
-CREATE ROLE IF NOT EXISTS 'admin', 'customer', 'seller';
+-- Create role
+create role if not exists 'admin', 'customer', 'seller';
 
--- Grant permissions for each user role
+-- Grant permission for each user role
 -- Admin: All rights
-GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
+grant all privileges on lazada_ecommerce.* TO 'admin';
 
 -- Customer: SELECT product, CRU user (its account)
-GRANT SELECT ON lazada_ecommerce.products TO 'customer';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'customer';
+grant select on lazada_ecommerce.products to 'customer';
+grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 
 -- Seller: CRUD product, CRU user (its account)
-GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
+grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
+grant insert, select, update on lazada_ecommerce.users_info to 'seller';
 
--- Create users
-CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
-CREATE USER IF NOT EXISTS 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
-CREATE USER IF NOT EXISTS 'seller'@'localhost' IDENTIFIED BY 'Lseller';
+-- Create user
+create user if not exists 'admin'@'localhost' identified by 'Ladmin';
+create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
+create user if not exists 'seller'@'localhost' identified by 'Lseller';
 
--- Assign roles to users
-GRANT 'admin' TO 'admin'@'localhost';
-GRANT 'customer' TO 'customer'@'localhost';
-GRANT 'seller' TO 'seller'@'localhost';
+-- Set role to user
+grant 'admin' to 'admin'@'localhost';
+grant 'customer' to 'customer'@'localhost';
+grant 'seller' to 'seller'@'localhost';
 
 -- Insert 10 dummy data for users and users_info
 -- Dummy user's default password: "password"
@@ -132,7 +125,9 @@ VALUES
   ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, NULL, 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
   ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, NULL, 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
 
--- Insert 5 dummy data for warehouses
+
+-- Dummy data for warehouses
+-- Insert 5 dummy records into the warehouses table
 INSERT INTO `warehouses` (`name`, `address`, `total_volume`, `available_volume`, `created_at`, `updated_at`)
 VALUES
   ('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
@@ -140,8 +135,8 @@ VALUES
   ('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
   ('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
   ('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
-
--- Insert 10 dummy data for inventory
+-- Dummy data for inventories
+-- Insert 10 dummy records into the inventory table
 INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `created_at`, `updated_at`)
 VALUES
   (1, 1, 100, NOW(), NOW()),
