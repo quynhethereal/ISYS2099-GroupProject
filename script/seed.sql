@@ -106,12 +106,16 @@ create table if not exists `order_items` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
 alter table `order_items` add foreign key (`order_id`) references `orders`(`id`);
 alter table `order_items` add foreign key (`inventory_id`) references `inventory`(`id`);
 
 -- Create role
 create role if not exists 'admin', 'customer', 'seller';
+
+-- Revoke all the privileges from all roles
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
 
 -- Grant permission for each user role
 -- Admin: All rights
@@ -120,10 +124,13 @@ grant all privileges on lazada_ecommerce.* TO 'admin';
 -- Customer: SELECT product, CRU user (its account)
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
+grant insert, select, update on lazada_ecommerce.orders to 'customer';
+grant insert, select, update on lazada_ecommerce.order_items to 'customer';
 
 -- Seller: CRUD product, CRU user (its account)
 grant insert, select, update, delete on lazada_ecommerce.products to 'seller';
 grant insert, select, update on lazada_ecommerce.users_info to 'seller';
+grant select, update on lazada_ecommerce.orders to 'seller';
 
 -- Create user
 create user if not exists 'admin'@'localhost' identified by 'Ladmin';
@@ -135,6 +142,8 @@ grant 'admin' to 'admin'@'localhost';
 grant 'customer' to 'customer'@'localhost';
 grant 'seller' to 'seller'@'localhost';
 
+flush priviledges;
+
 -- Insert 10 dummy data for users and users_info
 -- Dummy user's default password: "password"
 INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) 
@@ -142,7 +151,9 @@ VALUES
   ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
 
 -- Insert corresponding dummy data for users_info
-INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`);
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES 
+  (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
 -- Insert 20 dummy data for products
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
