@@ -10,8 +10,6 @@ const getTotalPrice = (productList) => {
     for (const product of productList) {
         totalPrice += product.order_quantity * product.price;
     }
-    console.log(totalPrice);
-    console.log("aaja")
     return totalPrice;
 }
 

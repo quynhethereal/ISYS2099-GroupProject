@@ -1,4 +1,4 @@
-const admin_pool = require("../db/db");
+const { admin_pool } = require("../db/db");
 const Order = require("../models/order.model");
 const Inventory = require("../models/inventory.model");
 const OrderItem = require("../models/order_item.model");
