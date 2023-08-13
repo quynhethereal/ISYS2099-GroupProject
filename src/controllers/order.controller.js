@@ -1,6 +1,6 @@
 const createOrderService = require('../services/createOrder.service');
 const checkForDuplicateProductIds = require('../validators/createOrder.validator').checkForDuplicateProductIds;
-
+const Order = require('../models/order.model');
 // example payload
 // {
 //     "cart": [
@@ -31,6 +31,28 @@ exports.createOrder = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error creating order."
+        });
+    }
+}
+
+exports.getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.getAll(req.currentUser.id);
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving orders."
+        });
+    }
+}
+
+exports.getOrder = async (req, res) => {
+    try {
+        const order = await Order.getById(req.params.id, req.currentUser.id);
+        res.status(200).json(order);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving order."
         });
     }
 }

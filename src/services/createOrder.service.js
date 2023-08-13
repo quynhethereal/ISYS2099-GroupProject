@@ -48,7 +48,7 @@ CreateOrderService.createOrder = async (params) => {
             const inventory = new Inventory(row);
             inventories.push(inventory);
         }
-        
+
         // get inventory mapping for each order item
         const inventoryMapping = checkAllInventory(order, inventories);
 
