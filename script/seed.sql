@@ -106,7 +106,9 @@ VALUES
   ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
 
 -- Insert corresponding dummy data for users_info
-INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`);
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES
+  (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
 -- Insert 20 dummy data for products
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
