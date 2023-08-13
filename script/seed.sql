@@ -1,95 +1,153 @@
--- PATH: script/seed.sql
-
--- Create and use the database
+-- Create the database if not exists
 CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+
+-- Use the created database
 USE `lazada_ecommerce`;
 
--- Create 'users' table
+-- Path: script/seed.sql
+
+-- Create `users` table
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(255) NOT NULL,
-  `hashed_password` VARCHAR(255) NOT NULL,
-  `salt_value` VARCHAR(255) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `username` VARCHAR(255) NOT NULL CHECK (CHAR_LENGTH(TRIM(username)) BETWEEN 3 AND 20),
+    `hashed_password` VARCHAR(255) NOT NULL,
+    `salt_value` VARCHAR(255) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'users_info' table
+-- Create `users_info` table
 CREATE TABLE IF NOT EXISTS `users_info` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `user_id` INT(11) NOT NULL,
-  `first_name` VARCHAR(255) NOT NULL,
-  `last_name` VARCHAR(255) NOT NULL,
-  `role` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) NOT NULL,
-  `phone` VARCHAR(255) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `user_id` INT(11) NOT NULL,
+    `first_name` VARCHAR(255) NOT NULL CHECK (first_name REGEXP '^[A-Za-z]+$'),
+    `last_name` VARCHAR(255) NOT NULL CHECK (last_name REGEXP '^[A-Za-z]+$'),
+    `role` VARCHAR(255) NOT NULL CHECK (role IN ('customer', 'seller', 'admin')),
+    `email` VARCHAR(255) NOT NULL CHECK (email REGEXP '^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'),
+    `phone` VARCHAR(255) NOT NULL CHECK (phone REGEXP '^[0-9]{10}$'),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'products' table
+-- Create `products` table
 CREATE TABLE IF NOT EXISTS `products` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(255) NOT NULL,
-  `description` VARCHAR(255) NOT NULL,
-  `price` DECIMAL(10, 2),
-  `image` LONGBLOB,
-  `image_name` VARCHAR(255),
-  `length` DECIMAL(10, 2),
-  `width` DECIMAL(10, 2),
-  `height` DECIMAL(10, 2),
-  `category_id` INT(11) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(255) NOT NULL CHECK (TRIM(title) <> ''),
+    `description` VARCHAR(255) NOT NULL CHECK (TRIM(description) <> ''),
+    `price` DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
+    `image` LONGBLOB NOT NULL CHECK (TRIM(image) <> ''),
+    `image_name` VARCHAR(255) NOT NULL CHECK (TRIM(image_name) <> ''),
+    `length` DECIMAL(10, 2) NOT NULL CHECK (length >= 0),
+    `width` DECIMAL(10, 2) NOT NULL CHECK (width >= 0),
+    `height` DECIMAL(10, 2) NOT NULL CHECK (height >= 0),
+    `category_id` INT(11) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'warehouses' table
+-- Create `warehouses` table
 CREATE TABLE IF NOT EXISTS `warehouses` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NOT NULL,
-  `address` VARCHAR(255) NOT NULL,
-  `total_volume` DECIMAL(10, 2),
-  `available_volume` DECIMAL(10, 2),
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL CHECK (TRIM(name) <> ''),
+    `address` VARCHAR(255) NOT NULL CHECK (TRIM(address) <> ''),
+    `total_volume` DECIMAL(10, 2) NOT NULL CHECK (total_volume > 0),
+    `available_volume` DECIMAL(10, 2) NOT NULL CHECK (available_volume >= 0),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- Create 'inventory' table
+-- Create `inventory` table
 CREATE TABLE IF NOT EXISTS `inventory` (
-  `id` INT(11) NOT NULL AUTO_INCREMENT,
-  `product_id` INT(11) NOT NULL,
-  `warehouse_id` INT(11) NOT NULL,
-  `quantity` INT(11) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    `product_id` INT(11) NOT NULL,
+    `warehouse_id` INT(11) NOT NULL,
+    `quantity` INT(11) NOT NULL CHECK (quantity >= 0),
+    `reserved_quantity` INT(11) NOT NULL CHECK (reserved_quantity >= 0),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `id` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Add foreign keys for 'inventory' table
+-- Add foreign keys
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
+-- Triggers to create ULID for inventory on insert
+-- SET GLOBAL log_bin_trust_function_creators = 1; // run this if you have error
+DELIMITER //
+DROP trigger IF EXISTS before_inventory_insert;
+CREATE TRIGGER before_inventory_insert
+BEFORE INSERT ON inventory
+FOR EACH ROW
+BEGIN
+  SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
+END;
+//
+DELIMITER ;
+
+-- Create `orders` table
+CREATE TABLE IF NOT EXISTS `orders` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `user_id` INT(11) NOT NULL,
+    `total_price` DECIMAL(10, 2) NOT NULL CHECK (total_price >= 0),
+    `status` VARCHAR(255) NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected')),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `orders` ALTER `status` SET DEFAULT 'pending';
+ALTER TABLE `orders` ALTER `total_price` SET DEFAULT 0.0;
+
+-- Add foreign key
+ALTER TABLE `orders` ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`id`);
+
+-- Create `order_items` table
+CREATE TABLE IF NOT EXISTS `order_items` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `order_id` INT(11) NOT NULL,
+    `inventory_id` VARCHAR(255),
+    `quantity` INT(11) NOT NULL CHECK (quantity >= 0),
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- Add foreign keys
+ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
+ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
+
 -- Create roles
 CREATE ROLE IF NOT EXISTS 'admin', 'customer', 'seller';
+
+-- Revoke privileges from all roles
+REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
+REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
+REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
 
 -- Grant permissions for each user role
 -- Admin: All rights
 GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
 
--- Customer: SELECT product, CRU user (its account)
+-- Customer: SELECT product, CRU users_info, orders, order_items and inventory
 GRANT SELECT ON lazada_ecommerce.products TO 'customer';
 GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'customer';
+GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.orders TO 'customer';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order_items TO 'customer';
+GRANT SELECT ON lazada_ecommerce.inventory TO 'customer';
 
--- Seller: CRUD product, CRU user (its account)
+-- Seller: CRUD product, CRU users_info, orders and inventory
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
 GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
+GRANT SELECT, UPDATE ON lazada_ecommerce.orders TO 'seller';
+GRANT SELECT ON lazada_ecommerce.inventory TO 'seller';
 
--- Create users
+-- Create users with roles
 CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
 CREATE USER IF NOT EXISTS 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
 CREATE USER IF NOT EXISTS 'seller'@'localhost' IDENTIFIED BY 'Lseller';
@@ -99,61 +157,62 @@ GRANT 'admin' TO 'admin'@'localhost';
 GRANT 'customer' TO 'customer'@'localhost';
 GRANT 'seller' TO 'seller'@'localhost';
 
--- Insert 10 dummy data for users and users_info
--- Dummy user's default password: "password"
-INSERT INTO `users` (`username`, `hashed_password`, `salt_value`) 
-VALUES 
-  ('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+-- Flush privileges
+FLUSH PRIVILEGES;
 
--- Insert corresponding dummy data for users_info
+-- Insert dummy data for users and users_info
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
+VALUES 
+	('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+
 INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
-VALUES
-  (1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
+VALUES 
+	(1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
 -- Insert 20 dummy data for products
+-- Insert dummy data for products with image names
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
 VALUES
-  ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, NULL, 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, NOW(), NOW()),
-  ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, NULL, 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, NOW(), NOW()),
-  ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, NULL, 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, NOW(), NOW()),
-  ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, NULL, 'earbuds.jpg', 2.0, 1.5, 0.5, 1, NOW(), NOW()),
-  ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, NULL, 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, NOW(), NOW()),
-  ('Gaming Console', 'Experience immersive gaming adventures.', 299.00, NULL, 'gaming_console.jpg', 12.0, 8.0, 2.5, 2, NOW(), NOW()),
-  ('Portable Speaker', 'Take your music anywhere with this portable speaker.', 59.95, NULL, 'speaker.jpg', 4.5, 3.5, 1.0, 1, NOW(), NOW()),
-  ('Smart Watch', 'Stay connected and track your health on the go.', 199.50, NULL, 'smart_watch.jpg', 1.8, 1.5, 0.4, 3, NOW(), NOW()),
-  ('Digital Camera', 'Capture stunning photos and memories.', 499.99, NULL, 'camera.jpg', 5.2, 3.8, 2.2, 2, NOW(), NOW()),
-  ('Blender', 'Blend your favorite fruits into delicious smoothies.', 79.00, NULL, 'blender.jpg', 8.0, 6.5, 10.0, 4, NOW(), NOW()),
-  ('Fitness Treadmill', 'Stay fit with this advanced treadmill.', 1299.00, NULL, 'treadmill.jpg', 6.5, 3.0, 4.5, 3, NOW(), NOW()),
-  ('Wireless Mouse', 'Enhance your productivity with a wireless mouse.', 29.99, NULL, 'mouse.jpg', 4.0, 2.5, 1.0, 2, NOW(), NOW()),
-  ('LED TV', 'Enjoy your favorite shows and movies in high definition.', 599.95, NULL, 'tv.jpg', 40.0, 25.0, 4.0, 1, NOW(), NOW()),
-  ('Cookware Set', 'Upgrade your kitchen with this comprehensive cookware set.', 149.95, NULL, 'cookware.jpg', 14.0, 10.0, 6.0, 4, NOW(), NOW()),
-  ('Wireless Headphones', 'Immerse yourself in music with wireless headphones.', 119.99, NULL, 'headphones.jpg', 3.0, 2.5, 1.5, 1, NOW(), NOW()),
-  ('Home Security Camera', 'Monitor your home with a smart security camera.', 89.50, NULL, 'security_camera.jpg', 3.5, 2.0, 2.0, 3, NOW(), NOW()),
-  ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, NULL, 'vacuum.jpg', 12.0, 9.0, 3.0, 2, NOW(), NOW()),
-  ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, NULL, 'tablet.jpg', 9.5, 7.0, 0.4, 1, NOW(), NOW()),
-  ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, NULL, 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
-  ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, NULL, 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
+    ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, 'smartphone_x_image_data', 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, NOW(), NOW()),
+    ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, 'laptop_pro_image_data', 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, NOW(), NOW()),
+    ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, 'fitness_tracker_image_data', 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, NOW(), NOW()),
+    ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, 'earbuds_image_data', 'earbuds.jpg', 2.0, 1.5, 0.5, 1, NOW(), NOW()),
+    ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, 'coffee_maker_image_data', 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, NOW(), NOW()),
+    ('Gaming Console', 'Experience immersive gaming adventures.', 299.00, 'gaming_console_image_data', 'gaming_console.jpg', 12.0, 8.0, 2.5, 2, NOW(), NOW()),
+    ('Portable Speaker', 'Take your music anywhere with this portable speaker.', 59.95, 'speaker_image_data', 'speaker.jpg', 4.5, 3.5, 1.0, 1, NOW(), NOW()),
+    ('Smart Watch', 'Stay connected and track your health on the go.', 199.50, 'smart_watch_image_data', 'smart_watch.jpg', 1.8, 1.5, 0.4, 3, NOW(), NOW()),
+    ('Digital Camera', 'Capture stunning photos and memories.', 499.99, 'camera_image_data', 'camera.jpg', 5.2, 3.8, 2.2, 2, NOW(), NOW()),
+    ('Blender', 'Blend your favorite fruits into delicious smoothies.', 79.00, 'blender_image_data', 'blender.jpg', 8.0, 6.5, 10.0, 4, NOW(), NOW()),
+    ('Fitness Treadmill', 'Stay fit with this advanced treadmill.', 1299.00, 'treadmill_image_data', 'treadmill.jpg', 6.5, 3.0, 4.5, 3, NOW(), NOW()),
+    ('Wireless Mouse', 'Enhance your productivity with a wireless mouse.', 29.99, 'mouse_image_data', 'mouse.jpg', 4.0, 2.5, 1.0, 2, NOW(), NOW()),
+    ('LED TV', 'Enjoy your favorite shows and movies in high definition.', 599.95, 'tv_image_data', 'tv.jpg', 40.0, 25.0, 4.0, 1, NOW(), NOW()),
+    ('Cookware Set', 'Upgrade your kitchen with this comprehensive cookware set.', 149.95, 'cookware_image_data', 'cookware.jpg', 14.0, 10.0, 6.0, 4, NOW(), NOW()),
+    ('Wireless Headphones', 'Immerse yourself in music with wireless headphones.', 119.99, 'headphones_image_data', 'headphones.jpg', 3.0, 2.5, 1.5, 1, NOW(), NOW()),
+    ('Home Security Camera', 'Monitor your home with a smart security camera.', 89.50, 'security_camera_image_data', 'security_camera.jpg', 3.5, 2.0, 2.0, 3, NOW(), NOW()),
+    ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, 'vacuum_image_data', 'vacuum.jpg', 12.0, 9.0, 3.0, 2, NOW(), NOW()),
+    ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, 'tablet_image_data', 'tablet.jpg', 9.5, 7.0, 0.4, 1, NOW(), NOW()),
+    ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, 'plants_image_data', 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
+    ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
 
--- Insert 5 dummy data for warehouses
+-- Insert 5 dummy records into the warehouses table
 INSERT INTO `warehouses` (`name`, `address`, `total_volume`, `available_volume`, `created_at`, `updated_at`)
 VALUES
-  ('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
-  ('Warehouse B', '456 Elm St, City B', 1500.00, 1000.00, NOW(), NOW()),
-  ('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
-  ('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
-  ('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
+	('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
+	('Warehouse B', '456 Elm St, City B', 1500.00, 1000.00, NOW(), NOW()),
+	('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
+	('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
+	('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
 
--- Insert 10 dummy data for inventory
-INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `created_at`, `updated_at`)
+-- Insert 10 dummy records into the inventory table
+INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `reserved_quantity`, `created_at`, `updated_at`)
 VALUES
-  (1, 1, 100, NOW(), NOW()),
-  (2, 2, 50, NOW(), NOW()),
-  (3, 3, 200, NOW(), NOW()),
-  (4, 4, 75, NOW(), NOW()),
-  (5, 5, 120, NOW(), NOW()),
-  (6, 1, 30, NOW(), NOW()),
-  (7, 2, 80, NOW(), NOW()),
-  (8, 3, 150, NOW(), NOW()),
-  (9, 4, 90, NOW(), NOW()),
-  (10, 5, 110, NOW(), NOW());
-
+	(1, 1, 100, 0, NOW(), NOW()),
+	(2, 2, 50, 0, NOW() - INTERVAL 1 HOUR, NOW() - INTERVAL 1 HOUR),
+	(3, 3, 200, 0, NOW() - INTERVAL 2 HOUR, NOW() - INTERVAL 2 HOUR),
+	(4, 4, 75, 0, NOW() - INTERVAL 3 HOUR, NOW() - INTERVAL 3 HOUR),
+	(5, 5, 120, 0, NOW() - INTERVAL 4 HOUR, NOW() - INTERVAL 4 HOUR),
+	(6, 1, 30, 0, NOW() - INTERVAL 5 HOUR, NOW() - INTERVAL 5 HOUR),
+	(7, 2, 80, 0, NOW() - INTERVAL 6 HOUR, NOW() - INTERVAL 6 HOUR),
+	(8, 3, 150, 0, NOW() - INTERVAL 7 HOUR, NOW() - INTERVAL 7 HOUR),
+	(9, 4, 90, 0, NOW() - INTERVAL 8 HOUR, NOW() - INTERVAL 8 HOUR),
+	(10, 5, 110, 0, NOW() - INTERVAL 9 HOUR, NOW() - INTERVAL 9 HOUR);
