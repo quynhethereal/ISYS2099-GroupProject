@@ -1,13 +1,20 @@
-const {admin_pool} = require("../db/db");
-const Inventory = {}
+const connection = require("../db/db");
 
+class Inventory {
+    constructor(params={}) {
+        this.id = params.id;
+        this.productId = params.product_id;
+        this.quantity = params.quantity - params.reserved_quantity;
+        this.warehouseId = params.warehouse_id;
+    }
+}
 
 Inventory.getProductInventory = async (params) => {
     try {
         const {productId, quantity} = params;
 
         return new Promise(async (resolve, reject) => {
-            await admin_pool.execute('SELECT * FROM `inventory` WHERE product_id = ? AND quantity >= ?', [productId, quantity], (err, results) => {
+            await connection.execute('SELECT * FROM `inventory` WHERE product_id = ? AND quantity >= ?', [productId, quantity], (err, results) => {
                 if (err) {
                     console.log('There is no warehouse with the inventory the requirements.');
                     reject(err);
@@ -24,3 +31,5 @@ Inventory.getProductInventory = async (params) => {
         throw err;
     }
 }
+
+module.exports = Inventory;

@@ -10,18 +10,23 @@ admin_pool = mysql.createPool({
     debug: false
 });
 
-admin_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting customer pool to MySQL:', err);
-      connection.release();
-      throw err;
-  }
-
-  console.log('Connected admin pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
+admin_pool.on('release', function (connection) {
+    console.log('Connection %d released', connection.threadId);
 });
+
+admin_pool.getConnection(function (err, connection) {
+    if (err) {
+        console.error('Error connecting customer pool to MySQL:', err);
+        connection.release();
+        throw err;
+    }
+
+    console.log('Connected admin pool to MySQL!');
+    connection.on('error', function (err) {
+        throw err;
+    });
+});
+
 
 // Create a customer connection pool to the MySQL database
 customer_pool = mysql.createPool({

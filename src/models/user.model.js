@@ -4,6 +4,7 @@ const Helpers = require('../helpers/helpers');
 
 class User {
     constructor(params) {
+        this.id = params.id;
         this.username = params.username;
         this.firstName = params.firstName;
         this.lastName = params.lastName;

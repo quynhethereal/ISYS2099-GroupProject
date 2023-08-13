@@ -2,7 +2,7 @@ const {admin_pool} = require("../db/db");
 const productValidator = require('../validators/product.validator');
 
 class Product {
-    constructor(params) {
+    constructor(params = {}) {
         this.name = params.name;
         this.description = params.description;
         this.price = params.price;
