@@ -88,5 +88,28 @@ seller_pool.getConnection(function (err, connection) {
   });
 });
 
-module.exports = {admin_pool, customer_pool, seller_pool};
+// Create a seller connection pool to the MySQL database
+const wh_pool = mysql.createPool({
+  connectionLimit: 10,
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_WH_USER,
+  password: process.env.MYSQL_WH_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  debug: false
+});
+
+wh_pool.getConnection(function (err, connection) {
+  if (err) {
+      console.error('Error connecting seller to MySQL:', err);
+      connection.release();
+      throw err;
+  }
+
+  console.log('Connected seller pool to MySQL!');
+  connection.on('error', function (err) {
+      throw err;
+  });
+});
+
+module.exports = {mongodb_connection, admin_pool, customer_pool, seller_pool, wh_pool};
 
