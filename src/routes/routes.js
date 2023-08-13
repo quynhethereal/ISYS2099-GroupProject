@@ -40,6 +40,8 @@ module.exports = app => {
     router.get("/order", authMiddleware.verifyToken, orders.getAllOrders);
     // ---- view a specific order of a user ----
     router.get("/order/:id", authMiddleware.verifyToken, orders.getOrder);
+    // ---- accept an order ----
+    router.put("/order/:id/accept", authMiddleware.verifyToken, orders.acceptOrder);
 
     app.use('/api', router);
 }
