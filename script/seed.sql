@@ -70,6 +70,11 @@ ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`
 -- Create role
 create role if not exists 'admin', 'customer', 'seller';
 
+-- Revoke all the privileges from all roles
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
+revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
+
 -- Grant permission for each user role
 -- Admin: All rights
 grant all privileges on lazada_ecommerce.* TO 'admin';
@@ -94,6 +99,8 @@ create user if not exists 'seller'@'localhost' identified by 'Lseller';
 grant 'admin' to 'admin'@'localhost';
 grant 'customer' to 'customer'@'localhost';
 grant 'seller' to 'seller'@'localhost';
+
+flush priviledges;
 
 -- Insert dummy data
 -- Dummy user has password "password" by default
