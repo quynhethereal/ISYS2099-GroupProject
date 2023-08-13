@@ -4,6 +4,8 @@ class OrderItem {
         this.productId = params.productId;
         this.quantity = params.quantity;
         this.inventoryId = params.inventoryId;
+        this.title = params.title;
+        this.description = params.description;
     }
 }
 

@@ -1,4 +1,6 @@
-// Function to check for duplicate product IDs in the payload
+// Function to validate cart:
+// - check for duplicate product IDs in the payload
+// - cart should only have < 30 items && > 0 item
 
 // sample payload
 
@@ -8,15 +10,23 @@
 //     { "productId": 3, "quantity": 2 }
 // ]
 
-exports.checkForDuplicateProductIds = (cart) => {
+exports.validateCartPayload = (cart) => {
+    if (cart.length > 30 || cart.length === 0) {
+        return false;
+    }
+
     const productIds = new Set();
 
     for (const item of cart) {
+        if (item.quantity <= 0) {
+            return false;
+        }
+
         if (productIds.has(item.productId)) {
-            return true; // Found a duplicate
+            return false // Found a duplicate
         }
         productIds.add(item.productId);
     }
 
-    return false; // No duplicates found
+    return true;
 };
