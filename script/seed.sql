@@ -84,7 +84,7 @@ DELIMITER ;
 create table if not exists `orders` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
-    `total_price` DECIMAL(10, 2),
+    `total_price` DECIMAL(10, 2) NOT NULL,
     `status` varchar(255) NOT NULL,
     `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -92,6 +92,8 @@ create table if not exists `orders` (
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 ALTER TABLE `orders` ALTER `status` SET DEFAULT 'pending';
+ALTER TABLE `orders` ALTER `total_price` SET DEFAULT 0.0;
+
 
 -- add foreign keys
 alter table `orders` add foreign key (`user_id`) references `users`(`id`);
