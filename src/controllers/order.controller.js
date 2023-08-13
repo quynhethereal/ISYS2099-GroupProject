@@ -37,7 +37,12 @@ exports.createOrder = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.getAll(req.currentUser.id);
+        // validate status
+        if (req.query.status && !Order.isValidStatus(req.query.status)) {
+            return res.status(400).json({ message: "Invalid status." });
+        }
+
+        const orders = await Order.getAll(req.currentUser.id, req.query.status);
         res.status(200).json(orders);
     } catch (err) {
         res.status(500).send({
