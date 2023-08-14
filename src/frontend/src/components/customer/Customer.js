@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../hook/AuthHook.js";
 
 const Customer = () => {
   const { user } = useAuth();
   // console.log(user);
-  return <div>Customer page</div>;
+  return <></>;
 };
 
 export default Customer;
