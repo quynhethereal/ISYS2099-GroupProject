@@ -11,7 +11,6 @@ const validateCreateWarehousePayload = (params) => {
     if (typeof params.name !== 'string' || typeof params.province !== 'string' || typeof params.city !== 'string' || typeof params.district !== 'string' || typeof params.street !== 'string' || typeof params.number !== 'string' || typeof params.total_volume !== 'number' || typeof params.available_volume !== 'number') {
         return false;
     }
-
     return true;
 }
 

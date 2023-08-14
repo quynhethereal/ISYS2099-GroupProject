@@ -49,6 +49,7 @@ module.exports = app => {
 
     // warehouse-related API
     router.post("/warehouse", authMiddleware.verifyToken, warehouses.create);
+    router.get("/warehouse", authMiddleware.verifyToken, warehouses.findAll);
 
     app.use('/api', router);
 }
