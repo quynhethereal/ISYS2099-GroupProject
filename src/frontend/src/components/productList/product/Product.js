@@ -14,11 +14,21 @@ const Product = ({ info }) => {
           />
         </div>
         <div className="card-body">
-          <h5 className="card-title text-truncate">Product Name</h5>
-          <p className="card-text text-truncate text-danger">
-            <b className="text-decoration-underline fw-bold">đ</b>54,000
-          </p>
-          <button className="btn btn-primary">Add product</button>
+          <h5 className="card-title text-truncate">{info.title}</h5>
+          <div className="card-text ">
+            <p
+              className="fw-bolder overflow-hidden"
+              style={{ height: "4.5rem" }}
+            >
+              {info.description}
+            </p>
+            <p className="text-truncate text-danger">
+              <b className="text-decoration-underline fw-bold">đ</b>
+              {info.price}
+            </p>
+          </div>
+
+          <button className="btn btn-success">Add product</button>
         </div>
       </div>
     </>
