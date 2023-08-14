@@ -12,6 +12,23 @@ exports.findAll = async (req, res) => {
     }
 }
 
+exports.findById = async (req, res) => {
+    try {
+        const product = await Product.findById(parseInt(req.params.id));
+        if (!product) {
+            res.status(404).send({
+                message: `Product with id ${req.params.id} not found.`
+            });
+            return;
+        }
+        res.status(200).json(product);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving product."
+        });
+    }
+}
+
 exports.findAllByCategory = async (req, res) => {
     try {
         const categoryId = parseInt(req.params.id);

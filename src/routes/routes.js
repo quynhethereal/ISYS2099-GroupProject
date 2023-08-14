@@ -32,6 +32,7 @@ module.exports = app => {
     // product-related API
     router.get("/products", products.findAll);
     router.get("/category/:id/products", products.findAllByCategory);
+    router.get("/product/:id", products.findById);
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
