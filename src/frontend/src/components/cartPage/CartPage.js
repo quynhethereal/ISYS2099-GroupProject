@@ -1,17 +1,16 @@
 import React from "react";
 import { useAuth } from "../../hook/AuthHook.js";
 import Header from "../header/Header.js";
-import ProductList from "../productList/ProductList.js";
+import CartDetail from "./cartDetail/CartDetail.js";
 
-const Customer = () => {
+const CartPage = () => {
   const { user } = useAuth();
-  // console.log(user);
   return (
     <>
       <Header user={user}></Header>
-      <ProductList></ProductList>
+      <CartDetail></CartDetail>
     </>
   );
 };
 
-export default Customer;
+export default CartPage;
