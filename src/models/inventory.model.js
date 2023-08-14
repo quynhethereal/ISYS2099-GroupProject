@@ -1,6 +1,13 @@
 const connection = require("../db/db");
-const Inventory = {}
 
+class Inventory {
+    constructor(params={}) {
+        this.id = params.id;
+        this.productId = params.product_id;
+        this.quantity = params.quantity - params.reserved_quantity;
+        this.warehouseId = params.warehouse_id;
+    }
+}
 
 Inventory.getProductInventory = async (params) => {
     try {
@@ -24,3 +31,5 @@ Inventory.getProductInventory = async (params) => {
         throw err;
     }
 }
+
+module.exports = Inventory;

@@ -29,11 +29,22 @@ module.exports = app => {
     router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     // product-related API
-    router.get("/category/:id/products", authMiddleware.verifyToken, products.findAllByCategory);
+    router.get("/products", products.findAll);
+    router.get("/category/:id/products", products.findAllByCategory);
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
     // order-related API
-    router.post("/product/:id/order", authMiddleware.verifyToken, orders.createOrder);
+    router.post("/order", authMiddleware.verifyToken, orders.createOrder);
+
+    // ---- view all orders of a user ----
+    router.get("/order", authMiddleware.verifyToken, orders.getAllOrders);
+    // ---- view a specific order of a user ----
+    router.get("/order/:id", authMiddleware.verifyToken, orders.getOrder);
+    // ---- accept an order ----
+    router.put("/order/:id/accept", authMiddleware.verifyToken, orders.acceptOrder);
+    // ---- reject an order ----
+    router.put("/order/:id/reject", authMiddleware.verifyToken, orders.rejectOrder);
+
     app.use('/api', router);
 }

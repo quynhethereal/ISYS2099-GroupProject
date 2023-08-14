@@ -15,6 +15,7 @@ exports.authenticate = async (req, res) => {
             if (userInfo) {
                 // for demo purposes, the expiration is set to 90 days
                 const token = jwt.sign({
+                    id: user.id,
                     username: user.username,
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
