@@ -24,3 +24,19 @@ exports.create = async (req, res) => {
         });
     }
 }
+
+exports.findAll = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const warehouses = await Warehouse.findAll(req.query);
+        res.status(200).json(warehouses);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving warehouses."
+        });
+    }
+}

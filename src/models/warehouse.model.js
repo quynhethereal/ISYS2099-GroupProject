@@ -69,4 +69,58 @@ Warehouse.create = async (params) => {
     }
 }
 
+// select count of warehouses
+Warehouse.count = async () => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        const [rows] = await connection.execute("SELECT COUNT(*) as count FROM `warehouses`");
+
+        return rows[0].count;
+    } catch (err) {
+        console.log('Unable to count warehouses.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
+// use pagination
+Warehouse.findAll = async (params) => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        console.log(params);
+        const limit = parseInt(params.limit) || 10;
+        const currentPage = parseInt(params.currentPage) || 1;
+
+        const offset = (currentPage - 1) * limit;
+
+        const total = await Warehouse.count();
+        const totalPages = Math.ceil(total / limit);
+
+        const [rows] = await connection.execute("SELECT * FROM `warehouses` ORDER BY ID ASC LIMIT ?,?", [offset + "", limit +""]);
+
+        if (rows.length === 0) {
+            throw new Error('No warehouses found.');
+        }
+
+        return {
+            totalWarehouseCount: total,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            warehouses: rows
+        }
+    } catch (err) {
+        console.log('Unable to find warehouses.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
+
 module.exports = Warehouse;
