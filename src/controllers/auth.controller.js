@@ -20,7 +20,7 @@ exports.authenticate = async (req, res) => {
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
                     email: userInfo.email,
-                    role: null
+                    role: userInfo.role
                 }, privateKey, {expiresIn: '90d'});
                 res.send({token: token});
             } else {

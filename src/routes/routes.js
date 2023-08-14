@@ -15,6 +15,7 @@ module.exports = app => {
     const auth = require("../controllers/auth.controller.js");
     const products = require("../controllers/product.controller.js");
     const orders = require("../controllers/order.controller.js");
+    const warehouses = require("../controllers/warehouse.controller.js");
     const authMiddleware = require('../middlewares/auth.middleware');
 
     let router = require("express").Router();
@@ -45,6 +46,9 @@ module.exports = app => {
     router.put("/order/:id/accept", authMiddleware.verifyToken, orders.acceptOrder);
     // ---- reject an order ----
     router.put("/order/:id/reject", authMiddleware.verifyToken, orders.rejectOrder);
+
+    // warehouse-related API
+    router.post("/warehouse", authMiddleware.verifyToken, warehouses.create);
 
     app.use('/api', router);
 }
