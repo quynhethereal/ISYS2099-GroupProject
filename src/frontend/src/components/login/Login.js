@@ -37,8 +37,8 @@ const Login = () => {
       >
         <div className="h-100 col-12 col-md-6 d-flex justify-content-center align-items-center">
           <div className="d-flex flex-column col-10 col-md-7">
-            <h1 className="my-2">Welcome Back</h1>
-            <p className="my-2 text-muted">Hi! We a lazada 2.0</p>
+            <h1 className="my-2">Welcome Back!</h1>
+            <p className="my-2 text-muted">Hi :) We are Lazada 2.0</p>
             <form onSubmit={handleSubmit(handleForm)}>
               <label htmlFor="username" className="my-1">
                 User Name

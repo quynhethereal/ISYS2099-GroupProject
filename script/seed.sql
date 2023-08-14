@@ -53,13 +53,18 @@ CREATE TABLE IF NOT EXISTS `products` (
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL CHECK (TRIM(name) <> ''),
-    `address` VARCHAR(255) NOT NULL CHECK (TRIM(address) <> ''),
+    `province` VARCHAR(255) NOT NULL CHECK (TRIM(province) <> ''),
+    `city` VARCHAR(255) NOT NULL CHECK (TRIM(city) <> ''),
+    `district` VARCHAR(255) NOT NULL CHECK (TRIM(district) <> ''),
+    `street` VARCHAR(255) NOT NULL CHECK (TRIM(street) <> ''),
+    `number` VARCHAR(20) NOT NULL CHECK (TRIM(number) <> ''),
     `total_volume` DECIMAL(10, 2) NOT NULL CHECK (total_volume > 0),
     `available_volume` DECIMAL(10, 2) NOT NULL CHECK (available_volume >= 0),
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 
 -- Create `inventory` table
 CREATE TABLE IF NOT EXISTS `inventory` (
@@ -195,13 +200,14 @@ VALUES
     ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
 
 -- Insert 5 dummy records into the warehouses table
-INSERT INTO `warehouses` (`name`, `address`, `total_volume`, `available_volume`, `created_at`, `updated_at`)
+INSERT INTO `warehouses` (`name`, `province`, `city`, `district`, `street`, `number`, `total_volume`, `available_volume`)
 VALUES
-	('Warehouse A', '123 Main St, City A', 1000.00, 750.00, NOW(), NOW()),
-	('Warehouse B', '456 Elm St, City B', 1500.00, 1000.00, NOW(), NOW()),
-	('Warehouse C', '789 Oak St, City C', 800.00, 350.00, NOW(), NOW()),
-	('Warehouse D', '101 Pine St, City D', 2000.00, 1800.00, NOW(), NOW()),
-	('Warehouse E', '202 Maple St, City E', 1200.00, 900.00, NOW(), NOW());
+    ('Warehouse A', 'Province A', 'City A', 'District A', 'Street A', '123', 1000.00, 800.00),
+    ('Warehouse B', 'Province B', 'City B', 'District B', 'Street B', '456', 1500.00, 1200.00),
+    ('Warehouse C', 'Province C', 'City C', 'District C', 'Street C', '789', 2000.00, 1800.00),
+    ('Warehouse D', 'Province D', 'City D', 'District D', 'Street D', '1011', 1200.00, 1000.00),
+    ('Warehouse E', 'Province E', 'City E', 'District E', 'Street E', '1314', 1800.00, 1600.00);
+
 
 -- Insert 10 dummy records into the inventory table
 INSERT INTO `inventory` (`product_id`, `warehouse_id`, `quantity`, `reserved_quantity`, `created_at`, `updated_at`)
