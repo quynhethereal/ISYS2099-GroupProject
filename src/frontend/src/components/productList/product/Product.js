@@ -1,8 +1,13 @@
 import React from "react";
 
 import unknownProduct from "../../../assets/image/unknownProduct.png";
+import { useCart } from "../../../hook/CartHook.js";
 
 const Product = ({ info }) => {
+  const { addItem } = useCart();
+  const handleAddProduct = (item) => {
+    addItem(item);
+  };
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
@@ -28,7 +33,12 @@ const Product = ({ info }) => {
             </p>
           </div>
 
-          <button className="btn btn-success">Add product</button>
+          <button
+            className="btn btn-success"
+            onClick={() => handleAddProduct(info)}
+          >
+            Add product
+          </button>
         </div>
       </div>
     </>

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import jwt_decode from "jwt-decode";
 
+//this is for authentication
+
 export const useLocalStorage = (keyName, defaultValue) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const value = localStorage.getItem(keyName);
       if (value) {
         return jwt_decode(JSON.parse(value).token);
-        // return JSON.parse(value);
       } else {
         localStorage.setItem(keyName, JSON.stringify(defaultValue));
         return defaultValue;

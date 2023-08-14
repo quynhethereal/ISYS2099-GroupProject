@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import logo from "../../assets/image/icon.png";
 import searchIcon from "../../assets/image/searchIcon.png";
@@ -6,6 +7,11 @@ import cart from "../../assets/image/cart.png";
 import logout from "../../assets/image/logout.png";
 
 const Header = ({ user }) => {
+  const navigate = useNavigate();
+
+  const handleToCartPage = () => {
+    navigate("/customer/cart", { replace: true });
+  };
   return (
     <>
       <div className="container py-3">
@@ -34,12 +40,18 @@ const Header = ({ user }) => {
               </span>
             </div>
           </div>
+
           <div className="col-12 col-md-1 d-flex justify-content-center align-items-center my-3 m-md-0">
-            <img
-              src={cart}
-              alt="cart icon"
-              style={{ width: "36px", height: "36px" }}
-            />
+            <button
+              className="btn btn-outline-warning"
+              onClick={() => handleToCartPage()}
+            >
+              <img
+                src={cart}
+                alt="cart icon"
+                style={{ width: "36px", height: "36px" }}
+              />
+            </button>
           </div>
           <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
             <p>
