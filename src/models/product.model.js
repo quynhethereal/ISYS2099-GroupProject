@@ -130,7 +130,7 @@ Product.findAll = async (params) => {
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
                 "SELECT * FROM `products` WHERE id > ? ORDER BY id ASC LIMIT ?",
-                [nextId +"" , limit+"" ],
+                [nextId + "" , limit+"" ],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
