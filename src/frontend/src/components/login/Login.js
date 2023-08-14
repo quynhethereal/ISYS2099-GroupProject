@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../hook/AuthHook.js";
+import Swal from "sweetalert2";
 
 import background from "../../assets/image/background.webp";
 const Login = () => {
@@ -15,11 +16,18 @@ const Login = () => {
       password: "",
     },
   });
-
   const { login } = useAuth();
 
-  const handleForm = (value) => {
-    login(value);
+  const handleForm = async (value) => {
+    await login(value).then((state) => {
+      if (!state) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "The password or username is not correct!",
+        });
+      }
+    });
   };
   return (
     <>
@@ -32,18 +40,18 @@ const Login = () => {
             <h1 className="my-2">Welcome Back</h1>
             <p className="my-2 text-muted">Hi! We a lazada 2.0</p>
             <form onSubmit={handleSubmit(handleForm)}>
-              <label htmlFor="email" className="my-1">
-                Email
+              <label htmlFor="username" className="my-1">
+                User Name
               </label>
               <div className="input-group mb-3">
                 <input
                   type="text"
                   className="form-control"
-                  id="email"
+                  id="username"
                   aria-describedby="basic-addon3"
-                  placeholder="Enter email"
+                  placeholder="Enter username"
                   {...register("username", {
-                    required: "The email is required",
+                    required: "The username is required",
                   })}
                 />
               </div>
