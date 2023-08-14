@@ -28,7 +28,7 @@ const BlockPage = () => {
         <button
           onClick={() => navigate("/")}
           type="button"
-          className="col-1 btn btn-info shadow p-3 mb-5 rouded"
+          className="btn btn-info shadow p-3 mb-5 rouded"
           style={{ borderRadius: "15px" }}
         >
           Go Back

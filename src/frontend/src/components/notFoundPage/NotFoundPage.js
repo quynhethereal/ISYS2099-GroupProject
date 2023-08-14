@@ -17,7 +17,7 @@ const NotFoundPage = () => {
           <button
             onClick={() => navigate("/")}
             type="button"
-            className="col-4 btn btn-info shadow p-3 mb-5 rouded"
+            className="btn btn-info shadow p-3 mb-5 rouded"
             style={{ borderRadius: "15px" }}
           >
             Go Back
