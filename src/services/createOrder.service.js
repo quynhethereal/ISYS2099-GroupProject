@@ -40,7 +40,7 @@ CreateOrderService.createOrder = async (params) => {
         // sort this first to avoid deadlock
         const productIds = params.order.map(item => item.productId).sort((a, b) => a - b);
 
-        const inventoriesResult = await connection.query('SELECT * FROM inventory WHERE product_id IN (?) ORDER BY product_id ASC FOR SHARE', [productIds]);
+        const inventoriesResult = await connection.query('SELECT * FROM inventory WHERE product_id IN (?) ORDER BY product_id ASC FOR UPDATE', [productIds]);
 
         // build Inventory list
         const inventories = [];
@@ -75,7 +75,7 @@ CreateOrderService.createOrder = async (params) => {
         }
 
         // calculate total price
-        const productPriceQuery = await connection.execute('SELECT o.quantity AS order_quantity, p.price FROM order_items o join inventory i on o.inventory_id = i.id join products p on i.product_id = p.id WHERE o.order_id = ?', [order.id]);
+        const productPriceQuery = await connection.execute('SELECT o.quantity AS order_quantity, p.price FROM order_items o join inventory i on o.inventory_id = i.id join products p on i.product_id = p.id WHERE o.order_id = ? FOR SHARE', [order.id]);
 
         // calculate total price
         transactionResult.totalPrice = getTotalPrice(productPriceQuery[0]);

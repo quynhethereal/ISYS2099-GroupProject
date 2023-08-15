@@ -29,7 +29,7 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
         // get inventory and product size info of fromWarehouse
-        const fromWarehouseInventory = await connection.execute('SELECT i.id, i.product_id, i.quantity, i.reserved_quantity, p.length, p.width, p.height FROM products p join inventory i on i.product_id = p.id WHERE i.warehouse_id = ? AND p.id = ? FOR SHARE', [fromWarehouse, productId]);
+        const fromWarehouseInventory = await connection.execute('SELECT i.id, i.product_id, i.quantity, i.reserved_quantity, p.length, p.width, p.height FROM products p join inventory i on i.product_id = p.id WHERE i.warehouse_id = ? AND p.id = ? FOR UPDATE', [fromWarehouse, productId]);
 
         if (fromWarehouseInventory[0].length === 0) {
             throw new Error('Unable to find inventory.');
@@ -77,7 +77,7 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
         // update the order items that have inventory_id of fromWarehouse
-        const affectedOrderItemsQuery = await connection. execute("SELECT * FROM `order_items` WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = 'pending')", [fromWarehouseInventory[0][0].id]);
+        const affectedOrderItemsQuery = await connection. execute("SELECT * FROM `order_items` WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = 'pending') FOR UPDATE", [fromWarehouseInventory[0][0].id]);
 
         if (affectedOrderItemsQuery[0].length > 0) {
             const updateOrderItemsQuery = await connection.execute('UPDATE `order_items` SET inventory_id = ? WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = "pending")', [toWarehouseInventory[0][0].id, fromWarehouseInventory[0][0].id]);
@@ -95,7 +95,6 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
     } catch (err) {
-        console.log(err.stack);
         console.log('Unable to move inventory.');
         await connection.query('ROLLBACK');
 
