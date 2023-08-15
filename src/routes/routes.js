@@ -56,6 +56,7 @@ module.exports = app => {
     // inventory-related API
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
     router.get("/inventories", authMiddleware.verifyToken, inventories.getAll);
+    router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
 
     app.use('/api', router);
 }
