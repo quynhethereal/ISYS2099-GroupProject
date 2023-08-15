@@ -33,7 +33,12 @@ CREATE DATABASE IF NOT EXISTS lazada_ecommerce;
 - Create a `.env` file from the sample and fill in your own credentials:
 
 ```bash
+(macos)
 cp .env.dev.sample .env
+```
+```bash
+(windows)
+copy .env.dev.sample .env
 ```
 
 - Run the server:
