@@ -1,6 +1,6 @@
 const Warehouse = require('../models/warehouse.model.js');
 const {validateCreateWarehousePayload }  = require('../validators/createWarehouse.validator');
-
+const Inventory = require('../models/inventory.model');
 exports.create = async (req, res) => {
     try {
 
@@ -21,6 +21,23 @@ exports.create = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error creating warehouse."
+        });
+    }
+}
+
+exports.getInventoryByWarehouseId = async (req, res) => {
+    try {
+        const warehouseId = req.params.id;
+
+        const params = {
+            warehouseId: warehouseId,
+            ...req.query
+        }
+        const inventory = await Inventory.getInventoryByWarehouseId(params);
+        res.status(200).json(inventory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving warehouse."
         });
     }
 }
