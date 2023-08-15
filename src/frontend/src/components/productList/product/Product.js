@@ -1,12 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import unknownProduct from "../../../assets/image/unknownProduct.png";
-import { useCart } from "../../../hook/CartHook.js";
 
 const Product = ({ info }) => {
-  const { addItem } = useCart();
-  const handleAddProduct = (item) => {
-    addItem(item);
+  const navigate = useNavigate();
+  const hanleViewProduct = (item) => {
+    console.log("view", item);
   };
   return (
     <>
@@ -35,9 +35,9 @@ const Product = ({ info }) => {
 
           <button
             className="btn btn-success"
-            onClick={() => handleAddProduct(info)}
+            onClick={() => hanleViewProduct(info)}
           >
-            Add product
+            View product
           </button>
         </div>
       </div>

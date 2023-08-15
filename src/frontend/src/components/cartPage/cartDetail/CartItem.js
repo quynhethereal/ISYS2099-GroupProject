@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import _uniqueId from "lodash/uniqueId";
+
 import unknownProduct from "../../../assets/image/unknownProduct.png";
 
 const CartItem = ({ data }) => {
@@ -18,7 +20,7 @@ const CartItem = ({ data }) => {
 
   return (
     <>
-      <th scope="row">{data.id}</th>
+      <th scope="row">{_uniqueId()}</th>
       <th>
         <img
           src={data?.image ? data.image : unknownProduct}
@@ -47,7 +49,7 @@ const CartItem = ({ data }) => {
           </button>
         </div>
       </td>
-      <td>{amount * data?.price}</td>
+      <td>$ {(amount * data?.price).toFixed(2)}</td>
     </>
   );
 };

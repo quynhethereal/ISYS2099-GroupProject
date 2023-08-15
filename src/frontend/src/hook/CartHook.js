@@ -9,7 +9,6 @@ export const CartProvider = ({ children }) => {
     let listOfId = cart?.map((item) => item.id);
     if (listOfId?.includes(data?.id)) {
       const newCart = cart.map((item) => {
-        console.log("add quantity to existing product in cart");
         if (item.id === data.id) {
           item.quantity += 1;
           return item;
@@ -19,7 +18,6 @@ export const CartProvider = ({ children }) => {
       });
       setCart(newCart);
     } else {
-      console.log("add new product to cart");
       data.quantity = 1;
       if (cart) {
         setCart([...cart, data]);
@@ -28,7 +26,6 @@ export const CartProvider = ({ children }) => {
       }
     }
   };
-  console.log(cart);
 
   useEffect(() => {
     if (!localStorage.getItem(key) || localStorage.getItem(key) == null) {

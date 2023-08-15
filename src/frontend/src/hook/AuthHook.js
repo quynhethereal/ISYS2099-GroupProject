@@ -1,14 +1,13 @@
 import { createContext, useContext, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useLocalStorage } from "./LocalStorageHook";
 import { loginUser } from "../action/auth/auth";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useLocalStorage("lazada-login-token", null);
-  //   localStorage.setItem("lazada-login-token", JSON.stringify(data));
-
   const login = async (data) => {
     const result = await loginUser(data).then((res) => {
       if (res) {
@@ -21,7 +20,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user && location === "/") {
       navigate("/customer");
     }
     // eslint-disable-next-line

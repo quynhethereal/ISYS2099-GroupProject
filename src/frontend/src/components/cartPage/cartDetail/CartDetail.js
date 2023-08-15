@@ -21,7 +21,7 @@ const CartDetail = () => {
           </div>
         </div>
         <div className="col-12 col-md-9 p-3">
-          <table className="table text-center">
+          <table className="table text-start">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -33,11 +33,6 @@ const CartDetail = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {!cart && (
-                <div className="fw-bold fs-2 text-wanring">
-                  No Items in your cart
-                </div>
-              )} */}
               {cart?.map((item, index) => {
                 return (
                   <tr key={index}>
