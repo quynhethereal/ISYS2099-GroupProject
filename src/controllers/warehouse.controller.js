@@ -27,8 +27,11 @@ exports.create = async (req, res) => {
 
 exports.getInventoryByWarehouseId = async (req, res) => {
     try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
         const warehouseId = req.params.id;
-
         const params = {
             warehouseId: warehouseId,
             ...req.query
