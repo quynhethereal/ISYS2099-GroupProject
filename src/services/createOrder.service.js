@@ -75,7 +75,7 @@ CreateOrderService.createOrder = async (params) => {
         }
 
         // calculate total price
-        const productPriceQuery = await connection.execute('SELECT o.quantity AS order_quantity, p.price FROM order_items o join inventory i on o.inventory_id = i.id join products p on i.product_id = p.id WHERE o.order_id = ? FOR SHARE', [order.id]);
+        const productPriceQuery = await connection.execute('SELECT o.quantity AS order_quantity, p.price FROM order_items o join inventory i on o.inventory_id = i.id join products p on i.product_id = p.id WHERE o.order_id = ? FOR UPDATE', [order.id]);
 
         // calculate total price
         transactionResult.totalPrice = getTotalPrice(productPriceQuery[0]);
