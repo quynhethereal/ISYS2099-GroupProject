@@ -41,6 +41,14 @@ exports.moveInventory = async (req, res) => {
             return;
         }
 
+        // validate that two warehouses are not the same
+        if (fromWarehouse === toWarehouse) {
+            res.status(400).send({
+                message: "Cannot move inventory from and to the same warehouse."
+            });
+            return;
+        }
+
         const result = await moveInventoryService.moveInventory( productId, fromWarehouse, toWarehouse, quantity);
 
         res.status(200).json(result);

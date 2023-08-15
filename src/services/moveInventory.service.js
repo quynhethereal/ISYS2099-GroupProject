@@ -15,7 +15,6 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
 
     try {
         await connection.query('BEGIN');
-        // select two warehouses requested
 
         // sort the ids to avoid deadlocks
         const warehouseIds = [fromWarehouse, toWarehouse].sort((a, b) => a - b);
@@ -28,7 +27,7 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         if (warehouses.length !== 2) {
             throw new Error('Unable to find warehouses.');
         }
-        
+
         // get inventory and product size info of fromWarehouse
         const fromWarehouseInventory = await connection.execute('SELECT i.id, i.product_id, i.quantity, i.reserved_quantity, p.length, p.width, p.height FROM products p join inventory i on i.product_id = p.id WHERE i.warehouse_id = ? AND p.id = ? FOR SHARE', [fromWarehouse, productId]);
 
