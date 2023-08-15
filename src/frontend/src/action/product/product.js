@@ -9,3 +9,13 @@ export const getAllProduct = async (nextId, limit) => {
     console.log(error.message);
   }
 };
+
+export const getProductById = async (id) => {
+  try {
+    const { data } = await api.getProductById(id);
+
+    return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+};

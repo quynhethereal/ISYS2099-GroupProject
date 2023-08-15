@@ -6,7 +6,10 @@ import unknownProduct from "../../../assets/image/unknownProduct.png";
 const Product = ({ info }) => {
   const navigate = useNavigate();
   const hanleViewProduct = (item) => {
-    console.log("view", item);
+    navigate(`/customer/product/details/${item.id}`, {
+      replace: true,
+      state: info,
+    });
   };
   return (
     <>

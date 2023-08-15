@@ -16,7 +16,6 @@ const CartItem = ({ data }) => {
       setAmount((prev) => prev + 1);
     }
   };
-  // console.log(amount);
 
   return (
     <>

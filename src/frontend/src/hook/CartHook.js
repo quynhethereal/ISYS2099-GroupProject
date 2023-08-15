@@ -5,12 +5,16 @@ export const CartProvider = ({ children }) => {
   const key = "lazada-cart";
   const [cart, setCart] = useState(JSON.parse(localStorage.getItem(key)));
 
-  const addItem = (data) => {
+  const addItem = (data, quanlity) => {
     let listOfId = cart?.map((item) => item.id);
     if (listOfId?.includes(data?.id)) {
       const newCart = cart.map((item) => {
         if (item.id === data.id) {
-          item.quantity += 1;
+          if (quanlity) {
+            item.quanlity = quanlity;
+          } else {
+            item.quanlity += 1;
+          }
           return item;
         } else {
           return item;
@@ -18,7 +22,7 @@ export const CartProvider = ({ children }) => {
       });
       setCart(newCart);
     } else {
-      data.quantity = 1;
+      data.quanlity = quanlity ? quanlity : 1;
       if (cart) {
         setCart([...cart, data]);
       } else {

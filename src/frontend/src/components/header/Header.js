@@ -62,8 +62,8 @@ const Header = ({ user }) => {
           </div>
           <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
             <p>
-              {user.firstName}
-              {user.lastName}
+              {user?.firstName}
+              {user?.lastName}
             </p>
             <button
               type="button"

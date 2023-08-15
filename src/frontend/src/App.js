@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/login/Login";
 import Customer from "./components/customer/Customer";
 import CartPage from "./components/cartPage/CartPage";
+import ProductDetail from "./components/productList/product/ProductDetail";
 import BlockPage from "./components/blockPage/BlockPage";
 import NotFoundPage from "./components/notFoundPage/NotFoundPage";
 import { AuthProvider } from "./hook/AuthHook";
@@ -31,6 +32,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CartPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                exact
+                path="/customer/product/details/:id"
+                element={
+                  <ProtectedRoute>
+                    <ProductDetail />
                   </ProtectedRoute>
                 }
               ></Route>
