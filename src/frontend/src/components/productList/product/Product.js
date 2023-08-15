@@ -11,17 +11,17 @@ const Product = ({ info }) => {
     });
   };
 
-  function _arrayBufferToBase64(buffer) {
-    var binary = "";
-    var bytes = new Uint8Array(buffer);
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return window.btoa(binary);
-  }
+  // function _arrayBufferToBase64(buffer) {
+  //   var binary = "";
+  //   var bytes = new Uint8Array(buffer);
+  //   var len = bytes.byteLength;
+  //   for (var i = 0; i < len; i++) {
+  //     binary += String.fromCharCode(bytes[i]);
+  //   }
+  //   return window.btoa(binary);
+  // }
 
-  console.log(_arrayBufferToBase64(info.image.data));
+  // console.log(_arrayBufferToBase64(info.image.data));
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
