@@ -1,10 +1,26 @@
 import React from "react";
 
-import CartItem from "./CartItem";
 import { useCart } from "../../../hook/CartHook.js";
+import { useAuth } from "../../../hook/AuthHook.js";
+import { createOrder } from "../../../action/order/order.js";
+
+import CartItem from "./CartItem";
 
 const CartDetail = () => {
+  const { token } = useAuth();
   const { cart } = useCart();
+
+  const handleCreateOrder = async () => {
+    const payload = {
+      cart: cart.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      })),
+    };
+    await createOrder(token(), payload).then((result) => {
+      console.log(result);
+    });
+  };
   return (
     <>
       <div className="container my-4 d-flex flex-column flex-md-row justify-content-between align-items-start">
@@ -18,10 +34,18 @@ const CartDetail = () => {
             <p>
               Total quantity: <span>12</span>
             </p>
+            <div>
+              <button
+                className="btn btn-success"
+                onClick={() => handleCreateOrder()}
+              >
+                Create Order
+              </button>
+            </div>
           </div>
         </div>
         <div className="col-12 col-md-9 p-3">
-          <table className="table text-center">
+          <table className="table text-start">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -33,11 +57,6 @@ const CartDetail = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {!cart && (
-                <div className="fw-bold fs-2 text-wanring">
-                  No Items in your cart
-                </div>
-              )} */}
               {cart?.map((item, index) => {
                 return (
                   <tr key={index}>
