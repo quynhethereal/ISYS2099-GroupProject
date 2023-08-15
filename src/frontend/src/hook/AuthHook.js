@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (user && location === "/") {
+    if (user && location.pathname === "/") {
       navigate("/customer");
     }
     // eslint-disable-next-line
