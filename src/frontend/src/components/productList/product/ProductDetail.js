@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../hook/AuthHook.js";
 import { useCart } from "../../../hook/CartHook.js";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductById } from "../../../action/product/product.js";
 
 import Header from "../../header/Header.js";
 import NotFoundProductPage from "./NotFoundProductPage.js";
@@ -9,13 +10,25 @@ import unknownProduct from "../../../assets/image/unknownProduct.png";
 import star from "../../../assets/image/star.png";
 
 const ProductDetail = () => {
-  const location = useLocation();
+  const productId = useParams().id;
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addItem } = useCart();
-  const product = location.state;
 
+  const [product, setProduct] = useState(null);
   const [amount, setAmount] = useState(1);
+
+  useEffect(() => {
+    async function findProduct() {
+      await getProductById(productId).then((res) => {
+        if (res) {
+          setProduct(res);
+        }
+      });
+    }
+    findProduct();
+    // eslint-disable-next-line
+  }, []);
 
   const handleRemoveItem = () => {
     if (amount > 1) {
@@ -29,10 +42,10 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
-    addItem(location.state, amount);
+    addItem(product, amount);
   };
   const handleBuyNow = () => {
-    addItem(location.state, amount);
+    addItem(product, amount);
     navigate("/customer/cart", { replace: true });
   };
   return (

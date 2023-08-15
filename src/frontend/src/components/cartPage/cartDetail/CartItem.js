@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import _uniqueId from "lodash/uniqueId";
 
+import { useCart } from "../../../hook/CartHook.js";
+
 import unknownProduct from "../../../assets/image/unknownProduct.png";
 
 const CartItem = ({ data }) => {
+  const { addItem } = useCart();
   const [amount, setAmount] = useState(data?.quantity ? data.quantity : 1);
 
   const handleRemoveItem = (info) => {
     if (amount > 1) {
       setAmount((prev) => prev - 1);
+      addItem(info, amount - 1);
     }
   };
   const handleAddItem = (info) => {
     if (amount < 100) {
       setAmount((prev) => prev + 1);
+      addItem(info, amount + 1);
     }
   };
 

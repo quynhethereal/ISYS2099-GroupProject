@@ -8,6 +8,14 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useLocalStorage("lazada-login-token", null);
+
+  const token = () => {
+    const jwtToken = JSON.parse(
+      localStorage.getItem("lazada-login-token")
+    )?.token;
+    return jwtToken;
+  };
+
   const login = async (data) => {
     const result = await loginUser(data).then((res) => {
       if (res) {
@@ -31,6 +39,7 @@ export const AuthProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       user,
+      token,
       login,
       logout,
     }),
