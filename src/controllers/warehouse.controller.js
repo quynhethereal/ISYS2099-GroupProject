@@ -60,3 +60,25 @@ exports.findAll = async (req, res) => {
         });
     }
 }
+
+exports.findById = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const warehouse = await Warehouse.findById(parseInt(req.params.id));
+        if (!warehouse) {
+            res.status(404).send({
+                message: `Warehouse with id ${req.params.id} not found.`
+            });
+            return;
+        }
+        res.status(200).json(warehouse);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving warehouse."
+        });
+    }
+}

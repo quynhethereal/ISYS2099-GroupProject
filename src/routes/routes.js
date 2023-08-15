@@ -51,6 +51,7 @@ module.exports = app => {
     // warehouse-related API
     router.post("/warehouses", authMiddleware.verifyToken, warehouses.create);
     router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
+    router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
 
     app.use('/api', router);
