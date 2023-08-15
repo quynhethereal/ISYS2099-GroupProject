@@ -103,3 +103,24 @@ exports.updateImage = async (req, res) => {
         });
     }
 }
+
+exports.getImage = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+
+        // validate presence of params
+        if (productId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        const image = await Product.getImage(productId);
+        res.status(200).json(image);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving product image."
+        });
+    }
+}

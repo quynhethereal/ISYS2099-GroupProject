@@ -1,5 +1,7 @@
 const {customer_pool, seller_pool} = require("../db/db");
 const productValidator = require('../validators/product.validator');
+const path = require('path');
+const Helpers = require('../helpers/helpers');
 
 class Product {
     constructor(params = {}) {
@@ -91,7 +93,7 @@ Product.findByCategory = async (params) => {
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
                 "SELECT * FROM `products` WHERE category_id = ? ORDER BY id ASC LIMIT ?,?",
-                [categoryId + "" , offset + "", limit + ""],
+                [categoryId + "", offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -130,7 +132,7 @@ Product.findAll = async (params) => {
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
                 "SELECT * FROM `products` WHERE id > ? ORDER BY id ASC LIMIT ?",
-                [nextId + "" , limit+"" ],
+                [nextId + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -375,4 +377,44 @@ Product.update = async (params) => {
     }
 }
 
+Product.getImage = async (productId) => {
+    try {
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            console.log("Product not found.");
+            throw new Error("Product not found.");
+        } else {
+            const imageQuery = await new Promise((resolve, reject) => {
+                seller_pool.execute(
+                    'SELECT image, image_name FROM `products` WHERE id = ?',
+                    [productId],
+                    (err, results) => {
+                        if (err) {
+                            console.log('Unable to get product image.');
+                            reject(err);
+                            return;
+                        }
+                        console.log("Product image retrieved.");
+                        resolve(results);
+                    }
+                );
+            });
+
+        // write to file
+            const defaultFilePath = path.join(__dirname, '../..', 'public', 'uploads', 'images', imageQuery[0].image_name);
+            Helpers.decodeImage(imageQuery[0].image, defaultFilePath);
+
+            return {
+                message: "Product image retrieved.",
+                imagePath: defaultFilePath,
+                imageName: imageQuery[0].image_name
+            }
+        }
+    } catch (err) {
+        console.log('Unable to get product image.');
+        // rethrow error
+        throw err;
+    }
+}
 module.exports = Product;
