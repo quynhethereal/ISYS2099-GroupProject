@@ -1,23 +1,23 @@
 const multer = require("multer");
 const path = require('path');
+const inventories = require("../controllers/inventory.controller");
+//Set Storage Engine
+const storage = multer.diskStorage({
+    destination: './public/uploads/images',
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() +
+            path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage, limits: { fieldSize: 10 * 1024 * 1024 } }); //10MB
+const users = require("../controllers/user.controller.js");
+const auth = require("../controllers/auth.controller.js");
+const products = require("../controllers/product.controller.js");
+const orders = require("../controllers/order.controller.js");
+const warehouses = require("../controllers/warehouse.controller.js");
+const authMiddleware = require('../middlewares/auth.middleware');
 
 module.exports = app => {
-    //Set Storage Engine
-    const storage = multer.diskStorage({
-        destination: './public/uploads/images',
-        filename: function (req, file, cb) {
-            cb(null, file.fieldname + '-' + Date.now() +
-                path.extname(file.originalname));
-        }
-    });
-    const upload = multer({ storage: storage, limits: { fieldSize: 10 * 1024 * 1024 } }); //10MB
-    const users = require("../controllers/user.controller.js");
-    const auth = require("../controllers/auth.controller.js");
-    const products = require("../controllers/product.controller.js");
-    const orders = require("../controllers/order.controller.js");
-    const warehouses = require("../controllers/warehouse.controller.js");
-    const authMiddleware = require('../middlewares/auth.middleware');
-
     let router = require("express").Router();
     // authenticate a user
     router.post("/auth", auth.authenticate);
@@ -52,7 +52,10 @@ module.exports = app => {
     router.post("/warehouses", authMiddleware.verifyToken, warehouses.create);
     router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
     router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
+
+    // inventory-related API
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
+    router.get("/inventories", authMiddleware.verifyToken, inventories.getAll);
 
     app.use('/api', router);
 }
