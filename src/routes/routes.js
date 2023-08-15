@@ -49,8 +49,10 @@ module.exports = app => {
     router.put("/order/:id/reject", authMiddleware.verifyToken, orders.rejectOrder);
 
     // warehouse-related API
-    router.post("/warehouse", authMiddleware.verifyToken, warehouses.create);
-    router.get("/warehouse", authMiddleware.verifyToken, warehouses.findAll);
+    router.post("/warehouses", authMiddleware.verifyToken, warehouses.create);
+    router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
+    router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
+    router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
 
     app.use('/api', router);
 }
