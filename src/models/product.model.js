@@ -107,7 +107,8 @@ Product.findByCategory = async (params) => {
             products: res,
             limit: limit,
             currentPage: currentPage,
-            totalPages: totalPages
+            totalPages: totalPages,
+            totalProductCount: productCount
         }
     } catch (err) {
         console.log('Unable to find products.');
@@ -129,7 +130,7 @@ Product.findAll = async (params) => {
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
                 "SELECT * FROM `products` WHERE id > ? ORDER BY id ASC LIMIT ?",
-                [nextId +"" , limit+"" ],
+                [nextId + "" , limit+"" ],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -150,6 +151,7 @@ Product.findAll = async (params) => {
             limit: limit,
             nextId: resNextId,
             totalPages: totalPages,
+            totalProductCount: productCount
         };
 
     } catch (err) {

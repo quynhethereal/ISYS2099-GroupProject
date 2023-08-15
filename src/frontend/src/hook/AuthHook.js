@@ -10,16 +10,22 @@ export const AuthProvider = ({ children }) => {
   //   localStorage.setItem("lazada-login-token", JSON.stringify(data));
 
   const login = async (data) => {
-    await loginUser(data).then((res) => {
-      setUser(res);
+    const result = await loginUser(data).then((res) => {
+      if (res) {
+        setUser(res);
+        return true;
+      }
+      return false;
     });
+    return result;
   };
 
   useEffect(() => {
     if (user) {
       navigate("/customer");
     }
-  }, [setUser]);
+    // eslint-disable-next-line
+  }, [user]);
 
   const logout = () => {};
 

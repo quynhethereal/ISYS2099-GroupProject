@@ -15,6 +15,7 @@ module.exports = app => {
     const auth = require("../controllers/auth.controller.js");
     const products = require("../controllers/product.controller.js");
     const orders = require("../controllers/order.controller.js");
+    const warehouses = require("../controllers/warehouse.controller.js");
     const authMiddleware = require('../middlewares/auth.middleware');
 
     let router = require("express").Router();
@@ -31,6 +32,7 @@ module.exports = app => {
     // product-related API
     router.get("/products", products.findAll);
     router.get("/category/:id/products", products.findAllByCategory);
+    router.get("/product/:id", products.findById);
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
 
@@ -45,6 +47,10 @@ module.exports = app => {
     router.put("/order/:id/accept", authMiddleware.verifyToken, orders.acceptOrder);
     // ---- reject an order ----
     router.put("/order/:id/reject", authMiddleware.verifyToken, orders.rejectOrder);
+
+    // warehouse-related API
+    router.post("/warehouse", authMiddleware.verifyToken, warehouses.create);
+    router.get("/warehouse", authMiddleware.verifyToken, warehouses.findAll);
 
     app.use('/api', router);
 }

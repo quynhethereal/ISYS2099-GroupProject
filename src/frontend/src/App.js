@@ -1,8 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./components/login/Login";
 import Customer from "./components/customer/Customer";
+import CartPage from "./components/cartPage/CartPage";
 import BlockPage from "./components/blockPage/BlockPage";
+import NotFoundPage from "./components/notFoundPage/NotFoundPage";
 import { AuthProvider } from "./hook/AuthHook";
+import { CartProvider } from "./hook/CartHook";
 import { ProtectedRoute } from "./hook/ProtectedRoute";
 
 function App() {
@@ -10,19 +13,31 @@ function App() {
     <>
       <Router>
         <AuthProvider>
-          <Routes>
-            <Route exact path="/" element={<Login />}></Route>
-            <Route
-              exact
-              path="/customer"
-              element={
-                <ProtectedRoute>
-                  <Customer />
-                </ProtectedRoute>
-              }
-            ></Route>
-            <Route exact path="/blocked" element={<BlockPage />}></Route>
-          </Routes>
+          <CartProvider>
+            <Routes>
+              <Route exact path="/" element={<Login />}></Route>
+              <Route
+                exact
+                path="/customer"
+                element={
+                  <ProtectedRoute>
+                    <Customer />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                exact
+                path="/customer/cart"
+                element={
+                  <ProtectedRoute>
+                    <CartPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route exact path="/blocked" element={<BlockPage />}></Route>
+              <Route path="*" element={<NotFoundPage />}></Route>
+            </Routes>
+          </CartProvider>
         </AuthProvider>
       </Router>
     </>
