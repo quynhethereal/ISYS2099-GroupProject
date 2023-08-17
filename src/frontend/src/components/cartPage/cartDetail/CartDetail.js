@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-// import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -9,19 +8,19 @@ import { createOrder } from "../../../action/order/order.js";
 import CartItem from "./CartItem";
 
 const CartDetail = () => {
-  // const navigate = useNavigate();
+  const [isOrdering, setIsOrdering] = useState(false);
   const { token } = useAuth();
-  const { cart } = useCart();
-
-  const [isOrdered, setIsOrdered] = useState(false);
+  const { cart, resetItem } = useCart();
 
   const handleCreateOrder = async () => {
+    setIsOrdering(true);
     if (!cart) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Please add a product before creating order",
       });
+      setIsOrdering(false);
       return;
     }
     const payload = {
@@ -31,8 +30,8 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      // log
       if (result && result.status === 200) {
+        resetItem();
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -50,6 +49,7 @@ const CartDetail = () => {
         });
       }
     });
+    setIsOrdering(false);
   };
   return (
     <>
@@ -59,17 +59,31 @@ const CartDetail = () => {
           <hr className="hr" />
           <div className="d-flex flex-column">
             <p>
-              Total amount: <span>123,2</span>
+              Total amount:{" "}
+              <span>
+                $
+                {cart
+                  .reduce((acc, o) => acc + o.quantity * parseFloat(o.price), 0)
+                  .toFixed(2)}
+              </span>
             </p>
             <p>
-              Total quantity: <span>12</span>
+              Total quantity:{" "}
+              <span>{cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
             </p>
             <div>
               <button
-                className="btn btn-success"
+                className="btn btn-success col-12"
                 onClick={() => handleCreateOrder()}
               >
-                Create Order
+                {isOrdering ? (
+                  <div
+                    className="spinner-border text-white"
+                    role="status"
+                  ></div>
+                ) : (
+                  "Create Order"
+                )}
               </button>
             </div>
           </div>
