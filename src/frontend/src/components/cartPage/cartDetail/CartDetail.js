@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -7,8 +9,11 @@ import { createOrder } from "../../../action/order/order.js";
 import CartItem from "./CartItem";
 
 const CartDetail = () => {
+  const navigate = useNavigate();
   const { token } = useAuth();
   const { cart } = useCart();
+
+  const [isOrdered, setIsOrdered] = useState(false);
 
   const handleCreateOrder = async () => {
     const payload = {
@@ -19,6 +24,19 @@ const CartDetail = () => {
     };
     await createOrder(token(), payload).then((result) => {
       console.log(result);
+      if (result?.id) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Order sucess",
+          text: "Your order now in pending state for delivery",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+        navigate(0, { replace: true });
+      } else {
+      }
     });
   };
   return (
@@ -60,7 +78,7 @@ const CartDetail = () => {
               {cart?.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <CartItem data={item}></CartItem>
+                    <CartItem data={item} index={index}></CartItem>
                   </tr>
                 );
               })}

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import _uniqueId from "lodash/uniqueId";
 
 import { useCart } from "../../../hook/CartHook.js";
 
 import unknownProduct from "../../../assets/image/unknownProduct.png";
 
-const CartItem = ({ data }) => {
+const CartItem = ({ data, index }) => {
   const { addItem } = useCart();
   const [amount, setAmount] = useState(data?.quantity ? data.quantity : 1);
 
@@ -24,7 +23,7 @@ const CartItem = ({ data }) => {
 
   return (
     <>
-      <th scope="row">{_uniqueId()}</th>
+      <th scope="row">{index + 1}</th>
       <th>
         <img
           src={data?.image ? data.image : unknownProduct}
