@@ -28,6 +28,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (user && location.pathname === "/" && user.role === "admin") {
+      navigate("/admin");
+    }
     if (user && location.pathname === "/") {
       navigate("/customer");
     }
