@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -7,10 +8,21 @@ import { createOrder } from "../../../action/order/order.js";
 import CartItem from "./CartItem";
 
 const CartDetail = () => {
+  const [isOrdering, setIsOrdering] = useState(false);
   const { token } = useAuth();
-  const { cart } = useCart();
+  const { cart, resetItem } = useCart();
 
   const handleCreateOrder = async () => {
+    setIsOrdering(true);
+    if (!cart) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please add a product before creating order",
+      });
+      setIsOrdering(false);
+      return;
+    }
     const payload = {
       cart: cart.map((item) => ({
         productId: item.id,
@@ -18,8 +30,26 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      console.log(result);
+      if (result && result.status === 200) {
+        resetItem();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Order sucess",
+          text: "Your order now in pending state for delivery",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Maximum 30 items are allowed per order",
+        });
+      }
     });
+    setIsOrdering(false);
   };
   return (
     <>
@@ -29,17 +59,31 @@ const CartDetail = () => {
           <hr className="hr" />
           <div className="d-flex flex-column">
             <p>
-              Total amount: <span>123,2</span>
+              Total amount:{" "}
+              <span>
+                $
+                {cart
+                  .reduce((acc, o) => acc + o.quantity * parseFloat(o.price), 0)
+                  .toFixed(2)}
+              </span>
             </p>
             <p>
-              Total quantity: <span>12</span>
+              Total quantity:{" "}
+              <span>{cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
             </p>
             <div>
               <button
-                className="btn btn-success"
+                className="btn btn-success col-12"
                 onClick={() => handleCreateOrder()}
               >
-                Create Order
+                {isOrdering ? (
+                  <div
+                    className="spinner-border text-white"
+                    role="status"
+                  ></div>
+                ) : (
+                  "Create Order"
+                )}
               </button>
             </div>
           </div>
@@ -60,7 +104,7 @@ const CartDetail = () => {
               {cart?.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <CartItem data={item}></CartItem>
+                    <CartItem data={item} index={index}></CartItem>
                   </tr>
                 );
               })}

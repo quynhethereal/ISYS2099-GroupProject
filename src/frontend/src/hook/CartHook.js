@@ -31,6 +31,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const resetItem = () => {
+    localStorage.setItem(key, JSON.stringify(null));
+  };
+
   useEffect(() => {
     if (!localStorage.getItem(key) || localStorage.getItem(key) == null) {
       localStorage.setItem(key, JSON.stringify(null));
@@ -44,6 +48,7 @@ export const CartProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       addItem,
+      resetItem,
       cart,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
