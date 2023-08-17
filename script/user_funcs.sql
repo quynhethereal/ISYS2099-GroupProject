@@ -2,6 +2,14 @@
 
 -- Generate ULID from datetime
 
+DROP FUNCTION IF EXISTS ULID_ENCODE//
+CREATE FUNCTION ULID_ENCODE (b BINARY(16)) RETURNS CHAR(26) DETERMINISTIC
+BEGIN
+DECLARE s_hex CHAR(32);
+SET s_hex = LPAD(HEX(b), 32, '0');
+RETURN REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(CONCAT(LPAD(CONV(SUBSTRING(s_hex, 1, 2), 16, 32), 2, '0'), LPAD(CONV(SUBSTRING(s_hex, 3, 15), 16, 32), 12, '0'), LPAD(CONV(SUBSTRING(s_hex, 18, 15), 16, 32), 12, '0')), 'V', 'Z'), 'U', 'Y'), 'T', 'X'), 'S', 'W'), 'R', 'V'), 'Q', 'T'), 'P', 'S'), 'O', 'R'), 'N', 'Q'), 'M', 'P'), 'L', 'N'), 'K', 'M'), 'J', 'K'), 'I', 'J');
+END//
+
 delimiter //
 drop function IF EXISTS ULID_FROM_DATETIME//
 create function ULID_FROM_DATETIME (t DATETIME) RETURNS CHAR(26) deterministic
