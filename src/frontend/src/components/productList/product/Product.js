@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import unknownProduct from "../../../assets/image/unknownProduct.png";
+// import unknownProduct from "../../../assets/image/unknownProduct.png";
 
 const Product = ({ info }) => {
   const navigate = useNavigate();
