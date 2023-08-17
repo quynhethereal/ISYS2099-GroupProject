@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -9,13 +9,21 @@ import { createOrder } from "../../../action/order/order.js";
 import CartItem from "./CartItem";
 
 const CartDetail = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { token } = useAuth();
   const { cart } = useCart();
 
   const [isOrdered, setIsOrdered] = useState(false);
 
   const handleCreateOrder = async () => {
+    if (!cart) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please add a product before creating order",
+      });
+      return;
+    }
     const payload = {
       cart: cart.map((item) => ({
         productId: item.id,
@@ -23,8 +31,8 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      console.log(result);
-      if (result?.id) {
+      // log
+      if (result && result.status === 200) {
         Swal.fire({
           position: "top-end",
           icon: "success",
@@ -34,8 +42,12 @@ const CartDetail = () => {
           timer: 3000,
           timerProgressBar: true,
         });
-        navigate(0, { replace: true });
       } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Maximum 30 items are allowed per order",
+        });
       }
     });
   };
