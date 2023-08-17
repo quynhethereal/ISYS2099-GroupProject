@@ -6,7 +6,7 @@ import CartPage from "./components/cartPage/CartPage";
 import ProductDetail from "./components/productList/product/ProductDetail";
 
 import Admin from "./components/admin/Admin";
-import WarehouseList from "./components/warehouseList/WarehouseList";
+// import WarehouseList from "./components/warehouseList/WarehouseList";
 
 import BlockPage from "./components/blockPage/BlockPage";
 import NotFoundPage from "./components/notFoundPage/NotFoundPage";
