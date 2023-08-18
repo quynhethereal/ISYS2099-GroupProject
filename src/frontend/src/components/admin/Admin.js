@@ -9,7 +9,7 @@ const Admin = () => {
   // const { user } = useAuth();
   return (
     <>
-      <div className="d-flex flex-row">
+      <div className="d-flex flex-column flex-md-row">
         <DashBoard></DashBoard>
         <AdminRenderPage></AdminRenderPage>
       </div>

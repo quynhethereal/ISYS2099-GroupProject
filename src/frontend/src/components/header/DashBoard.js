@@ -11,7 +11,7 @@ const DashBoard = () => {
   const location = useLocation().pathname;
   return (
     <div
-      className="col-4 col-sm-4 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white"
+      className="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white"
       style={{ height: "100vh", background: "#f0f0f0" }}
     >
       <a
