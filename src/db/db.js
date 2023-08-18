@@ -1,19 +1,24 @@
 const mysql = require('mysql2');
 const mongoose = require('mongoose');
+const Category = require('../models/category.model')
 
 // Create connection to mongodb in localhost
 const mongodb_uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 
 // Check whether connection is valid
-mongodb_connection = mongoose.createConnection(mongodb_uri);
-mongodb_connection.on('connected', function (ref) {
-  console.log("Connected to MongoDB database!");
-});
+mongoose.connect(mongodb_uri)
+    .then(() => console.log("Connected to MongoDB database!"))
+    .catch((err) => console.log("Fail to connect to MongoDB database...", err));
 
-// Check whether connection is failed
-mongodb_connection.on('error', function (err) {
-  console.log("Fail to connect to MongoDB database...", err);
-});
+Category.find({})
+    .then((documents) => {
+        documents.forEach((document) => {
+        console.log(document);
+        });
+    })
+    .catch((error) => {
+        console.error('Error fetching documents:', error);
+    });
 
 // Create admin connection pool to the MySQL database
 const admin_pool = mysql.createPool({
@@ -67,49 +72,49 @@ customer_pool.getConnection(function (err, connection) {
 
 // Create a seller connection pool to the MySQL database
 const seller_pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_SELLER_USER,
-  password: process.env.MYSQL_SELLER_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  debug: false
+    connectionLimit: 10,
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_SELLER_USER,
+    password: process.env.MYSQL_SELLER_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    debug: false
 });
 
 seller_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting seller to MySQL:', err);
-      connection.release();
-      throw err;
-  }
+    if (err) {
+        console.error('Error connecting seller to MySQL:', err);
+        connection.release();
+        throw err;
+    }
 
-  console.log('Connected seller pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
+    console.log('Connected seller pool to MySQL!');
+    connection.on('error', function (err) {
+        throw err;
+    });
 });
 
 // Create a seller connection pool to the MySQL database
 const wh_pool = mysql.createPool({
-  connectionLimit: 10,
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_WH_USER,
-  password: process.env.MYSQL_WH_PASSWORD,
-  database: process.env.MYSQL_DATABASE,
-  debug: false
+    connectionLimit: 10,
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_WH_USER,
+    password: process.env.MYSQL_WH_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    debug: false
 });
 
 wh_pool.getConnection(function (err, connection) {
-  if (err) {
-      console.error('Error connecting seller to MySQL:', err);
-      connection.release();
-      throw err;
-  }
+    if (err) {
+        console.error('Error connecting seller to MySQL:', err);
+        connection.release();
+        throw err;
+    }
 
-  console.log('Connected seller pool to MySQL!');
-  connection.on('error', function (err) {
-      throw err;
-  });
+  console.log('Connected warehouse admin pool to MySQL!');
+    connection.on('error', function (err) {
+        throw err;
+    });
 });
 
-module.exports = {mongodb_connection, admin_pool, customer_pool, seller_pool, wh_pool};
+module.exports = {mongoose, admin_pool, customer_pool, seller_pool, wh_pool};
 
