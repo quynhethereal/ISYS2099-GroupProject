@@ -17,3 +17,8 @@ export const getInventoryByWarehouseId = (token, id, limit, currentPage) =>
       headers: { "x-access-token": token },
     }
   );
+
+export const createWarehouse = (token, data) =>
+  axios.post(`${backend_url}/api/warehouses`, data, {
+    headers: { "x-access-token": token },
+  });

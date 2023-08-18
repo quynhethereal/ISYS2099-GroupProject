@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 
 import logo from "../../assets/image/icon.png";
 import home from "../../assets/image/home.png";
+import logout from "../../assets/image/logout.png";
 import warehouse from "../../assets/image/warehouse.png";
 import product from "../../assets/image/product.png";
 
@@ -10,7 +11,7 @@ const DashBoard = () => {
   const location = useLocation().pathname;
   return (
     <div
-      className="col-4 col-sm-4 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white"
+      className="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white"
       style={{ height: "100vh", background: "#f0f0f0" }}
     >
       <a
@@ -75,12 +76,27 @@ const DashBoard = () => {
                 style={{ width: "28px" }}
               />
             </span>
-            WareHouse
+            Products
           </a>
         </li>
       </ul>
-      <hr />
-      <div className="last-element"></div>
+      <hr style={{ border: "1px solid black" }} />
+      <div className="d-flex flex-column flex-md-row">
+        <button
+          type="button"
+          className="col-12 d-flex flex-row justtify-content-center align-items-center btn btn-outline-warning"
+        >
+          <img
+            src={logout}
+            alt="logout icon"
+            className="img-fluid me-3"
+            style={{ width: "28px" }}
+          />
+          <span className="text-muted" style={{ fontSize: "16px" }}>
+            Logout
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

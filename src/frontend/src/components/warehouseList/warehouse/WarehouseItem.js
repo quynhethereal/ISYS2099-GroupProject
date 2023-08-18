@@ -9,25 +9,39 @@ const WarehouseItem = ({ data, token }) => {
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
 
-  // const handleNextPage = () => {
-  //   if (page < inventory.totalPages) {
-  //     setPage((prev) => prev + 1);
-  //   }
-  // };
-  // const handlePreviousPage = () => {
-  //   if (page > 1) {
-  //     setPage((prev) => prev - 1);
-  //   }
-  // };
+  const handleNextPage = () => {
+    if (page < inventory.totalPages) {
+      setPage((prev) => prev + 1);
+    }
+  };
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  };
 
   const handleChangePage = (number) => {
     setPage(number);
   };
 
   function returnNumberToArray(totalPage) {
-    var rows = [],
-      i = 0;
-    while (++i <= totalPage) rows.push(i);
+    var rows = [];
+    var i = 0;
+    if (totalPage < 3) {
+      while (++i <= totalPage) rows.push(i);
+      return rows;
+    }
+    if (totalPage - page >= 3) {
+      i = page - 1;
+      while (++i <= page + 1) rows.push(i);
+      rows.push("...");
+      rows.push(totalPage);
+    } else {
+      i = totalPage - 3;
+      while (++i <= totalPage - 1) rows.push(i);
+      rows.push("...");
+      rows.push(totalPage);
+    }
     return rows;
   }
 
@@ -129,38 +143,51 @@ const WarehouseItem = ({ data, token }) => {
             <div className="col-12 d-flex justify-content-center">
               <nav aria-label="pagination-inventory">
                 <ul className="pagination pagination-sm">
-                  {/* <li className="page-item">
+                  <li className="page-item">
                     <button
                       className="page-link"
                       onClick={() => handlePreviousPage()}
                     >
-                      Previous
+                      {"<"}
                     </button>
-                  </li> */}
-                  {returnNumberToArray(inventory?.totalPages).map((number) => {
-                    return (
-                      <li
-                        className={`page-item ${page === number && "active"}`}
-                        aria-current="page"
-                        key={number}
-                      >
-                        <button
-                          className="page-link"
-                          onClick={() => handleChangePage(number)}
-                        >
-                          {number}
-                        </button>
-                      </li>
-                    );
-                  })}
-                  {/* <li className="page-item">
+                  </li>
+                  {returnNumberToArray(inventory?.totalPages).map(
+                    (number, index) => {
+                      return (
+                        <div key={index}>
+                          {Number.isInteger(number) ? (
+                            <li
+                              className={`page-item ${
+                                page === number && "active"
+                              }`}
+                              aria-current="page"
+                            >
+                              <button
+                                className="page-link"
+                                onClick={() => handleChangePage(number)}
+                              >
+                                {number}
+                              </button>
+                            </li>
+                          ) : (
+                            <li aria-current="page">
+                              <button className="page-link" disabled>
+                                {number}
+                              </button>
+                            </li>
+                          )}
+                        </div>
+                      );
+                    }
+                  )}
+                  <li className="page-item">
                     <button
                       className="page-link"
                       onClick={() => handleNextPage()}
                     >
-                      Next
+                      {">"}
                     </button>
-                  </li> */}
+                  </li>
                 </ul>
               </nav>
             </div>

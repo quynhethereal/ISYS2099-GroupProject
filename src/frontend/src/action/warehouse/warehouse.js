@@ -28,3 +28,17 @@ export const getInventoryByWarehouseId = async (
     console.log(error.message);
   }
 };
+
+export const createWarehouse = async (token, data) => {
+  try {
+    const res = await api.createWarehouse(token, data);
+
+    if (res.status === 200) {
+      return res;
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
