@@ -1,8 +1,6 @@
 import React, { memo } from "react";
 
 const WarehouseInventory = ({ data }) => {
-  //going to show the item details
-  console.log(data);
   return (
     <div>
       <ul className="list-group list-group-numbered">

@@ -4,6 +4,7 @@ import { useAuth } from "../../hook/AuthHook.js";
 import { getWarehouses } from "../../action/warehouse/warehouse.js";
 
 import WarehouseItem from "./warehouse/WarehouseItem.js";
+import WarehouseCreateForm from "./warehouse/WarehouseCreateForm.js";
 
 const WarehouseList = () => {
   const [warehouses, setWarehouses] = useState();
@@ -27,9 +28,19 @@ const WarehouseList = () => {
   };
 
   function returnNumberToArray(totalPage) {
-    var rows = [],
-      i = 0;
-    while (++i <= totalPage) rows.push(i);
+    var rows = [];
+    var i = 0;
+    if (totalPage - page >= 3) {
+      i = page - 1;
+      while (++i <= page + 1) rows.push(i);
+      rows.push("...");
+      rows.push(totalPage);
+    } else {
+      i = totalPage - 3;
+      while (++i <= totalPage - 1) rows.push(i);
+      rows.push("...");
+      rows.push(totalPage);
+    }
     return rows;
   }
 
@@ -56,22 +67,33 @@ const WarehouseList = () => {
                 Previous
               </button>
             </li>
-            {returnNumberToArray(warehouses?.totalPages).map((number) => {
-              return (
-                <li
-                  className={`page-item ${page === number && "active"}`}
-                  aria-current="page"
-                  key={number}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => handleChangePage(number)}
-                  >
-                    {number}
-                  </button>
-                </li>
-              );
-            })}
+            {returnNumberToArray(warehouses?.totalPages).map(
+              (number, index) => {
+                return (
+                  <div key={index}>
+                    {Number.isInteger(number) ? (
+                      <li
+                        className={`page-item ${page === number && "active"}`}
+                        aria-current="page"
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handleChangePage(number)}
+                        >
+                          {number}
+                        </button>
+                      </li>
+                    ) : (
+                      <li aria-current="page">
+                        <button className="page-link" disabled>
+                          {number}
+                        </button>
+                      </li>
+                    )}
+                  </div>
+                );
+              }
+            )}
             <li className="page-item">
               <button className="page-link" onClick={() => handleNextPage()}>
                 Next
@@ -79,6 +101,9 @@ const WarehouseList = () => {
             </li>
           </ul>
         </nav>
+      </div>
+      <div className="row mb-md-4">
+        <WarehouseCreateForm />
       </div>
       <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-center p-0">
         {warehouses?.warehouses?.map((item, index) => {
