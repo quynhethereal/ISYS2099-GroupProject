@@ -52,5 +52,7 @@ module.exports = app => {
     router.post("/warehouse", authMiddleware.verifyToken, warehouses.create);
     router.get("/warehouse", authMiddleware.verifyToken, warehouses.findAll);
 
+    // TODO: api for search product
+
     app.use('/api', router);
 }
