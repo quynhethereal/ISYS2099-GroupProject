@@ -12,12 +12,19 @@ const Header = ({ user }) => {
   const handleToCartPage = () => {
     navigate("/customer/cart", { replace: true });
   };
+
+  //just customer
+  const handleToHomePage = () => {
+    navigate("/customer", { replace: true });
+  };
   return (
     <>
       <div className="container py-3">
         <div className="row d-flex flex-column flex-md-row justify-content-center align-items-center justify-content-md-between">
           <div className="col-12 col-md-2 text-center d-flex justtify-content-center align-items-center my-3 m-md-0">
-            <img src={logo} alt="app logo" className="img-fluid" />
+            <button className="btn" onClick={() => handleToHomePage()}>
+              <img src={logo} alt="app logo" className="img-fluid" />
+            </button>
           </div>
           <div className="col-12 col-md-5 d-flex justtify-content-center align-items-center">
             <div className="w-100 input-group-lg mb-3 d-flex justify-content-center algin-items-center">
@@ -55,8 +62,8 @@ const Header = ({ user }) => {
           </div>
           <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
             <p>
-              {user.firstName}
-              {user.lastName}
+              {user?.firstName}
+              {user?.lastName}
             </p>
             <button
               type="button"

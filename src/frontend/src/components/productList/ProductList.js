@@ -6,11 +6,14 @@ import { getAllProduct } from "../../action/product/product.js";
 const ProductList = () => {
   const [product, setProduct] = useState();
   const [isloading, setIsLoading] = useState(false);
+  const [isFechtedEverything, setIsFechtedEverything] = useState(false);
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
-    console.log(product.length);
     await getAllProduct(product.length, 10).then((data) => {
+      if (data.totalProductCount === product.length) {
+        setIsFechtedEverything(true);
+      }
       setProduct([...product, ...data?.products]);
       setIsLoading(false);
     });
@@ -43,12 +46,14 @@ const ProductList = () => {
               <span className="visually-hidden">Loading...</span>
             </div>
           )}
-          <button
-            className="btn btn-warning"
-            onClick={() => handleAddMoreProduct()}
-          >
-            More products...
-          </button>
+          {!isFechtedEverything && (
+            <button
+              className="btn btn-warning"
+              onClick={() => handleAddMoreProduct()}
+            >
+              More products...
+            </button>
+          )}
         </div>
       </div>
     </>

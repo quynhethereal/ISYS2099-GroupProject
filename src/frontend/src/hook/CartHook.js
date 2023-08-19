@@ -5,13 +5,16 @@ export const CartProvider = ({ children }) => {
   const key = "lazada-cart";
   const [cart, setCart] = useState(JSON.parse(localStorage.getItem(key)));
 
-  const addItem = (data) => {
+  const addItem = (data, quantity) => {
     let listOfId = cart?.map((item) => item.id);
     if (listOfId?.includes(data?.id)) {
       const newCart = cart.map((item) => {
-        console.log("add quantity to existing product in cart");
         if (item.id === data.id) {
-          item.quantity += 1;
+          if (quantity) {
+            item.quantity = quantity;
+          } else {
+            item.quantity += 1;
+          }
           return item;
         } else {
           return item;
@@ -19,8 +22,7 @@ export const CartProvider = ({ children }) => {
       });
       setCart(newCart);
     } else {
-      console.log("add new product to cart");
-      data.quantity = 1;
+      data.quantity = quantity ? quantity : 1;
       if (cart) {
         setCart([...cart, data]);
       } else {
@@ -28,7 +30,10 @@ export const CartProvider = ({ children }) => {
       }
     }
   };
-  console.log(cart);
+
+  const resetItem = () => {
+    localStorage.setItem(key, JSON.stringify(null));
+  };
 
   useEffect(() => {
     if (!localStorage.getItem(key) || localStorage.getItem(key) == null) {
@@ -43,6 +48,7 @@ export const CartProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       addItem,
+      resetItem,
       cart,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,6 +1,7 @@
 const {admin_pool} = require("../db/db");
 class Warehouse {
     constructor(params = {}) {
+        this.id = params.id;
         this.name = params.name;
         this.province = params.province;
         this.city = params.city;
