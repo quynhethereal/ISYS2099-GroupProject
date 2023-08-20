@@ -62,14 +62,14 @@ const CartDetail = () => {
               Total amount:{" "}
               <span>
                 $
-                {cart
+                {cart && cart
                   .reduce((acc, o) => acc + o.quantity * parseFloat(o.price), 0)
                   .toFixed(2)}
               </span>
             </p>
             <p>
               Total quantity:{" "}
-              <span>{cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
+              <span>{cart && cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
             </p>
             <div>
               <button
