@@ -36,6 +36,7 @@ module.exports = app => {
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
+    router.get("/products/:key", products.findByKey);
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);

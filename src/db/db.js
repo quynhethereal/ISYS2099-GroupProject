@@ -25,6 +25,8 @@ const CategorySchema = new mongoose.Schema ({
 
 const Category = mongoose.model('Category', CategorySchema);
 
+var Categories = [];
+
 Category.find({})
 .then((documents) => {
     if (documents.length == 0) {
@@ -55,7 +57,7 @@ Category.find({})
         // Create an array to store all the values taken from MongoDB
         Categories.push(documents);
         documents.forEach((document) => {
-            console.log(document);
+            // console.log(document);
         })
     }
 })

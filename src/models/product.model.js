@@ -118,6 +118,33 @@ Product.findByCategory = async (params) => {
     }
 }
 
+// Search keyword in title and description - Best match
+Product.findByKey = (key) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT * FROM `products` \
+            WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\') \
+            ORDER BY \
+            CASE \
+                WHEN title = ? THEN 1 \
+                WHEN title LIKE CONCAT(?,\'%\') THEN 2 \
+                WHEN title LIKE CONCAT(\'%\',?,\'%\') THEN 3 \
+                ELSE 4 \
+            END',
+            [key, key, key, key, key],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to search products');
+                    reject(err);
+                    return;
+                }
+                resolve(results);
+            }
+        )
+    })
+
+}
+
 // use largestID for infinite scrolling landing page
 Product.findAll = async (params) => {
     try {

@@ -48,6 +48,28 @@ exports.findAllByCategory = async (req, res) => {
     }
 }
 
+exports.findByKey = async (req, res) => {
+    try {
+        const key = req.params.key;
+
+        // TODO: handle explicit cases
+        if (key == null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        const products = await Product.findByKey(key);
+
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error finding products by key."
+        });
+    }
+}
+
 exports.update = async (req, res) => {
     try {
         const productId = parseInt(req.params.id);
