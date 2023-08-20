@@ -37,7 +37,7 @@ Category.find({})
 // No subcategory
 exports.createCategory = async (req, res) => {
     const name = req.body.name;
-    const findCategory = await Category.findOne(name);
+    const findCategory = await Category.findOne({name: name});
     if (!findCategory) {
         const category = Category.create(req.body);
         res.status(200).json(category);
