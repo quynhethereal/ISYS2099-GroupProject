@@ -16,6 +16,7 @@ const products = require("../controllers/product.controller.js");
 const orders = require("../controllers/order.controller.js");
 const warehouses = require("../controllers/warehouse.controller.js");
 const authMiddleware = require('../middlewares/auth.middleware');
+const categories = require('../controllers/category.controller');
 
 module.exports = app => {
     let router = require("express").Router();
@@ -60,7 +61,8 @@ module.exports = app => {
     router.get("/inventories", authMiddleware.verifyToken, inventories.getAll);
     router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
 
-    // TODO: api for search product
+    // category api for testing
+    router.get("/categories", categories.getAllCategories);
 
     app.use('/api', router);
 }
