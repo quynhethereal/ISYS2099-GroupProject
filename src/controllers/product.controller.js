@@ -52,7 +52,6 @@ exports.findByKey = async (req, res) => {
     try {
         const key = req.params.key;
 
-        // TODO: handle explicit cases
         if (key == null) {
             res.status(400).send({
                 message: "Invalid request."

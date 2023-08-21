@@ -62,9 +62,13 @@ module.exports = app => {
     router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
 
     // category api for testing
-    router.get("/categories", categories.getAllCategories);
     router.post("/categories", categories.createCategory);
-    console.log(categories.getAllCategories);
+    router.get("/categories", categories.getAllCategories);
+    // router.get("/categories", categories.getCategoryId); // test get one category
+    router.get("/categories/:id", categories.getOne);
+    router.get("/categories/:id/subcategories", categories.getSubCategories); // get all subcategories
+    // router.delete("categories/:id", categories.delete);
+    router.put("/categories/:id/update", categories.update);
 
     app.use('/api', router);
 }
