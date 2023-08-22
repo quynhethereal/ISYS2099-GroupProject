@@ -10,7 +10,7 @@ const WarehouseItem = ({ data, token }) => {
   const [page, setPage] = useState(1);
 
   const handleNextPage = () => {
-    if (page < inventory.totalPages) {
+    if (page < inventory?.totalPages) {
       setPage((prev) => prev + 1);
     }
   };
@@ -57,6 +57,7 @@ const WarehouseItem = ({ data, token }) => {
   }
 
   useEffect(() => {
+    console.log("This will call inventory");
     async function getData() {
       await getInventoryByWarehouseId(token(), data.id, 5, page).then((res) => {
         setInventory(res);
@@ -64,15 +65,15 @@ const WarehouseItem = ({ data, token }) => {
     }
     getData();
     // eslint-disable-next-line
-  }, [page]);
+  }, [page, data]);
 
   return (
     <div className="col-12 col-md-5 my-3 my-md-0 d-flex flex-column justify-content-center align-items-center">
       <div className="card w-100">
         <div className="card-body">
           <div className="card-title d-flex flex-row">
-            <div className="fs-4 fw-bolder">#{data.id}</div>
-            <div className="fs-4 fw-bolder">{data.name}</div>
+            <div className="fs-4 fw-bolder">#{data?.id}</div>
+            <div className="mx-auto fs-4 fw-bolder">{data?.name}</div>
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
@@ -85,7 +86,7 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{data.city}</p>
+                <p className="bold px-2 py-1 ">{data?.city}</p>
               </div>
             </div>
             <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-center">
@@ -99,7 +100,7 @@ const WarehouseItem = ({ data, token }) => {
                   style={{ background: "#f0f0f0" }}
                 >
                   <p className="bold px-2 py-1 ">
-                    {data.province}, {data.district}, {data.street}
+                    {data.province}, {data.district}, {data?.street}
                   </p>
                 </div>
               </div>
@@ -112,7 +113,7 @@ const WarehouseItem = ({ data, token }) => {
                   className="mt-2 rounded"
                   style={{ background: "#f0f0f0" }}
                 >
-                  <p className="bold px-2 py-1 ">{data.number}</p>
+                  <p className="bold px-2 py-1 ">{data?.number}</p>
                 </div>
               </div>
             </div>
@@ -125,7 +126,9 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{formatDate(data.created_at)}</p>
+                <p className="bold px-2 py-1 ">
+                  {formatDate(data?.created_at)}
+                </p>
               </div>
             </div>
             <div className="col-12">
@@ -137,7 +140,9 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{formatDate(data.updated_at)}</p>
+                <p className="bold px-2 py-1 ">
+                  {formatDate(data?.updated_at)}
+                </p>
               </div>
             </div>
             <div className="col-12 d-flex justify-content-center">

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -9,6 +10,7 @@ import CartItem from "./CartItem";
 
 const CartDetail = () => {
   const [isOrdering, setIsOrdering] = useState(false);
+  const navigate = useNavigate();
   const { token } = useAuth();
   const { cart, resetItem } = useCart();
 
@@ -24,22 +26,24 @@ const CartDetail = () => {
       return;
     }
     const payload = {
-      cart: cart.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
+      cart: cart?.map((item) => ({
+        productId: item?.id,
+        quantity: item?.quantity,
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      if (result && result.status === 200) {
+      if (result && result?.status === 200) {
         resetItem();
         Swal.fire({
           position: "top-end",
           icon: "success",
           title: "Order sucess",
-          text: "Your order now in pending state for delivery",
+          text: "Your order now in pending state for delivery. Reloading in 3 secs...",
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
         });
       } else {
         Swal.fire({
@@ -62,14 +66,20 @@ const CartDetail = () => {
               Total amount:{" "}
               <span>
                 $
-                {cart && cart
-                  .reduce((acc, o) => acc + o.quantity * parseFloat(o.price), 0)
-                  .toFixed(2)}
+                {cart &&
+                  cart
+                    ?.reduce(
+                      (acc, o) => acc + o.quantity * parseFloat(o.price),
+                      0
+                    )
+                    .toFixed(2)}
               </span>
             </p>
             <p>
               Total quantity:{" "}
-              <span>{cart && cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
+              <span>
+                {cart && cart?.reduce((acc, o) => acc + o.quantity, 0)}
+              </span>
             </p>
             <div>
               <button
@@ -88,7 +98,7 @@ const CartDetail = () => {
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-9 p-3">
+        <div className="col-12 col-md-10 p-3">
           <table className="table text-start">
             <thead>
               <tr>

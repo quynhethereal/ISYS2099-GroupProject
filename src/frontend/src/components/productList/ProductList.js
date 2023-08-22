@@ -7,25 +7,41 @@ const ProductList = () => {
   const [product, setProduct] = useState();
   const [isloading, setIsLoading] = useState(false);
   const [isFechtedEverything, setIsFechtedEverything] = useState(false);
+  const [nextRequest, setNextRequest] = useState({
+    nextId: 0,
+    limit: 10,
+  });
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
-    await getAllProduct(product.length, 10).then((data) => {
-      if (data.totalProductCount === product.length) {
-        setIsFechtedEverything(true);
+    await getAllProduct(nextRequest?.nextId, nextRequest?.limit).then(
+      (data) => {
+        setProduct([...product, ...data?.products]);
+        setNextRequest({
+          nextId: data?.nextId,
+          limit: data?.limit,
+        });
+        setIsLoading(false);
+        if (data?.totalProductCount === data?.nextId) {
+          setIsFechtedEverything(true);
+        }
       }
-      setProduct([...product, ...data?.products]);
-      setIsLoading(false);
-    });
+    );
   };
-
   useEffect(() => {
     async function getInitialData() {
-      await getAllProduct(0, 10).then((data) => {
-        setProduct(data?.products);
-      });
+      await getAllProduct(nextRequest?.nextId, nextRequest?.limit).then(
+        (data) => {
+          setProduct(data?.products);
+          setNextRequest({
+            nextId: data?.nextId,
+            limit: data?.limit,
+          });
+        }
+      );
     }
     getInitialData();
+    // eslint-disable-next-line
   }, []);
 
   return (

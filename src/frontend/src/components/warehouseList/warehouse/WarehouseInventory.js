@@ -27,14 +27,14 @@ const WarehouseInventory = ({ data }) => {
               <li className="list-group-item d-flex justify-content-between align-items-start">
                 <div className="col-10 ms-2 me-auto">
                   <div className="col-12 d-inline-block text-truncate fw-bold">
-                    {product.title}
+                    {product?.title}
                   </div>
                   <span className="col-12 d-inline-block text-truncate text-muted">
-                    {product.description}
+                    {product?.description}
                   </span>
                 </div>
                 <span className="badge bg-primary rounded-pill">
-                  {product.quantity}
+                  {product?.quantity}
                 </span>
               </li>
             </button>

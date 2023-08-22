@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 import { useCart } from "../../../hook/CartHook.js";
 
 import unknownProduct from "../../../assets/image/unknownProduct.png";
+import deleteProduct from "../../../assets/image/deleteProduct.png";
 
 const CartItem = ({ data, index }) => {
-  const { addItem } = useCart();
+  const { addItem, removeItem } = useCart();
   const [amount, setAmount] = useState(data?.quantity ? data.quantity : 1);
 
   const handleRemoveItem = (info) => {
@@ -19,6 +21,19 @@ const CartItem = ({ data, index }) => {
       setAmount((prev) => prev + 1);
       addItem(info, amount + 1);
     }
+  };
+
+  const handleRemoveProductFromCart = (info) => {
+    removeItem(info);
+    Swal.fire({
+      position: "top-end",
+      icon: "success",
+      title: "Removed product from cart",
+      text: "Your cart has changed",
+      showConfirmButton: false,
+      timer: 1000,
+      timerProgressBar: true,
+    });
   };
 
   return (
@@ -52,7 +67,17 @@ const CartItem = ({ data, index }) => {
           </button>
         </div>
       </td>
-      <td>$ {(amount * data?.price).toFixed(2)}</td>
+      <td>
+        <div className="d-flex flex-row justify-content-between align-items-center">
+          <div>$ {(amount * data?.price).toFixed(2)}</div>
+          <button
+            className="btn btn-primary"
+            onClick={() => handleRemoveProductFromCart(data)}
+          >
+            <img src={deleteProduct} alt="" style={{ width: 24, height: 24 }} />
+          </button>
+        </div>
+      </td>
     </>
   );
 };
