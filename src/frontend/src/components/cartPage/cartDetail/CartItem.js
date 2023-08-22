@@ -26,7 +26,6 @@ const CartItem = ({ data, index }) => {
   const handleRemoveProductFromCart = (info) => {
     removeItem(info);
     Swal.fire({
-      position: "top-end",
       icon: "success",
       title: "Removed product from cart",
       text: "Your cart has changed",

@@ -35,7 +35,6 @@ const CartDetail = () => {
       if (result && result?.status === 200) {
         resetItem();
         Swal.fire({
-          position: "top-end",
           icon: "success",
           title: "Order sucess",
           text: "Your order now in pending state for delivery. Reloading in 3 secs...",
