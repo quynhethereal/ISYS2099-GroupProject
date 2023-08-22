@@ -15,7 +15,7 @@ const ProductDetail = () => {
   const productId = useParams().id;
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addItem } = useCart();
+  const { addItem, cart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [amount, setAmount] = useState(1);
@@ -46,6 +46,14 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (cart?.length > 30) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Your cart is maximum 30 type of products. Remove some products and try again",
+      });
+      return;
+    }
     addItem(product, amount);
     Swal.fire({
       position: "top-end",
@@ -53,7 +61,7 @@ const ProductDetail = () => {
       title: "Added product to cart",
       text: "You can see the details in cart",
       showConfirmButton: false,
-      timer: 2000,
+      timer: 1000,
       timerProgressBar: true,
     });
   };
