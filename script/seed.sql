@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `products` (
     `title` VARCHAR(255) NOT NULL CHECK (TRIM(title) <> ''),
     `description` VARCHAR(255) NOT NULL CHECK (TRIM(description) <> ''),
     `price` DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-    `image` LONGTEXT NOT NULL CHECK (TRIM(image) <> ''),
+    `image` VARCHAR(255) NOT NULL CHECK (TRIM(image) <> ''),
     `image_name` VARCHAR(255) NOT NULL CHECK (TRIM(image_name) <> ''),
     `length` DECIMAL(10, 2) NOT NULL CHECK (length >= 0),
     `width` DECIMAL(10, 2) NOT NULL CHECK (width >= 0),
