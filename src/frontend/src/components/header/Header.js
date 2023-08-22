@@ -10,12 +10,12 @@ const Header = ({ user }) => {
   const navigate = useNavigate();
 
   const handleToCartPage = () => {
-    navigate("/customer/cart", { replace: true });
+    navigate("/customer/cart");
   };
 
   //just customer
   const handleToHomePage = () => {
-    navigate("/customer", { replace: true });
+    navigate("/customer");
   };
   return (
     <>

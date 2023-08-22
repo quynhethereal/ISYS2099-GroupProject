@@ -6,9 +6,7 @@ import { useNavigate } from "react-router-dom";
 const Product = ({ info }) => {
   const navigate = useNavigate();
   const hanleViewProduct = (item) => {
-    navigate(`/customer/product/details/${item.id}`, {
-      replace: true,
-    });
+    navigate(`/customer/product/details/${item.id}`);
   };
 
   return (

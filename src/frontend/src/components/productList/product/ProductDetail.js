@@ -46,7 +46,7 @@ const ProductDetail = () => {
   };
   const handleBuyNow = () => {
     addItem(product, amount);
-    navigate("/customer/cart", { replace: true });
+    navigate("/customer/cart");
   };
   return (
     <>

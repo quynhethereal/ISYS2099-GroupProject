@@ -94,7 +94,7 @@ const CartDetail = () => {
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-9 p-3">
+        <div className="col-12 col-md-10 p-3">
           <table className="table text-start">
             <thead>
               <tr>
