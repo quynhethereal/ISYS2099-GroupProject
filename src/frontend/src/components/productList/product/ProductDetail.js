@@ -19,6 +19,7 @@ const ProductDetail = () => {
 
   const [product, setProduct] = useState(null);
   const [amount, setAmount] = useState(1);
+  const [randomComments, setRandomCommemts] = useState();
 
   useEffect(() => {
     async function findProduct() {
@@ -29,6 +30,7 @@ const ProductDetail = () => {
       });
     }
     findProduct();
+    setRandomCommemts(Math.ceil(500 + Math.random() * (10000 - 500)));
     // eslint-disable-next-line
   }, []);
 
@@ -92,9 +94,7 @@ const ProductDetail = () => {
                   />
                 );
               })}
-              <span className="ms-4 fs-5">
-                {Math.ceil(500 + Math.random() * (10000 - 500))}
-              </span>
+              <span className="ms-4 fs-5">{randomComments}</span>
               <span className="ms-2 text-muteed text-decoration-underline">
                 Ratings
               </span>
