@@ -4,7 +4,7 @@ import Product from "./product/Product.js";
 import { getAllProduct } from "../../action/product/product.js";
 
 const ProductList = () => {
-  const [product, setProduct] = useState();
+  const [product, setProduct] = useState([]);
   const [isloading, setIsLoading] = useState(false);
   const [isFechtedEverything, setIsFechtedEverything] = useState(false);
   const [nextRequest, setNextRequest] = useState({
