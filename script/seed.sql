@@ -127,20 +127,18 @@ CREATE TABLE IF NOT EXISTS `order_items` (
 ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
 
+-- Drop all roles and users if exists
+drop role if exists 'admin', 'customer', 'seller', 'wh_admin';
+drop user if exists 'admin'@'localhost', 'customer'@'localhost', 'seller'@'localhost', 'wh_admin'@'localhost';
+
 -- Create role
-create role if not exists 'admin', 'customer', 'seller', 'wh_admin';
+create role 'admin', 'customer', 'seller', 'wh_admin';
 
 -- Create user
-create user if not exists 'admin'@'localhost' identified by 'Ladmin';
-create user if not exists 'customer'@'localhost' identified by 'Lcustomer';
-create user if not exists 'seller'@'localhost' identified by 'Lseller';
-create user if not exists 'wh_admin'@'localhost' identified by 'Lwhadmin';
-
--- Revoke all the privileges from all roles
-revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
-revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
-revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
-revoke if exists ALL PRIVILEGES ON lazada_ecommerce.* FROM 'wh_admin'@'localhost';
+create user 'admin'@'localhost' identified by 'Ladmin';
+create user 'customer'@'localhost' identified by 'Lcustomer';
+create user 'seller'@'localhost' identified by 'Lseller';
+create user 'wh_admin'@'localhost' identified by 'Lwhadmin';
 
 -- Grant permissions for each user role
 -- Admin: All rights

@@ -1,40 +1,6 @@
 const Category = require('../models/category.model');
 const Product = require('../models/product.model');
 
-// Category.collection.drop();
-
-// Add dummy data
-Category.find({})
-.then((documents) => {
-    if (documents.length == 0) {
-        Category.insertMany([
-            {id: 1, name: 'Clothing and Accessories'},
-            {id: 2, name: 'Electronics and Gadgets'},
-            {id: 3, name: 'Home and Kitchen Appliances'},
-            {id: 4, name: 'Beauty and Personal Care'},
-            {id: 5, name: 'Books, Music, and Movies'},
-            {id: 6, name: 'Sports and Fitness Equipment'},
-            {id: 7, name: 'Toys and Games'},
-            {id: 8, name: 'Furniture and Home Decor'},
-            {id: 9, name: 'Groceries and Food Items'},
-            {id: 10, name: 'Health and Wellness Products'},
-            {id: 11, name: 'Automotive and Car Accessories'},
-            {id: 12, name: 'Office Supplies and Stationery'},
-            {id: 13, name: 'Pet Supplies'},
-            {id: 14, name: 'Outdoor and Camping Gear'},
-            {id: 15, name: 'Jewelry and Watches'},
-            {id: 16, name: 'Baby and Kids Products'},
-            {id: 17, name: 'Crafts and DIY Supplies'},
-            {id: 18, name: 'Party and Event Supplies'},
-            {id: 19, name: 'Travel and Luggage'},
-            {id: 20, name: 'Gifts and Novelty Items'}
-        ]);
-    }
-})
-.catch((error) => {
-    console.error('Error fetching documents:', error);
-});
-
 // NOTE: Not create auto increment ID yet, update feature later
 exports.createCategory = async (req, res) => {
     try {
@@ -47,10 +13,7 @@ exports.createCategory = async (req, res) => {
             });
             return;
         } 
-
-        if(sameIdCategory) {
-
-        }
+        
         const category = Category.create(req.body);
         res.status(200).json(category);
     } catch (err) {
@@ -132,7 +95,7 @@ exports.getSubCategories = async (req, res) => {
 
     } catch (err) {
         res.status(500).send({
-            message: err.message || "Error get subcategories of ..."
+            message: err.message || "Error get subcategories."
         });
     }
 }

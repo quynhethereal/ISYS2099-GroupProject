@@ -23,7 +23,8 @@ CREATE DATABASE IF NOT EXISTS lazada_ecommerce;
 ```
 
 - Setup MongoDB database:
-  - Create a database called `lazada_ecommerce`
+  - Ensure that packages of MongoDB and Mongoose are installed
+  - Start the MongoDB services on your device
 - Populate the database with sample data:
 
 ```bash
