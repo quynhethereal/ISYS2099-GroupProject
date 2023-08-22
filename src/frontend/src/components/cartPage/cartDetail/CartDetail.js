@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 import { useCart } from "../../../hook/CartHook.js";
 import { useAuth } from "../../../hook/AuthHook.js";
@@ -9,6 +10,7 @@ import CartItem from "./CartItem";
 
 const CartDetail = () => {
   const [isOrdering, setIsOrdering] = useState(false);
+  const navigate = useNavigate();
   const { token } = useAuth();
   const { cart, resetItem } = useCart();
 
@@ -30,16 +32,18 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      if (result && result.status === 200) {
+      if (result && result?.status === 200) {
         resetItem();
         Swal.fire({
           position: "top-end",
           icon: "success",
           title: "Order sucess",
-          text: "Your order now in pending state for delivery",
+          text: "Your order now in pending state for delivery. Reloading in 3 secs...",
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
         });
       } else {
         Swal.fire({
