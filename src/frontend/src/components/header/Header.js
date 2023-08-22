@@ -16,7 +16,10 @@ const Header = ({ user }) => {
     navigate("/customer/cart");
   };
 
-  //just customer
+  const handleToOrderPage = () => {
+    navigate("/customer/order/delivery");
+  };
+
   const handleToHomePage = () => {
     navigate("/customer");
   };
@@ -64,10 +67,13 @@ const Header = ({ user }) => {
             </button>
           </div>
           <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
-            <p>
+            <button
+              className="btn btn-outline-warning text-black my-2"
+              onClick={() => handleToOrderPage()}
+            >
               {user?.firstName}
               {user?.lastName}
-            </p>
+            </button>
             <button
               type="button"
               className="d-flex flex-row justtify-content-center align-items-center btn btn-outline-warning"

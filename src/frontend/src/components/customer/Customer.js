@@ -5,7 +5,6 @@ import ProductList from "../productList/ProductList.js";
 
 const Customer = () => {
   const { user } = useAuth();
-  // console.log(user);
   return (
     <>
       <Header user={user}></Header>

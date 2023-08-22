@@ -4,6 +4,7 @@ import Login from "./components/login/Login";
 import Customer from "./components/customer/Customer";
 import CartPage from "./components/cartPage/CartPage";
 import ProductDetail from "./components/productList/product/ProductDetail";
+import CustomerOrderPage from "./components/orderPage/CustomerOrderPage";
 
 import Admin from "./components/admin/Admin";
 // import WarehouseList from "./components/warehouseList/WarehouseList";
@@ -34,6 +35,15 @@ function App() {
               ></Route>
               <Route
                 exact
+                path="/customer/order/delivery"
+                element={
+                  <ProtectedRoute role={"customer"}>
+                    <CustomerOrderPage />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                exact
                 path="/customer/cart"
                 element={
                   <ProtectedRoute role={"customer"}>
@@ -58,15 +68,6 @@ function App() {
                   </ProtectedRoute>
                 }
               ></Route>
-              {/* <Route
-                exact
-                path="/admin/warehouse"
-                element={
-                  <ProtectedRoute>
-                    <WarehouseList />
-                  </ProtectedRoute>
-                }
-              ></Route> */}
               <Route exact path="/blocked" element={<BlockPage />}></Route>
               <Route path="*" element={<NotFoundPage />}></Route>
             </Routes>
