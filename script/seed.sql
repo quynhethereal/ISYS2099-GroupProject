@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `products` (
     `title` VARCHAR(255) NOT NULL CHECK (TRIM(title) <> ''),
     `description` VARCHAR(255) NOT NULL CHECK (TRIM(description) <> ''),
     `price` DECIMAL(10, 2) NOT NULL CHECK (price >= 0),
-    `image` LONGTEXT NOT NULL CHECK (TRIM(image) <> ''),
+    `image` VARCHAR(255) NOT NULL CHECK (TRIM(image) <> ''),
     `image_name` VARCHAR(255) NOT NULL CHECK (TRIM(image_name) <> ''),
     `length` DECIMAL(10, 2) NOT NULL CHECK (length >= 0),
     `width` DECIMAL(10, 2) NOT NULL CHECK (width >= 0),
@@ -170,11 +170,28 @@ INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
 VALUES 
 	('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
 
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
+VALUES 
+	('seller', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
+VALUES 
+	('customer', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+
+
 INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
 VALUES 
 	(1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
 
--- Insert 20 dummy data for products
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES 
+	(2, 'Seller', 'User', 'seller', 'seller@gmail.com', '0123452328');
+
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES 
+	(3, 'Customer', 'User', 'customer', 'customer@gmail.com', '0123456711');
+
+-- Insert 30 dummy data for products
 -- Insert dummy data for products with image names
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
 VALUES
@@ -197,7 +214,17 @@ VALUES
     ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, 'vacuum_image_data', 'vacuum.jpg', 12.0, 9.0, 3.0, 2, NOW(), NOW()),
     ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, 'tablet_image_data', 'tablet.jpg', 9.5, 7.0, 0.4, 1, NOW(), NOW()),
     ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, 'plants_image_data', 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
-    ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW());
+    ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW()),
+      ('Modern Dining Table', 'Gather around this elegant dining table for family meals and gatherings.', 699.00, 'dining_table_image_data', 'dining_table.jpg', 72.0, 36.0, 30.0, 5, NOW(), NOW()),
+    ('Comfortable Recliner', 'Relax in style with this plush and comfortable recliner chair.', 349.99, 'recliner_image_data', 'recliner.jpg', 36.0, 32.0, 40.0, 5, NOW(), NOW()),
+    ('Classic Wooden Bookshelf', 'Display your book collection with this timeless wooden bookshelf.', 249.95, 'bookshelf_image_data', 'bookshelf.jpg', 48.0, 12.0, 72.0, 5, NOW(), NOW()),
+    ('Sleek TV Stand', 'Elevate your entertainment setup with this modern TV stand.', 199.50, 'tv_stand_image_data', 'tv_stand.jpg', 60.0, 18.0, 20.0, 5, NOW(), NOW()),
+    ('Cozy Sectional Sofa', 'Create a cozy seating area with this spacious sectional sofa.', 899.00, 'sectional_sofa_image_data', 'sectional_sofa.jpg', 108.0, 84.0, 36.0, 5, NOW(), NOW()),
+    ('Stylish Coffee Table', 'Complete your living room with this stylish and functional coffee table.', 149.99, 'coffee_table_image_data', 'coffee_table.jpg', 48.0, 24.0, 18.0, 5, NOW(), NOW()),
+    ('King Size Bed Frame', 'Sleep in luxury with this elegant king size bed frame.', 799.99, 'bed_frame_image_data', 'bed_frame.jpg', 80.0, 76.0, 12.0, 5, NOW(), NOW()),
+    ('Vintage Armchair', 'Add a touch of vintage charm to your space with this classic armchair.', 199.00, 'armchair_image_data', 'armchair.jpg', 30.0, 30.0, 40.0, 5, NOW(), NOW()),
+    ('Study Desk', 'Create an inspiring workspace with this functional study desk.', 129.95, 'study_desk_image_data', 'study_desk.jpg', 48.0, 24.0, 30.0, 5, NOW(), NOW()),
+    ('Outdoor Patio Set', 'Enjoy outdoor relaxation with this stylish patio furniture set.', 599.00, 'patio_set_image_data', 'patio_set.jpg', 72.0, 36.0, 30.0, 5, NOW(), NOW());
 
 -- Insert 5 dummy records into the warehouses table
 INSERT INTO `warehouses` (`name`, `province`, `city`, `district`, `street`, `number`, `total_volume`, `available_volume`)
@@ -221,4 +248,14 @@ VALUES
 	(7, 2, 80, 0, NOW() - INTERVAL 6 HOUR, NOW() - INTERVAL 6 HOUR),
 	(8, 3, 150, 0, NOW() - INTERVAL 7 HOUR, NOW() - INTERVAL 7 HOUR),
 	(9, 4, 90, 0, NOW() - INTERVAL 8 HOUR, NOW() - INTERVAL 8 HOUR),
-	(10, 5, 110, 0, NOW() - INTERVAL 9 HOUR, NOW() - INTERVAL 9 HOUR);
+	(10, 5, 110, 0, NOW() - INTERVAL 9 HOUR, NOW() - INTERVAL 9 HOUR),
+    (11, 1, 60, 0, NOW() - INTERVAL 10 HOUR, NOW() - INTERVAL 10 HOUR),
+    (12, 2, 25, 0, NOW() - INTERVAL 11 HOUR, NOW() - INTERVAL 11 HOUR),
+    (13, 3, 180, 0, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR),
+    (14, 4, 50, 0, NOW() - INTERVAL 13 HOUR, NOW() - INTERVAL 13 HOUR),
+    (15, 5, 85, 0, NOW() - INTERVAL 14 HOUR, NOW() - INTERVAL 14 HOUR),
+    (16, 1, 40, 0, NOW() - INTERVAL 15 HOUR, NOW() - INTERVAL 15 HOUR),
+    (17, 2, 95, 0, NOW() - INTERVAL 16 HOUR, NOW() - INTERVAL 16 HOUR),
+    (18, 3, 120, 0, NOW() - INTERVAL 17 HOUR, NOW() - INTERVAL 17 HOUR),
+    (19, 4, 70, 0, NOW() - INTERVAL 18 HOUR, NOW() - INTERVAL 18 HOUR),
+    (20, 5, 105, 0, NOW() - INTERVAL 19 HOUR, NOW() - INTERVAL 19 HOUR);

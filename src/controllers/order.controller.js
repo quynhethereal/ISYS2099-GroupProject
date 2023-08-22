@@ -21,7 +21,7 @@ exports.createOrder = async (req, res) => {
         const isValid = validateCart(cart);
 
         if (!isValid) {
-            return res.status(400).json({ message: "Cart's payload is invalid. Maximum 30 items are allowed per order and cart shouldn't contain duplicate product IDs" });
+            return res.status(400).json({message: "Cart's payload is invalid. Maximum 30 items are allowed per order and cart shouldn't contain duplicate product IDs"});
         }
 
         const params = {
@@ -41,10 +41,16 @@ exports.getAllOrders = async (req, res) => {
     try {
         // validate status
         if (req.query.status && !Order.isValidStatus(req.query.status)) {
-            return res.status(400).json({ message: "Invalid status." });
+            return res.status(400).json({message: "Invalid status."});
         }
 
-        const orders = await Order.getAll(req.currentUser.id, req.query.status);
+        let status = req.query.status;
+
+        if (req.query.status === undefined) {
+            status = 'pending';
+        }
+
+        const orders = await Order.getAll(req.currentUser.id, status);
         res.status(200).json(orders);
     } catch (err) {
         res.status(500).send({
