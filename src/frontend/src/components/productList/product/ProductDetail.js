@@ -56,7 +56,6 @@ const ProductDetail = () => {
     }
     addItem(product, amount);
     Swal.fire({
-      position: "top-end",
       icon: "success",
       title: "Added product to cart",
       text: "You can see the details in cart",

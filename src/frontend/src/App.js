@@ -4,6 +4,7 @@ import Login from "./components/login/Login";
 import Customer from "./components/customer/Customer";
 import CartPage from "./components/cartPage/CartPage";
 import ProductDetail from "./components/productList/product/ProductDetail";
+import CustomerOrderPage from "./components/orderPage/CustomerOrderPage";
 
 import Admin from "./components/admin/Admin";
 // import WarehouseList from "./components/warehouseList/WarehouseList";
@@ -27,8 +28,17 @@ function App() {
                 exact
                 path="/customer"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <Customer />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                exact
+                path="/customer/order/delivery"
+                element={
+                  <ProtectedRoute role={"customer"}>
+                    <CustomerOrderPage />
                   </ProtectedRoute>
                 }
               ></Route>
@@ -36,7 +46,7 @@ function App() {
                 exact
                 path="/customer/cart"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <CartPage />
                   </ProtectedRoute>
                 }
@@ -45,7 +55,7 @@ function App() {
                 exact
                 path="/customer/product/details/:id"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <ProductDetail />
                   </ProtectedRoute>
                 }
@@ -53,20 +63,11 @@ function App() {
               <Route
                 path="/admin/*"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"admin"}>
                     <Admin />
                   </ProtectedRoute>
                 }
               ></Route>
-              {/* <Route
-                exact
-                path="/admin/warehouse"
-                element={
-                  <ProtectedRoute>
-                    <WarehouseList />
-                  </ProtectedRoute>
-                }
-              ></Route> */}
               <Route exact path="/blocked" element={<BlockPage />}></Route>
               <Route path="*" element={<NotFoundPage />}></Route>
             </Routes>

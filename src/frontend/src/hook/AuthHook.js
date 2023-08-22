@@ -30,14 +30,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (user && location.pathname === "/" && user.role === "admin") {
       navigate("/admin");
-    }
-    if (user && location.pathname === "/") {
+    } else if (user && location.pathname === "/" && user.role === "sellers") {
+      navigate("seller");
+    } else if (user && location.pathname === "/" && user.role === "customer") {
       navigate("/customer");
     }
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, location.pathname]);
 
-  const logout = () => {};
+  const logout = () => {
+    setUser(null);
+    navigate(0);
+  };
 
   const value = useMemo(
     () => ({

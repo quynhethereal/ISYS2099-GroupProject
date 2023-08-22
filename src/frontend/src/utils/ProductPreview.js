@@ -35,7 +35,7 @@ const ProductPreview = ({ data, show, handleClose }) => {
           </p>
           <p className="w-100 text-center text-muted">$ {data?.price}</p>
           <p className="w-100 text-center text-muted ">
-            {data?.width} x {data?.height} x {data?.length} (x,y,z)
+            {data?.width} x {data?.height} x {data?.length} (x,y,z in meter)
           </p>
           <div className="w-100 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
             <p className="text-secondary">Quantity: {data?.quantity}</p>

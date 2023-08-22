@@ -1,19 +1,25 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useAuth } from "../../hook/AuthHook.js";
+
 import logo from "../../assets/image/icon.png";
 import searchIcon from "../../assets/image/searchIcon.png";
 import cart from "../../assets/image/cart.png";
-import logout from "../../assets/image/logout.png";
+import logoutImage from "../../assets/image/logout.png";
 
 const Header = ({ user }) => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleToCartPage = () => {
     navigate("/customer/cart");
   };
 
-  //just customer
+  const handleToOrderPage = () => {
+    navigate("/customer/order/delivery");
+  };
+
   const handleToHomePage = () => {
     navigate("/customer");
   };
@@ -61,16 +67,20 @@ const Header = ({ user }) => {
             </button>
           </div>
           <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
-            <p>
+            <button
+              className="btn btn-outline-warning text-black my-2"
+              onClick={() => handleToOrderPage()}
+            >
               {user?.firstName}
               {user?.lastName}
-            </p>
+            </button>
             <button
               type="button"
               className="d-flex flex-row justtify-content-center align-items-center btn btn-outline-warning"
+              onClick={() => logout()}
             >
               <img
-                src={logout}
+                src={logoutImage}
                 alt="logout icon"
                 style={{ width: "16px", height: "16px" }}
               />
