@@ -57,7 +57,6 @@ const WarehouseItem = ({ data, token }) => {
   }
 
   useEffect(() => {
-    console.log("This will call inventory");
     async function getData() {
       await getInventoryByWarehouseId(token(), data.id, 5, page).then((res) => {
         setInventory(res);

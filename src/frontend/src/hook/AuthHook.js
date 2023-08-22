@@ -38,7 +38,10 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line
   }, [user, location.pathname]);
 
-  const logout = () => {};
+  const logout = () => {
+    setUser(null);
+    navigate(0);
+  };
 
   const value = useMemo(
     () => ({

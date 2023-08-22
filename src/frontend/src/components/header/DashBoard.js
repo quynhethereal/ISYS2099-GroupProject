@@ -1,13 +1,16 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
+import { useAuth } from "../../hook/AuthHook.js";
+
 import logo from "../../assets/image/icon.png";
 import home from "../../assets/image/home.png";
-import logout from "../../assets/image/logout.png";
+import logoutImage from "../../assets/image/logout.png";
 import warehouse from "../../assets/image/warehouse.png";
 import product from "../../assets/image/product.png";
 
 const DashBoard = () => {
+  const { logout } = useAuth();
   const location = useLocation().pathname;
   return (
     <div
@@ -85,9 +88,10 @@ const DashBoard = () => {
         <button
           type="button"
           className="col-12 d-flex flex-row justtify-content-center align-items-center btn btn-outline-warning"
+          onClick={() => logout()}
         >
           <img
-            src={logout}
+            src={logoutImage}
             alt="logout icon"
             className="img-fluid me-3"
             style={{ width: "28px" }}
