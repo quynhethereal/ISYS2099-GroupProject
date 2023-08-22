@@ -170,9 +170,26 @@ INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
 VALUES 
 	('admin', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
 
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
+VALUES 
+	('seller', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+
+INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)
+VALUES 
+	('customer', '41daf57a257f11d162b77bdf358a354325271bc44c7890ac324909a6e0c4125480339717f25dbf6d57dfaf94a1bfbdf9361bf46a13813bb07759b83e9dcee36e', '123456');
+
+
 INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
 VALUES 
 	(1, 'Admin', 'User', 'admin', 'admin@gmail.com', '0123456789');
+
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES 
+	(2, 'Seller', 'User', 'seller', 'seller@gmail.com', '0123452328');
+
+INSERT INTO `users_info` (`user_id`, `first_name`, `last_name`, `role`, `email`, `phone`)
+VALUES 
+	(3, 'Customer', 'User', 'customer', 'customer@gmail.com', '0123456711');
 
 -- Insert 20 dummy data for products
 -- Insert dummy data for products with image names
