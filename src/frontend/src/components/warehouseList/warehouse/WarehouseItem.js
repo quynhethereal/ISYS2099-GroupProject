@@ -73,7 +73,7 @@ const WarehouseItem = ({ data, token }) => {
         <div className="card-body">
           <div className="card-title d-flex flex-row">
             <div className="fs-4 fw-bolder">#{data?.id}</div>
-            <div className="fs-4 fw-bolder">{data?.name}</div>
+            <div className="mx-auto fs-4 fw-bolder">{data?.name}</div>
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
