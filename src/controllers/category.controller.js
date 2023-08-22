@@ -109,44 +109,6 @@ exports.getOne = async (req, res) => {
     }
 }
 
-exports.getCategoryId = async (req, res) => {
-    try {
-        const categoryName = req.body.name;
-
-        if (categoryName == null) {
-            res.status(400).send({
-                message: "Invalid request."
-            });
-            return;
-        }
-
-        const category  = await Category.find({name: categoryName});
-
-        if (!category) {
-            res.status(404).send({
-                message: `Category with id ${req.body.name} not found.`
-            });
-            return;
-        }
-        res.status(200).json(category);
-
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error get category ID."
-        })
-    }
-}
-
-exports.addSubCategory = async (req, res) => {
-    try {
-        // TODO: Add subcategory to parent
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error adding subcategory."
-        });
-    }
-}
-
 exports.getSubCategories = async (req, res) => {
     try {
         const category = parseInt(req.params.id);
@@ -177,7 +139,54 @@ exports.getSubCategories = async (req, res) => {
 
 exports.getAttributes = async (req, res) => {
     try {
-        // TODO: Add attributes to categories
+        // TODO: Get attributes of a category
+        const id = parseInt(req.params.id);
+
+        if (id == null) {
+            res.status(400).send({
+                message: "Invalid request."
+            })
+        }
+
+        // Get the category
+        const category = await Category.findOne({id: id});
+
+        if (!category) {
+            res.status(404).send ({
+                message: `Category with id ${req.params.id} not found.`
+            })
+        }
+
+        // Check if the category is a subcategory or main one
+        if (category.parent == null) {
+            res.status(200).json(category.attributes);
+            return;
+        }
+
+        const parentId = parseInt(category.parent);
+        const parentCategory = await Category.findOne({id: parentId});
+
+        if (!parentCategory) {
+            res.status(404).send({
+                message: `Parent category with id ${parentId} not found.`
+            })
+        }
+
+        const parentAttributes = await parentCategory.attributes;
+
+        if (parentAttributes == null) {
+            // This could responds empty
+            res.status(200).json(category.attributes);
+            return;
+        }
+
+        // Concat attributes of category and subcategory
+        const allAttributes = category.attributes.concat(parentAttributes);
+        const params = {
+            attributes: allAttributes
+        }
+
+        res.status(200).json(params);
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."
@@ -187,11 +196,10 @@ exports.getAttributes = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        //TODO: Update features of categories
         const id = parseInt(req.params.id);
         const name = req.body.name;
         const attributes = req.body.attributes;
-        var parent = req.body.parent;
+        var parent = req.body.parent; // optional attribute
 
         if (name == null || attributes == null) {
             res.status(400).send({

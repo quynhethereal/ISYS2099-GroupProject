@@ -66,9 +66,9 @@ module.exports = app => {
     router.get("/categories", categories.getAllCategories);
     // router.get("/categories", categories.getCategoryId); // test get one category
     router.get("/categories/:id", categories.getOne);
+    router.get("/categories/:id/attributes", categories.getAttributes);
     router.get("/categories/:id/subcategories", categories.getSubCategories); // get all subcategories
-    // router.delete("categories/:id", categories.delete);
-    router.put("/categories/:id/update", categories.update);
+    router.put("/categories/:id", categories.update);
 
     app.use('/api', router);
 }
