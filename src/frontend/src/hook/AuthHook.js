@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
       navigate("/customer");
     }
     // eslint-disable-next-line
-  }, [user]);
+  }, [user, location.pathname]);
 
   const logout = () => {};
 

@@ -27,7 +27,7 @@ function App() {
                 exact
                 path="/customer"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <Customer />
                   </ProtectedRoute>
                 }
@@ -36,7 +36,7 @@ function App() {
                 exact
                 path="/customer/cart"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <CartPage />
                   </ProtectedRoute>
                 }
@@ -45,7 +45,7 @@ function App() {
                 exact
                 path="/customer/product/details/:id"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"customer"}>
                     <ProductDetail />
                   </ProtectedRoute>
                 }
@@ -53,7 +53,7 @@ function App() {
               <Route
                 path="/admin/*"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute role={"admin"}>
                     <Admin />
                   </ProtectedRoute>
                 }

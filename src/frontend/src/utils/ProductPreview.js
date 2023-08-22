@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button";
 import unknownProduct from "../assets/image/unknownProduct.png";
 
 const ProductPreview = ({ data, show, handleClose }) => {
+  console.log(data);
   function formatDate(dateString) {
     const options = {
       year: "numeric",
