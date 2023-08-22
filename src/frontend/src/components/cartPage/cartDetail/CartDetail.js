@@ -24,9 +24,9 @@ const CartDetail = () => {
       return;
     }
     const payload = {
-      cart: cart.map((item) => ({
-        productId: item.id,
-        quantity: item.quantity,
+      cart: cart?.map((item) => ({
+        productId: item?.id,
+        quantity: item?.quantity,
       })),
     };
     await createOrder(token(), payload).then((result) => {
@@ -62,14 +62,20 @@ const CartDetail = () => {
               Total amount:{" "}
               <span>
                 $
-                {cart && cart
-                  .reduce((acc, o) => acc + o.quantity * parseFloat(o.price), 0)
-                  .toFixed(2)}
+                {cart &&
+                  cart
+                    ?.reduce(
+                      (acc, o) => acc + o.quantity * parseFloat(o.price),
+                      0
+                    )
+                    .toFixed(2)}
               </span>
             </p>
             <p>
               Total quantity:{" "}
-              <span>{cart && cart.reduce((acc, o) => acc + o.quantity, 0)}</span>
+              <span>
+                {cart && cart?.reduce((acc, o) => acc + o.quantity, 0)}
+              </span>
             </p>
             <div>
               <button

@@ -14,17 +14,19 @@ const ProductList = () => {
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
-    await getAllProduct(nextRequest.nextId, nextRequest.limit).then((data) => {
-      setProduct([...product, ...data?.products]);
-      setNextRequest({
-        nextId: data?.nextId,
-        limit: data?.limit,
-      });
-      setIsLoading(false);
-      if (data?.totalProductCount === data?.nextId) {
-        setIsFechtedEverything(true);
+    await getAllProduct(nextRequest?.nextId, nextRequest?.limit).then(
+      (data) => {
+        setProduct([...product, ...data?.products]);
+        setNextRequest({
+          nextId: data?.nextId,
+          limit: data?.limit,
+        });
+        setIsLoading(false);
+        if (data?.totalProductCount === data?.nextId) {
+          setIsFechtedEverything(true);
+        }
       }
-    });
+    );
   };
   useEffect(() => {
     async function getInitialData() {
