@@ -31,6 +31,10 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const removeItem = (data) => {
+    setCart(cart.filter((item) => item.id !== data.id));
+  };
+
   const resetItem = () => {
     localStorage.setItem(key, JSON.stringify(null));
   };
@@ -48,6 +52,7 @@ export const CartProvider = ({ children }) => {
   const value = useMemo(
     () => ({
       addItem,
+      removeItem,
       resetItem,
       cart,
     }),

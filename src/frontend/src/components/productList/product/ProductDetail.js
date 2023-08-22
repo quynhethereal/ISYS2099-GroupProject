@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import { useParams, useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../../hook/AuthHook.js";
 import { useCart } from "../../../hook/CartHook.js";
-import { useParams, useNavigate } from "react-router-dom";
 import { getProductById } from "../../../action/product/product.js";
 
 import Header from "../../header/Header.js";
@@ -43,6 +45,15 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     addItem(product, amount);
+    Swal.fire({
+      position: "top-end",
+      icon: "success",
+      title: "Added product to cart",
+      text: "You can see the details in cart",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
   };
   const handleBuyNow = () => {
     addItem(product, amount);
