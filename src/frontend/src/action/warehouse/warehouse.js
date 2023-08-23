@@ -9,6 +9,20 @@ export const getWarehouses = async (token, limit, currentPage) => {
     console.log(error.message);
   }
 };
+export const getWarehouseById = async (token, id) => {
+  try {
+    const res = await api.getWarehouseById(token, id);
+
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    } else {
+      return;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 export const getInventoryByWarehouseId = async (
   token,
@@ -40,5 +54,18 @@ export const createWarehouse = async (token, data) => {
     }
   } catch (error) {
     console.log(error.message);
+  }
+};
+
+export const moveTheIventoryToWarehouse = async (token, data) => {
+  try {
+    const res = await api.moveTheIventoryToWarehouse(token, data);
+    if (res.status === 200) {
+      return res;
+    } else {
+      return;
+    }
+  } catch (error) {
+    return error?.response?.data?.message;
   }
 };

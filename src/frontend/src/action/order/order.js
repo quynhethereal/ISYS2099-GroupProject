@@ -10,9 +10,9 @@ export const createOrder = async (token, cart) => {
   }
 };
 
-export const getAllOrderByUser = async (token) => {
+export const getAllOrderByUser = async (token, state) => {
   try {
-    const respone = await api.getAllOrderByUser(token);
+    const respone = await api.getAllOrderByUser(token, state);
 
     if (respone.status === 200) {
       return respone?.data;
@@ -42,6 +42,17 @@ export const acceptOrder = async (token, id) => {
 
     if (respone.status === 200) {
       return respone;
+    } else {
+      return;
+    }
+  } catch (error) {}
+};
+export const getOrderById = async (token, id) => {
+  try {
+    const respone = await api.getOrderById(token, id);
+
+    if (respone.status === 200) {
+      return respone.data;
     } else {
       return;
     }

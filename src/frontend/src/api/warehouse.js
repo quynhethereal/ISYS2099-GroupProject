@@ -22,3 +22,12 @@ export const createWarehouse = (token, data) =>
   axios.post(`${backend_url}/api/warehouses`, data, {
     headers: { "x-access-token": token },
   });
+
+export const getWarehouseById = (token, id) =>
+  axios.get(`${backend_url}/api/warehouses/${id}`, {
+    headers: { "x-access-token": token },
+  });
+export const moveTheIventoryToWarehouse = (token, data) =>
+  axios.post(`${backend_url}/api/inventories/move`, data, {
+    headers: { "x-access-token": token },
+  });

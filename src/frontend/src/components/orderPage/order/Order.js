@@ -1,13 +1,84 @@
 import React from "react";
+import Swal from "sweetalert2";
+
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../hook/AuthHook.js";
+
+import { rejectOrder, acceptOrder } from "../../../action/order/order.js";
 
 const Order = ({ data }) => {
-  const handleRejctOrder = () => {};
-  const handleUpdateOrder = () => {};
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  function stateProgressBar() {
+    switch (data?.status) {
+      case "pending":
+        return "col-3";
+      case "accepted":
+        return "col-6";
+      case "rejected":
+        return "col-6";
+      default:
+        return;
+    }
+  }
+  const handleRejctOrder = async (id) => {
+    await rejectOrder(token(), id).then((res) => {
+      if (res?.data?.order?.status === "rejected") {
+        Swal.fire({
+          icon: "success",
+          title: "Rejected the order",
+          text: "The products in order now being sent back to appropriate warehouses...",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Sorry, some problem occurred! Try again",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        });
+      }
+    });
+  };
+  const handleAcceptOrder = async (id) => {
+    await acceptOrder(token(), id).then((res) => {
+      if (res?.data?.order?.status === "accepted") {
+        Swal.fire({
+          icon: "success",
+          title: "Accepted the order",
+          text: "The order is now moved to the inventory warehouse for shipping...",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Sorry, some problem occurred! Try again",
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true,
+        });
+      }
+    });
+  };
   return (
     <div className="card p-3">
       <div className="card-img-top d-flex flex-column justify-content-center align-items-center">
         <div className="progress col-12">
-          <div className="progress-bar col-3" role="progressbar"></div>
+          <div
+            className={`progress-bar ${stateProgressBar()}`}
+            role="progressbar"
+          ></div>
         </div>
         <div className="mt-3 col-12 d-flex flex-row text-center">
           <div className="col-3 text-muted">Ordered</div>
@@ -24,14 +95,17 @@ const Order = ({ data }) => {
           Your order is now in pending state. Please wait the sellers to handle
         </p>
         <div className="col-12 d-flex flex">
-          <button className="btn btn-danger" onClick={() => handleRejctOrder()}>
+          <button
+            className="btn btn-danger"
+            onClick={() => handleRejctOrder(data?.id)}
+          >
             Reject Order
           </button>
           <button
             className="btn ms-auto btn-success"
-            onClick={() => handleUpdateOrder()}
+            onClick={() => handleAcceptOrder(data?.id)}
           >
-            Update Order
+            Accept Order
           </button>
         </div>
       </div>
