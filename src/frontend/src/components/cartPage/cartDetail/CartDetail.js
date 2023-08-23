@@ -42,8 +42,7 @@ const CartDetail = () => {
           timer: 3000,
           timerProgressBar: true,
         }).then(() => {
-          console.log(result);
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({
