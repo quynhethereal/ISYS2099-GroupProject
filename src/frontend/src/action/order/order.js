@@ -20,7 +20,7 @@ export const getAllOrderByUser = async (token, state) => {
       return;
     }
   } catch (error) {
-    console.log(error);
+    console.log(error?.response?.data?.message);
   }
 };
 
@@ -33,7 +33,9 @@ export const rejectOrder = async (token, id) => {
     } else {
       return;
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error?.response?.data?.message);
+  }
 };
 
 export const acceptOrder = async (token, id) => {
@@ -45,7 +47,9 @@ export const acceptOrder = async (token, id) => {
     } else {
       return;
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error?.response?.data?.message);
+  }
 };
 export const getOrderById = async (token, id) => {
   try {
