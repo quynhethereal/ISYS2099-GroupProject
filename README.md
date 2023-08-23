@@ -40,7 +40,8 @@ cp .env.dev.sample .env
 (windows)
 copy .env.dev.sample .env
 ```
-
+- Populate seed data by **copying the SQL files** in `user_funcs.sql` and `seed.sql` in **script** folder (must be in exact order!).
+  
 - Run the server:
 
 ```bash
