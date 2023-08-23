@@ -13,7 +13,7 @@ class Order {
 }
 
 Order.isValidStatus = (status) => {
-    return ['pending', 'paid', 'shipped', 'cancelled'].includes(status);
+    return ['pending', 'accepted', 'rejected'].includes(status);
 }
 
 Order.getAll = async (userId, status) => {
