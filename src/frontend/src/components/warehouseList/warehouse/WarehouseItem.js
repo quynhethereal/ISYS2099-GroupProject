@@ -1,11 +1,10 @@
 import React, { useState, useEffect, memo } from "react";
-// import axios from "axios";
 
 import { getInventoryByWarehouseId } from "../../../action/warehouse/warehouse.js";
 
 import WarehouseInventory from "./WarehouseInventory.js";
 
-const WarehouseItem = ({ data, token }) => {
+const WarehouseItem = ({ data, token, size }) => {
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
 
@@ -58,16 +57,22 @@ const WarehouseItem = ({ data, token }) => {
 
   useEffect(() => {
     async function getData() {
-      await getInventoryByWarehouseId(token(), data.id, 5, page).then((res) => {
-        setInventory(res);
-      });
+      await getInventoryByWarehouseId(token(), data?.id, 5, page).then(
+        (res) => {
+          setInventory(res);
+        }
+      );
     }
     getData();
     // eslint-disable-next-line
   }, [page, data]);
 
   return (
-    <div className="col-12 col-md-5 my-3 my-md-0 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className={`col-12 ${
+        size ? size : "col-md-5"
+      } my-3 my-md-0 d-flex flex-column justify-content-center align-items-center`}
+    >
       <div className="card w-100">
         <div className="card-body">
           <div className="card-title d-flex flex-row">
@@ -88,7 +93,7 @@ const WarehouseItem = ({ data, token }) => {
                 <p className="bold px-2 py-1 ">{data?.city}</p>
               </div>
             </div>
-            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-start">
               <div className="col-12 col-lg-7">
                 <label htmlFor="address" className="text-muted">
                   Address
@@ -99,7 +104,7 @@ const WarehouseItem = ({ data, token }) => {
                   style={{ background: "#f0f0f0" }}
                 >
                   <p className="bold px-2 py-1 ">
-                    {data.province}, {data.district}, {data?.street}
+                    {data?.province}, {data?.district}, {data?.street}
                   </p>
                 </div>
               </div>

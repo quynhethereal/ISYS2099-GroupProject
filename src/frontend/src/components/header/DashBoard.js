@@ -14,7 +14,7 @@ const DashBoard = () => {
   const location = useLocation().pathname;
   return (
     <div
-      className="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white"
+      className="col-12 col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-white sticky-md-top"
       style={{ height: "100vh", background: "#f0f0f0" }}
     >
       <a
@@ -41,7 +41,7 @@ const DashBoard = () => {
                 style={{ width: "28px" }}
               />
             </span>
-            Home
+            Inventory
           </a>
         </li>
         <li className="nav-item my-2">
