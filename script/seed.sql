@@ -1,3 +1,5 @@
+DROP database IF EXISTS `lazada_ecommerce`;
+
 -- Create the database if not exists
 CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
 
@@ -127,13 +129,11 @@ CREATE TABLE IF NOT EXISTS `order_items` (
 ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
 
+
+-- Drop role 
+DROP ROLE IF EXISTS 'admin', 'customer', 'seller';
 -- Create roles
 CREATE ROLE IF NOT EXISTS 'admin', 'customer', 'seller';
-
--- Revoke privileges from all roles
-REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'admin'@'localhost';
-REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'customer'@'localhost';
-REVOKE IF EXISTS ALL PRIVILEGES ON lazada_ecommerce.* FROM 'seller'@'localhost';
 
 -- Grant permissions for each user role
 -- Admin: All rights

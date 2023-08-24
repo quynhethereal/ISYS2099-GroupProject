@@ -1,4 +1,4 @@
--- funcs
+USE lazada_ecommerce;
 
 -- Generate ULID from datetime
 delimiter //
