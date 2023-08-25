@@ -79,6 +79,68 @@ Product.countByCategory = (categoryId) => {
     });
 }
 
+
+Product.countBySellerID = (sellerId) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) as count FROM `products` WHERE seller_id = ?',
+            [sellerId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products.');
+                    reject(err);
+                    return;
+                }
+
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        );
+    });
+}
+
+// use offset - limit
+Product.findBySellerId = async (params) => {
+    try {
+        console.log(params);
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+        const offset = (currentPage - 1) * limit;
+        const productCount = await Product.countBySellerID(params.sellerId);
+        const totalPages = Math.ceil(productCount / limit);
+
+        const res = await new Promise((resolve, reject) => {
+            seller_pool.execute(
+                "SELECT * FROM `products` WHERE seller_id = ? ORDER BY id ASC LIMIT ?,?",
+                [params.sellerId, offset +"", limit+""],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to find products.');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        }
+        
+    } catch (err) {
+        console.log(err.stack);
+        console.log('Unable to find products.');
+        throw err;
+    } 
+
+}
+
 // use offset - limit
 // example params = { category: 1, limit: 10, currentPage: 1 }
 Product.findByCategory = async (params) => {

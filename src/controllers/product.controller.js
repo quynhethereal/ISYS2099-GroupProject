@@ -124,3 +124,34 @@ exports.getImage = async (req, res) => {
         });
     }
 }
+
+exports.findBySellerId = async (req, res) => {
+    try {
+        const sellerId = parseInt(req.currentUser.id);
+
+        if (sellerId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        // check if user is seller 
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const params = {
+            sellerId,
+            queryParams: req.query
+        }
+
+        const products = await Product.findBySellerId(params);
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving products."
+        });
+    }
+}
+

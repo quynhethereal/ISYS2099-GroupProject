@@ -36,6 +36,8 @@ module.exports = app => {
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
+    router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
+
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);
@@ -58,6 +60,9 @@ module.exports = app => {
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
     router.get("/inventories", authMiddleware.verifyToken, inventories.getAll);
     router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
+    // ---- DO NOT USE THIS YET
+    router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
+
 
     app.use('/api', router);
 }

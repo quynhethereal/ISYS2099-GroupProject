@@ -1,4 +1,4 @@
-const {admin_pool} = require("../db/db");
+const { admin_pool } = require("../db/db");
 
 class Inventory {
     constructor(params = {}) {
@@ -11,7 +11,7 @@ class Inventory {
 
 Inventory.getProductInventory = async (params) => {
     try {
-        const {productId, quantity} = params;
+        const { productId, quantity } = params;
 
         return new Promise(async (resolve, reject) => {
             await admin_pool.execute('SELECT * FROM `inventory` WHERE product_id = ? AND quantity >= ?', [productId, quantity], (err, results) => {
@@ -25,7 +25,7 @@ Inventory.getProductInventory = async (params) => {
             });
         });
     } catch
-        (err) {
+    (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -46,7 +46,7 @@ Inventory.getCountAll = async () => {
             });
         });
     } catch
-        (err) {
+    (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -95,7 +95,7 @@ Inventory.getCountByWarehouseId = async (warehouseId) => {
             });
         });
     } catch
-        (err) {
+    (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -125,6 +125,19 @@ Inventory.getInventoryByWarehouseId = async (params) => {
         console.log('Unable to find inventory.');
         // rethrow error
         console.log(err.stack);
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
+Inventory.updateInventory = async (productId,quantity) => {
+    const connection = await admin_pool.promise().getConnection();
+    try {
+        await connection.execute("call ASSIGN_INVENTORY_TO_WAREHOUSE(?,?)", [productId, quantity]);
+    } catch (err) {
+        console.log('Unable to update inventory.');
+        // rethrow error
         throw err;
     } finally {
         connection.release();

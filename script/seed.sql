@@ -45,11 +45,16 @@ CREATE TABLE IF NOT EXISTS `products` (
     `length` DECIMAL(10, 2) NOT NULL CHECK (length >= 0),
     `width` DECIMAL(10, 2) NOT NULL CHECK (width >= 0),
     `height` DECIMAL(10, 2) NOT NULL CHECK (height >= 0),
+    `seller_id` INT(11) NOT NULL,
     `category_id` INT(11) NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- add foregin keys
+ALTER TABLE `products` ADD FOREIGN KEY (`seller_id`) REFERENCES `users`(`id`);
+
 
 -- Create `warehouses` table
 CREATE TABLE IF NOT EXISTS `warehouses` (
@@ -203,38 +208,38 @@ VALUES
 
 -- Insert 30 dummy data for products
 -- Insert dummy data for products with image names
-INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `created_at`, `updated_at`)
+INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `seller_id`, `created_at`, `updated_at`)
 VALUES
-    ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, 'smartphone_x_image_data', 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, NOW(), NOW()),
-    ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, 'laptop_pro_image_data', 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, NOW(), NOW()),
-    ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, 'fitness_tracker_image_data', 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, NOW(), NOW()),
-    ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, 'earbuds_image_data', 'earbuds.jpg', 2.0, 1.5, 0.5, 1, NOW(), NOW()),
-    ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, 'coffee_maker_image_data', 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, NOW(), NOW()),
-    ('Gaming Console', 'Experience immersive gaming adventures.', 299.00, 'gaming_console_image_data', 'gaming_console.jpg', 12.0, 8.0, 2.5, 2, NOW(), NOW()),
-    ('Portable Speaker', 'Take your music anywhere with this portable speaker.', 59.95, 'speaker_image_data', 'speaker.jpg', 4.5, 3.5, 1.0, 1, NOW(), NOW()),
-    ('Smart Watch', 'Stay connected and track your health on the go.', 199.50, 'smart_watch_image_data', 'smart_watch.jpg', 1.8, 1.5, 0.4, 3, NOW(), NOW()),
-    ('Digital Camera', 'Capture stunning photos and memories.', 499.99, 'camera_image_data', 'camera.jpg', 5.2, 3.8, 2.2, 2, NOW(), NOW()),
-    ('Blender', 'Blend your favorite fruits into delicious smoothies.', 79.00, 'blender_image_data', 'blender.jpg', 8.0, 6.5, 10.0, 4, NOW(), NOW()),
-    ('Fitness Treadmill', 'Stay fit with this advanced treadmill.', 1299.00, 'treadmill_image_data', 'treadmill.jpg', 6.5, 3.0, 4.5, 3, NOW(), NOW()),
-    ('Wireless Mouse', 'Enhance your productivity with a wireless mouse.', 29.99, 'mouse_image_data', 'mouse.jpg', 4.0, 2.5, 1.0, 2, NOW(), NOW()),
-    ('LED TV', 'Enjoy your favorite shows and movies in high definition.', 599.95, 'tv_image_data', 'tv.jpg', 40.0, 25.0, 4.0, 1, NOW(), NOW()),
-    ('Cookware Set', 'Upgrade your kitchen with this comprehensive cookware set.', 149.95, 'cookware_image_data', 'cookware.jpg', 14.0, 10.0, 6.0, 4, NOW(), NOW()),
-    ('Wireless Headphones', 'Immerse yourself in music with wireless headphones.', 119.99, 'headphones_image_data', 'headphones.jpg', 3.0, 2.5, 1.5, 1, NOW(), NOW()),
-    ('Home Security Camera', 'Monitor your home with a smart security camera.', 89.50, 'security_camera_image_data', 'security_camera.jpg', 3.5, 2.0, 2.0, 3, NOW(), NOW()),
-    ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, 'vacuum_image_data', 'vacuum.jpg', 12.0, 9.0, 3.0, 2, NOW(), NOW()),
-    ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, 'tablet_image_data', 'tablet.jpg', 9.5, 7.0, 0.4, 1, NOW(), NOW()),
-    ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, 'plants_image_data', 'plants.jpg', 1.0, 1.0, 1.0, 4, NOW(), NOW()),
-    ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, NOW(), NOW()),
-      ('Modern Dining Table', 'Gather around this elegant dining table for family meals and gatherings.', 699.00, 'dining_table_image_data', 'dining_table.jpg', 72.0, 36.0, 30.0, 5, NOW(), NOW()),
-    ('Comfortable Recliner', 'Relax in style with this plush and comfortable recliner chair.', 349.99, 'recliner_image_data', 'recliner.jpg', 36.0, 32.0, 40.0, 5, NOW(), NOW()),
-    ('Classic Wooden Bookshelf', 'Display your book collection with this timeless wooden bookshelf.', 249.95, 'bookshelf_image_data', 'bookshelf.jpg', 48.0, 12.0, 72.0, 5, NOW(), NOW()),
-    ('Sleek TV Stand', 'Elevate your entertainment setup with this modern TV stand.', 199.50, 'tv_stand_image_data', 'tv_stand.jpg', 60.0, 18.0, 20.0, 5, NOW(), NOW()),
-    ('Cozy Sectional Sofa', 'Create a cozy seating area with this spacious sectional sofa.', 899.00, 'sectional_sofa_image_data', 'sectional_sofa.jpg', 108.0, 84.0, 36.0, 5, NOW(), NOW()),
-    ('Stylish Coffee Table', 'Complete your living room with this stylish and functional coffee table.', 149.99, 'coffee_table_image_data', 'coffee_table.jpg', 48.0, 24.0, 18.0, 5, NOW(), NOW()),
-    ('King Size Bed Frame', 'Sleep in luxury with this elegant king size bed frame.', 799.99, 'bed_frame_image_data', 'bed_frame.jpg', 80.0, 76.0, 12.0, 5, NOW(), NOW()),
-    ('Vintage Armchair', 'Add a touch of vintage charm to your space with this classic armchair.', 199.00, 'armchair_image_data', 'armchair.jpg', 30.0, 30.0, 40.0, 5, NOW(), NOW()),
-    ('Study Desk', 'Create an inspiring workspace with this functional study desk.', 129.95, 'study_desk_image_data', 'study_desk.jpg', 48.0, 24.0, 30.0, 5, NOW(), NOW()),
-    ('Outdoor Patio Set', 'Enjoy outdoor relaxation with this stylish patio furniture set.', 599.00, 'patio_set_image_data', 'patio_set.jpg', 72.0, 36.0, 30.0, 5, NOW(), NOW());
+    ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, 'smartphone_x_image_data', 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, 2, NOW(), NOW()),
+    ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, 'laptop_pro_image_data', 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, 2, NOW(), NOW()),
+    ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, 'fitness_tracker_image_data', 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, 2, NOW(), NOW()),
+    ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, 'earbuds_image_data', 'earbuds.jpg', 2.0, 1.5, 0.5, 1, 2, NOW(), NOW()),
+    ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, 'coffee_maker_image_data', 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, 2, NOW(), NOW()),
+    ('Gaming Console', 'Experience immersive gaming adventures.', 299.00, 'gaming_console_image_data', 'gaming_console.jpg', 12.0, 8.0, 2.5, 2, 2, NOW(), NOW()),
+    ('Portable Speaker', 'Take your music anywhere with this portable speaker.', 59.95, 'speaker_image_data', 'speaker.jpg', 4.5, 3.5, 1.0, 1, 2, NOW(), NOW()),
+    ('Smart Watch', 'Stay connected and track your health on the go.', 199.50, 'smart_watch_image_data', 'smart_watch.jpg', 1.8, 1.5, 0.4, 3, 2, NOW(), NOW()),
+    ('Digital Camera', 'Capture stunning photos and memories.', 499.99, 'camera_image_data', 'camera.jpg', 5.2, 3.8, 2.2, 2, 2, NOW(), NOW()),
+    ('Blender', 'Blend your favorite fruits into delicious smoothies.', 79.00, 'blender_image_data', 'blender.jpg', 8.0, 6.5, 10.0, 4, 2, NOW(), NOW()),
+    ('Fitness Treadmill', 'Stay fit with this advanced treadmill.', 1299.00, 'treadmill_image_data', 'treadmill.jpg', 6.5, 3.0, 4.5, 3, 2, NOW(), NOW()),
+    ('Wireless Mouse', 'Enhance your productivity with a wireless mouse.', 29.99, 'mouse_image_data', 'mouse.jpg', 4.0, 2.5, 1.0, 2, 2, NOW(), NOW()),
+    ('LED TV', 'Enjoy your favorite shows and movies in high definition.', 599.95, 'tv_image_data', 'tv.jpg', 40.0, 25.0, 4.0, 1, 1, NOW(), NOW()),
+    ('Cookware Set', 'Upgrade your kitchen with this comprehensive cookware set.', 149.95, 'cookware_image_data', 'cookware.jpg', 14.0, 10.0, 6.0, 4, 2, NOW(), NOW()),
+    ('Wireless Headphones', 'Immerse yourself in music with wireless headphones.', 119.99, 'headphones_image_data', 'headphones.jpg', 3.0, 2.5, 1.5, 1, 2, NOW(), NOW()),
+    ('Home Security Camera', 'Monitor your home with a smart security camera.', 89.50, 'security_camera_image_data', 'security_camera.jpg', 3.5, 2.0, 2.0, 3, 2, NOW(), NOW()),
+    ('Vacuum Cleaner', 'Efficiently clean your home with a powerful vacuum.', 169.00, 'vacuum_image_data', 'vacuum.jpg', 12.0, 9.0, 3.0, 2, 2, NOW(), NOW()),
+    ('Tablet Computer', 'Versatile tablet for work and entertainment.', 249.99, 'tablet_image_data', 'tablet.jpg', 9.5, 7.0, 0.4, 1, 2, NOW(), NOW()),
+    ('Indoor Plants Set', 'Bring nature indoors with a set of beautiful plants.', 49.95, 'plants_image_data', 'plants.jpg', 1.0, 1.0, 1.0, 4, 2, NOW(), NOW()),
+    ('Smart Home Hub', 'Control your home devices with a smart hub.', 79.00, 'home_hub_image_data', 'home_hub.jpg', 4.0, 4.0, 0.8, 3, 2,  NOW(), NOW()),
+    ('Modern Dining Table', 'Gather around this elegant dining table for family meals and gatherings.', 699.00, 'dining_table_image_data', 'dining_table.jpg', 72.0, 36.0, 30.0, 5, 2, NOW(), NOW()),
+    ('Comfortable Recliner', 'Relax in style with this plush and comfortable recliner chair.', 349.99, 'recliner_image_data', 'recliner.jpg', 36.0, 32.0, 40.0, 5,2, NOW(), NOW()),
+    ('Classic Wooden Bookshelf', 'Display your book collection with this timeless wooden bookshelf.', 249.95, 'bookshelf_image_data', 'bookshelf.jpg', 48.0, 12.0, 72.0, 5, 2, NOW(), NOW()),
+    ('Sleek TV Stand', 'Elevate your entertainment setup with this modern TV stand.', 199.50, 'tv_stand_image_data', 'tv_stand.jpg', 60.0, 18.0, 20.0, 5, 2, NOW(), NOW()),
+    ('Cozy Sectional Sofa', 'Create a cozy seating area with this spacious sectional sofa.', 899.00, 'sectional_sofa_image_data', 'sectional_sofa.jpg', 108.0, 84.0, 36.0, 5, 2, NOW(), NOW()),
+    ('Stylish Coffee Table', 'Complete your living room with this stylish and functional coffee table.', 149.99, 'coffee_table_image_data', 'coffee_table.jpg', 48.0, 24.0, 18.0, 5, 2, NOW(), NOW()),
+    ('King Size Bed Frame', 'Sleep in luxury with this elegant king size bed frame.', 799.99, 'bed_frame_image_data', 'bed_frame.jpg', 80.0, 76.0, 12.0, 5, 2, NOW(), NOW()),
+    ('Vintage Armchair', 'Add a touch of vintage charm to your space with this classic armchair.', 199.00, 'armchair_image_data', 'armchair.jpg', 30.0, 30.0, 40.0, 5, 2, NOW(), NOW()),
+    ('Study Desk', 'Create an inspiring workspace with this functional study desk.', 129.95, 'study_desk_image_data', 'study_desk.jpg', 48.0, 24.0, 30.0, 5, 2, NOW(), NOW()),
+    ('Outdoor Patio Set', 'Enjoy outdoor relaxation with this stylish patio furniture set.', 599.00, 'patio_set_image_data', 'patio_set.jpg', 72.0, 36.0, 30.0, 5, 2, NOW(), NOW());
 
 -- Insert 5 dummy records into the warehouses table
 INSERT INTO `warehouses` (`name`, `province`, `city`, `district`, `street`, `number`, `total_volume`, `available_volume`)
