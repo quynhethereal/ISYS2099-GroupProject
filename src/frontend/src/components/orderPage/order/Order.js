@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hook/AuthHook.js";
-
 import { rejectOrder, acceptOrder } from "../../../action/order/order.js";
+
+import OrderPreview from "../../../utils/OrderPreview.js";
 
 const Order = ({ data }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [show, setShow] = useState(false);
   function stateProgressBar() {
     switch (data?.status) {
       case "pending":
@@ -34,6 +36,11 @@ const Order = ({ data }) => {
         return;
     }
   }
+
+  const handleViewOrder = () => {
+    setShow((prev) => !prev);
+  };
+
   const handleRejctOrder = async (id) => {
     await rejectOrder(token(), id).then((res) => {
       if (res?.data?.order?.status === "rejected") {
@@ -95,7 +102,7 @@ const Order = ({ data }) => {
         </div>
         <div className="mt-3 col-12 d-flex flex-row text-center">
           <div className="col-3 text-muted">Ordered</div>
-          <div className="col-6 text-muted">Accepted</div>
+          <div className="col-6 text-muted">Accepted/Rejected</div>
           <div className="col-3 text-muted">Shipping</div>
         </div>
       </div>
@@ -107,8 +114,8 @@ const Order = ({ data }) => {
         <p className="card-text">
           Your order is now in {data?.status} state. {stateMessage()}
         </p>
-        {data?.status === "pending" && (
-          <div className="col-12 d-flex flex">
+        {data?.status === "pending" ? (
+          <div className="col-12 d-flex flex justify-content-between">
             <button
               className="btn btn-danger"
               onClick={() => handleRejctOrder(data?.id)}
@@ -116,12 +123,34 @@ const Order = ({ data }) => {
               Reject Order
             </button>
             <button
-              className="btn ms-auto btn-success"
+              className="btn btn-warning"
+              onClick={() => handleViewOrder()}
+            >
+              View Order
+            </button>
+            <button
+              className="btn btn-success"
               onClick={() => handleAcceptOrder(data?.id)}
             >
               Accept Order
             </button>
           </div>
+        ) : (
+          <div className="col-12 d-flex flex justify-content-between">
+            <button
+              className="btn btn-warning"
+              onClick={() => handleViewOrder()}
+            >
+              View Order
+            </button>
+          </div>
+        )}
+        {show && (
+          <OrderPreview
+            show={show}
+            handleClose={setShow}
+            data={data}
+          ></OrderPreview>
         )}
       </div>
     </div>

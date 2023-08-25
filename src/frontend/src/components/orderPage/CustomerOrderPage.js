@@ -42,7 +42,7 @@ const CustomerOrderPage = () => {
             </li>
             <li className="nav-item">
               <button
-                className={`nav-link ${state === "pending" && "accepted"}`}
+                className={`nav-link ${state === "accepted" && "active"}`}
                 onClick={() => handleSetState("accepted")}
               >
                 Accepted
@@ -50,7 +50,7 @@ const CustomerOrderPage = () => {
             </li>
             <li className="nav-item">
               <button
-                className={`nav-link ${state === "pending" && "rejected"}`}
+                className={`nav-link ${state === "rejected" && "active"}`}
                 onClick={() => handleSetState("rejected")}
               >
                 Rejected

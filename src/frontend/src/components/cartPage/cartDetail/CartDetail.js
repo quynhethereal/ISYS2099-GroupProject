@@ -32,9 +32,24 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
-      console.log(result);
       if (result && result?.status === 200) {
-        if (result?.data?.orderId) {
+        var unFullFilledId = result?.data?.unfulfilledProducts;
+        var unFullFilledName = [];
+        var i = 0;
+        var j = 0;
+        while (++i <= cart?.length) {
+          console.log("run");
+          while (++j <= unFullFilledId.length) {
+            if (parseInt(unFullFilledId[j - 1]) === parseInt(cart[i - 1]?.id)) {
+              unFullFilledName.push(cart[i - 1]?.title);
+              break;
+            }
+          }
+        }
+        if (
+          result?.data?.orderId &&
+          result?.data?.unfulfilledProducts.length === 0
+        ) {
           resetItem();
           Swal.fire({
             icon: "success",
@@ -46,23 +61,24 @@ const CartDetail = () => {
           }).then(() => {
             navigate(0);
           });
+        } else if (
+          result?.data?.orderId &&
+          result?.data?.unfulfilledProducts.length > 0
+        ) {
+          resetItem();
+          Swal.fire({
+            icon: "success",
+            title: "Order sucess with some product only",
+            text: `Your order ${
+              result?.data?.orderId
+            } now in pending state for delivery. But some products is not associated with it: ${unFullFilledName.join()} (out of stock. Reloading in 3 secs...)`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          }).then(() => {
+            navigate(0);
+          });
         } else {
-          var unFullFilledId = result?.data?.unfulfilledProducts;
-          var unFullFilledName = [];
-          var i = 0;
-          var j = 0;
-          console.log(i < cart?.length);
-          while (++i <= cart?.length) {
-            console.log("run");
-            while (++j <= unFullFilledId.length) {
-              if (
-                parseInt(unFullFilledId[j - 1]) === parseInt(cart[i - 1]?.id)
-              ) {
-                unFullFilledName.push(cart[i - 1]?.title);
-                break;
-              }
-            }
-          }
           Swal.fire({
             icon: "error",
             title: "Failed to created the order",

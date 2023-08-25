@@ -42,7 +42,7 @@ const Inventory = () => {
     []
   );
   const [choosenProductQuantity, setChoosenProductQuantity] = useState();
-  const { user, token } = useAuth();
+  const { token } = useAuth();
 
   const handleForm = async (data) => {
     await moveTheIventoryToWarehouse(token(), data).then((res) => {
