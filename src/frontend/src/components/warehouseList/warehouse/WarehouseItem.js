@@ -4,7 +4,7 @@ import { getInventoryByWarehouseId } from "../../../action/warehouse/warehouse.j
 
 import WarehouseInventory from "./WarehouseInventory.js";
 
-const WarehouseItem = ({ data, token, size }) => {
+const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
 
@@ -60,10 +60,16 @@ const WarehouseItem = ({ data, token, size }) => {
       await getInventoryByWarehouseId(token(), data?.id, 5, page).then(
         (res) => {
           setInventory(res);
+
+          if (setWareHouseInventoryData) {
+            setWareHouseInventoryData(res);
+          }
         }
       );
     }
-    getData();
+    if (data?.id) {
+      getData();
+    }
     // eslint-disable-next-line
   }, [page, data]);
 
@@ -121,6 +127,32 @@ const WarehouseItem = ({ data, token, size }) => {
                 </div>
               </div>
             </div>
+            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-start">
+              <div className="col-12 col-lg-5">
+                <label htmlFor="total-volume" className="text-muted">
+                  Total Volume
+                </label>
+                <div
+                  id="total-volume"
+                  className="mt-2 rounded"
+                  style={{ background: "#f0f0f0" }}
+                >
+                  <p className="bold px-2 py-1 ">{data?.total_volume}</p>
+                </div>
+              </div>
+              <div className="col-12 col-lg-5">
+                <label htmlFor="number" className="text-muted">
+                  Available Volume
+                </label>
+                <div
+                  id="number"
+                  className="mt-2 rounded"
+                  style={{ background: "#f0f0f0" }}
+                >
+                  <p className="bold px-2 py-1 ">{data?.available_volume}</p>
+                </div>
+              </div>
+            </div>
             <div className="col-12">
               <label htmlFor="create-at" className="text-muted">
                 Created At:
@@ -154,6 +186,7 @@ const WarehouseItem = ({ data, token, size }) => {
                 <ul className="pagination pagination-sm">
                   <li className="page-item">
                     <button
+                      type="button"
                       className="page-link"
                       onClick={() => handlePreviousPage()}
                     >
@@ -172,6 +205,7 @@ const WarehouseItem = ({ data, token, size }) => {
                               aria-current="page"
                             >
                               <button
+                                type="button"
                                 className="page-link"
                                 onClick={() => handleChangePage(number)}
                               >
@@ -180,7 +214,11 @@ const WarehouseItem = ({ data, token, size }) => {
                             </li>
                           ) : (
                             <li aria-current="page">
-                              <button className="page-link" disabled>
+                              <button
+                                className="page-link"
+                                disabled
+                                type="button"
+                              >
                                 {number}
                               </button>
                             </li>
@@ -191,6 +229,7 @@ const WarehouseItem = ({ data, token, size }) => {
                   )}
                   <li className="page-item">
                     <button
+                      type="button"
                       className="page-link"
                       onClick={() => handleNextPage()}
                     >

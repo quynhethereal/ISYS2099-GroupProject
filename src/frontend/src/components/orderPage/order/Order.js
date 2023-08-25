@@ -21,6 +21,19 @@ const Order = ({ data }) => {
         return;
     }
   }
+
+  function stateMessage() {
+    switch (data?.status) {
+      case "pending":
+        return "Please handle it in order to change to accepted state";
+      case "accepted":
+        return "Please wait for the order to be processed before shipping";
+      case "rejected":
+        return "You can just view this rejected order";
+      default:
+        return;
+    }
+  }
   const handleRejctOrder = async (id) => {
     await rejectOrder(token(), id).then((res) => {
       if (res?.data?.order?.status === "rejected") {
@@ -92,22 +105,24 @@ const Order = ({ data }) => {
           <b className="text-danger">{data?.status}</b> state
         </h5>
         <p className="card-text">
-          Your order is now in pending state. Please wait the sellers to handle
+          Your order is now in {data?.status} state. {stateMessage()}
         </p>
-        <div className="col-12 d-flex flex">
-          <button
-            className="btn btn-danger"
-            onClick={() => handleRejctOrder(data?.id)}
-          >
-            Reject Order
-          </button>
-          <button
-            className="btn ms-auto btn-success"
-            onClick={() => handleAcceptOrder(data?.id)}
-          >
-            Accept Order
-          </button>
-        </div>
+        {data?.status === "pending" && (
+          <div className="col-12 d-flex flex">
+            <button
+              className="btn btn-danger"
+              onClick={() => handleRejctOrder(data?.id)}
+            >
+              Reject Order
+            </button>
+            <button
+              className="btn ms-auto btn-success"
+              onClick={() => handleAcceptOrder(data?.id)}
+            >
+              Accept Order
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

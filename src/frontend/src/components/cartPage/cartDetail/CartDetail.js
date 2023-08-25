@@ -16,7 +16,7 @@ const CartDetail = () => {
 
   const handleCreateOrder = async () => {
     setIsOrdering(true);
-    if (!cart) {
+    if (!cart || cart.length === 0) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -32,18 +32,43 @@ const CartDetail = () => {
       })),
     };
     await createOrder(token(), payload).then((result) => {
+      console.log(result);
       if (result && result?.status === 200) {
-        resetItem();
-        Swal.fire({
-          icon: "success",
-          title: "Order sucess",
-          text: "Your order now in pending state for delivery. Reloading in 3 secs...",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        }).then(() => {
-          navigate(0);
-        });
+        if (result?.data?.orderId) {
+          resetItem();
+          Swal.fire({
+            icon: "success",
+            title: "Order sucess",
+            text: `Your order ${result?.data?.orderId} now in pending state for delivery. Reloading in 3 secs...`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          }).then(() => {
+            navigate(0);
+          });
+        } else {
+          var unFullFilledId = result?.data?.unfulfilledProducts;
+          var unFullFilledName = [];
+          var i = 0;
+          var j = 0;
+          console.log(i < cart?.length);
+          while (++i <= cart?.length) {
+            console.log("run");
+            while (++j <= unFullFilledId.length) {
+              if (
+                parseInt(unFullFilledId[j - 1]) === parseInt(cart[i - 1]?.id)
+              ) {
+                unFullFilledName.push(cart[i - 1]?.title);
+                break;
+              }
+            }
+          }
+          Swal.fire({
+            icon: "error",
+            title: "Failed to created the order",
+            text: `The following products is out of stock: ${unFullFilledName.join()}`,
+          });
+        }
       } else {
         Swal.fire({
           icon: "error",

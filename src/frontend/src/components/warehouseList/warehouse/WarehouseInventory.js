@@ -19,6 +19,7 @@ const WarehouseInventory = ({ data }) => {
         {data?.map((product, index) => {
           return (
             <button
+              type="button"
               className="my-1"
               style={{ background: "none", border: "none" }}
               onClick={() => handleShowProductPreview(product)}
