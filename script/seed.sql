@@ -1,5 +1,3 @@
-DROP database IF EXISTS `lazada_ecommerce`;
-
 -- Create the database if not exists
 CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
 
@@ -9,6 +7,7 @@ USE `lazada_ecommerce`;
 -- Path: script/seed.sql
 
 -- Create `users` table
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(255) NOT NULL CHECK (CHAR_LENGTH(TRIM(username)) BETWEEN 3 AND 20),
