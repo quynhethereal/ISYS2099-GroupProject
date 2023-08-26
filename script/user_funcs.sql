@@ -1,3 +1,7 @@
+-- Create the database if not exists
+DROP DATABASE IF EXISTS `lazada_ecommerce`;
+CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+
 USE lazada_ecommerce;
 
 -- Generate ULID from datetime

@@ -1,6 +1,3 @@
--- Create the database if not exists
-CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
-
 -- Use the created database
 USE `lazada_ecommerce`;
 
