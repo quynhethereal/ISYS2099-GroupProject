@@ -478,15 +478,41 @@ Product.getImage = async (productId) => {
     }
 }
 
+Product.countByPriceRange = (minPrice, maxPrice) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) as count FROM `products` WHERE price >= ? AND price <= ?',
+            [minPrice, maxPrice],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products.');
+                    reject(err);
+                    return;
+                }
+
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        );
+    });
+}
+
 Product.findByPriceRange = async (params) => {
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
-        const sortDirection = params.sortDirection === 'desc' ? 'DESC' : 'ASC';
-        
+
+        // Validate sorting order
+        const validSortDirections = ['asc', 'desc'];
+        if (!validSortDirections.includes(params.sortDirection)) {
+            throw new Error('Invalid sorting order');
+        }
+        const sortDirection = params.sortDirection || 'asc'; // Default to 'asc' if not provided
+
         const minPrice = parseFloat(params.minPrice) || 0;
         const maxPrice = parseFloat(params.maxPrice) || Number.MAX_VALUE;
-        
+
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
@@ -512,11 +538,11 @@ Product.findByPriceRange = async (params) => {
             currentPage: currentPage,
             totalPages: totalPages,
             totalProductCount: productCount
-        }
+        };
     } catch (err) {
         console.log('Unable to find products.');
         throw err;
     }
-}
+};
 
 module.exports = Product;

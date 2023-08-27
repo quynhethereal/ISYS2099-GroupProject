@@ -172,4 +172,4 @@ exports.findAllByPriceRange = async (req, res) => {
             message: err.message || "Error retrieving products."
         });
     }
-};
+}
