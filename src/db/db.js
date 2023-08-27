@@ -22,6 +22,7 @@ const admin_pool = mysql.createPool({
     user: process.env.MYSQL_ADMIN_USER,
     password: process.env.MYSQL_ADMIN_PASSWORD,
     database: process.env.MYSQL_DATABASE,
+    multipleStatements: true,
     debug: false
 });
 
@@ -91,4 +92,3 @@ seller_pool.getConnection(function (err, connection) {
 });
 
 module.exports = {mongodb_connection, admin_pool, customer_pool, seller_pool};
-

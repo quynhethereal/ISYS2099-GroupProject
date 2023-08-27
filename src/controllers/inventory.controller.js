@@ -72,9 +72,6 @@ exports.updateInventory = async (req, res) => {
             return res.status(400).json({ message: "Invalid quantity." });
         }
 
-        console.log(req.params.id);
-        console.log(req.body.quantity);
-
         const inventory = await Inventory.updateInventory(req.params.id, req.body.quantity);
 
         res.status(200).json(inventory);

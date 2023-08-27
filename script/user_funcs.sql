@@ -163,7 +163,6 @@ BEGIN
                 SET remaining_quantity = 0;
                 SET has_warehouse = 1;
                 COMMIT;
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No space available in any warehouse';
                 LEAVE add_loop;
             END IF;
 

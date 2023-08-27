@@ -133,11 +133,26 @@ Inventory.getInventoryByWarehouseId = async (params) => {
 
 Inventory.updateInventory = async (productId,quantity) => {
     const connection = await admin_pool.promise().getConnection();
+
     try {
-        await connection.execute("call ASSIGN_INVENTORY_TO_WAREHOUSE(?,?)", [productId, quantity]);
+        const queryStr = "SET @pending_quantity = 0; CALL ASSIGN_INVENTORY_TO_WAREHOUSE(?,?,@pending_quantity); SELECT @pending_quantity";
+        const res = await connection.query(queryStr, [productId, quantity]);
+        const pendingQuantity = res[0][2][0]['@pending_quantity'];
+
+        if (pendingQuantity > 0) {
+            return {
+                message: 'Inventory updated successfully. There are some inventories that are not assigned to any warehouse.',
+                pendingQuantity: pendingQuantity
+            }
+        } else {
+            return {
+                message: 'Inventory updated successfully.',
+                quantity: quantity,
+                pendingQuantity: 0
+            }
+        }
     } catch (err) {
         console.log('Unable to update inventory.');
-        // rethrow error
         throw err;
     } finally {
         connection.release();
