@@ -139,18 +139,18 @@ Product.countByKey = (key) => {
 }
 
 Product.findByKey = async (params) => {
+    console.log(params.queryParams);
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
 
         const sortValidations = ['ASC', 'DESC'];
-        if (sortValidations.includes(params.queryParams.sortDirection)) {
+        if (!sortValidations.includes(params.queryParams.sortDirection)) {
             throw new Error('Invalid sorting order.');
         }
 
         const sortDirection = params.queryParams.sortDirection || 'ASC';
         const productCount = await Product.countByKey(params.queryParams.key);
-        const offset = (currentPage - 1) * limit;
         const totalPages = Math.ceil(productCount / limit);
 
         let query = " "
@@ -177,6 +177,8 @@ Product.findByKey = async (params) => {
                     END DESC \
                     LIMIT ?';
         }
+
+        const key = params.queryParams.key;
 
         const res = new Promise((resolve, reject) => {
             customer_pool.execute(
