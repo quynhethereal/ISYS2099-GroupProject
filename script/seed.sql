@@ -57,7 +57,8 @@ CREATE TABLE IF NOT EXISTS `products` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- Indexing
-ALTER TABLE products 
+ALTER TABLE products
+	ADD INDEX idx_products_price(price),
 	ADD INDEX idx_products_category_id(category_id);
 
 -- add foregin keys
