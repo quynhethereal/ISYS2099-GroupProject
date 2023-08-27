@@ -79,7 +79,6 @@ Product.countByCategory = (categoryId) => {
     });
 }
 
-
 Product.countBySellerID = (sellerId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
@@ -327,6 +326,7 @@ Product.updateQuantity = (params) => {
         );
     });
 }
+
 Product.updateImage = async (params) => {
     try {
         const product = await Product.findById(params.productId);
@@ -363,7 +363,6 @@ Product.updateImage = async (params) => {
     }
 };
 
-
 Product.updateCategory = (params) => {
     Product.findById(params.id).then((product) => {
         if (!product) {
@@ -385,7 +384,6 @@ Product.updateCategory = (params) => {
         );
     });
 }
-
 
 // example payload
 // {
@@ -479,4 +477,46 @@ Product.getImage = async (productId) => {
         throw err;
     }
 }
+
+Product.findByPriceRange = async (params) => {
+    try {
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+        const sortDirection = params.sortDirection === 'desc' ? 'DESC' : 'ASC'; // Added line
+        
+        const minPrice = parseFloat(params.minPrice) || 0;
+        const maxPrice = parseFloat(params.maxPrice) || Number.MAX_VALUE;
+        
+        const offset = (currentPage - 1) * limit;
+        const productCount = await Product.countByPriceRange(minPrice, maxPrice);
+        const totalPages = Math.ceil(productCount / limit);
+
+        const res = await new Promise((resolve, reject) => {
+            customer_pool.execute(
+                "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at " + sortDirection + " LIMIT ?,?",
+                [minPrice, maxPrice, offset, limit],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to find products.');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        }
+    } catch (err) {
+        console.log('Unable to find products.');
+        throw err;
+    }
+}
+
 module.exports = Product;
