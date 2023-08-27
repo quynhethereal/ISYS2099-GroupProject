@@ -119,29 +119,91 @@ Product.findByCategory = async (params) => {
 }
 
 // Search keyword in title and description - Best match
-Product.findByKey = (key) => {
+Product.countByKey = (key) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
             'SELECT * FROM `products` \
-            WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\') \
-            ORDER BY \
-            CASE \
-                WHEN title = ? THEN 1 \
-                WHEN title LIKE CONCAT(?,\'%\') THEN 2 \
-                WHEN title LIKE CONCAT(\'%\',?,\'%\') THEN 3 \
-                ELSE 4 \
-            END',
-            [key, key, key, key, key],
+            WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\')',
+            [key, key],
             (err, results) => {
                 if (err) {
                     console.log('Unable to search products');
                     reject(err);
                     return;
                 }
-                resolve(results);
+                const count = results[0].count;
+                resolve(count);
             }
         )
     })
+}
+
+Product.findByKey = async (params) => {
+    try {
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+
+        const sortValidations = ['ASC', 'DESC'];
+        if (sortValidations.includes(params.queryParams.sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
+        const sortDirection = params.queryParams.sortDirection || 'ASC';
+        const productCount = await Product.countByKey(params.queryParams.key);
+        const offset = (currentPage - 1) * limit;
+        const totalPages = Math.ceil(productCount / limit);
+
+        let query = " "
+        if (sortDirection === 'ASC') {
+            query = 'SELECT * FROM `products` \
+                    WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\') \
+                    ORDER BY \
+                    CASE \
+                        WHEN title = ? THEN 1 \
+                        WHEN title LIKE CONCAT(?,\'%\') THEN 2 \
+                        WHEN title LIKE CONCAT(\'%\',?,\'%\') THEN 3 \
+                        ELSE 4 \
+                    END ASC \
+                    LIMIT ?';
+        } else {
+            query = 'SELECT * FROM `products` \
+                    WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\') \
+                    ORDER BY \
+                    CASE \
+                        WHEN title = ? THEN 1 \
+                        WHEN title LIKE CONCAT(?,\'%\') THEN 2 \
+                        WHEN title LIKE CONCAT(\'%\',?,\'%\') THEN 3 \
+                        ELSE 4 \
+                    END DESC \
+                    LIMIT ?';
+        }
+
+        const res = new Promise((resolve, reject) => {
+            customer_pool.execute(
+                query,
+                [key, key, key, key, key, limit],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to search products');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            )
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        }
+        
+    } catch (err) {
+        console.log('Unable to search products. ');
+    } 
 
 }
 

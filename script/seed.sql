@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS `products` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+ALTER TABLE products
+    ADD INDEX idx_products_title(title),
+    ADD INDEX idx_products_description(description);
+
 -- Create `warehouses` table
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
