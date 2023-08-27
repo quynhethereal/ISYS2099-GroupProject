@@ -20,6 +20,7 @@ ALTER TABLE users
 
 
 -- Create `users_info` table
+DROP TABLE IF EXISTS `users_info`;
 CREATE TABLE IF NOT EXISTS `users_info` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` INT(11) NOT NULL,
@@ -38,6 +39,7 @@ ALTER TABLE users_info
 	ADD INDEX idx_users_info_user_id(user_id);
 
 -- Create `products` table
+DROP TABLE IF EXISTS `products`;
 CREATE TABLE IF NOT EXISTS `products` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(255) NOT NULL CHECK (TRIM(title) <> ''),
@@ -63,6 +65,7 @@ ALTER TABLE `products` ADD FOREIGN KEY (`seller_id`) REFERENCES `users`(`id`);
 
 
 -- Create `warehouses` table
+DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL CHECK (TRIM(name) <> ''),
@@ -79,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `warehouses` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- Create `inventory` table
+DROP TABLE IF EXISTS `inventory`;
 CREATE TABLE IF NOT EXISTS `inventory` (
     `product_id` INT(11) NOT NULL,
     `warehouse_id` INT(11) NOT NULL,
@@ -92,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
 -- Indexing
 ALTER TABLE inventory
 	ADD INDEX idx_inventory_product_id_quantity(product_id, quantity),
-	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id),
+	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id);
 
 -- Add foreign keys
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
@@ -111,6 +115,7 @@ END;
 //
 DELIMITER ;
 
+DROP TABLE IF EXISTS `pending_inventory`;
 CREATE TABLE `pending_inventory` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
@@ -122,6 +127,7 @@ ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id
 
 
 -- Create `orders` table
+DROP TABLE IF EXISTS `orders`;
 CREATE TABLE IF NOT EXISTS `orders` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` INT(11) NOT NULL,
@@ -146,6 +152,7 @@ ALTER TABLE `orders` ALTER `total_price` SET DEFAULT 0.0;
 ALTER TABLE `orders` ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`id`);
 
 -- Create `order_items` table
+DROP TABLE IF EXISTS `order_items`;
 CREATE TABLE IF NOT EXISTS `order_items` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `order_id` INT(11) NOT NULL,
