@@ -482,7 +482,7 @@ Product.findByPriceRange = async (params) => {
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
-        const sortDirection = params.sortDirection === 'desc' ? 'DESC' : 'ASC'; // Added line
+        const sortDirection = params.sortDirection === 'desc' ? 'DESC' : 'ASC';
         
         const minPrice = parseFloat(params.minPrice) || 0;
         const maxPrice = parseFloat(params.maxPrice) || Number.MAX_VALUE;
