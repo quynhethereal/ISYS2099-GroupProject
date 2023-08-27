@@ -155,3 +155,21 @@ exports.findBySellerId = async (req, res) => {
     }
 }
 
+exports.findAllByPriceRange = async (req, res) => {
+    try {
+        const params = {
+            minPrice: parseFloat(req.query.minPrice),
+            maxPrice: parseFloat(req.query.maxPrice),
+            queryParams: req.query,
+            sortDirection: req.query.sortDirection || 'asc' // Default to ascending if not provided
+        };
+
+        const products = await Product.findByPriceRange(params);
+
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving products."
+        });
+    }
+};
