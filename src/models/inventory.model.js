@@ -141,7 +141,7 @@ Inventory.updateInventory = async (productId,quantity) => {
 
         if (pendingQuantity > 0) {
             return {
-                message: 'Inventory updated successfully. There are some inventories that are not assigned to any warehouse.',
+                message: 'There are some inventories that are not assigned to any warehouses. Checking pending inventory page for more details.',
                 pendingQuantity: pendingQuantity
             }
         } else {
@@ -153,6 +153,54 @@ Inventory.updateInventory = async (productId,quantity) => {
         }
     } catch (err) {
         console.log('Unable to update inventory.');
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
+Inventory.getPendingInventoryCount = async () => {
+    try {
+        return new Promise(async (resolve, reject) => {
+            await admin_pool.execute('SELECT COUNT(*) FROM `pending_inventory`', (err, results) => {
+                if (err) {
+                    console.log('There is no warehouse with the inventory the requirements.');
+                    reject(err);
+                    return;
+                }
+                console.log("Inventory found.");
+                resolve(results[0]['COUNT(*)']);
+            });
+        });
+    } catch
+    (err) {
+        console.log('Unable to find inventory.');
+        // rethrow error
+        throw err;
+    }
+}
+
+Inventory.getPendingInventory = async (params) => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        const limit = parseInt(params.limit) || 10;
+        const currentPage = parseInt(params.currentPage) || 1;
+        const offset = (currentPage - 1) * limit;
+        const [rows] = await connection.execute("SELECT i.id as inventory_id, p.title, i.quantity, p.image, i.created_at as inventory_created_date FROM `pending_inventory` i INNER JOIN products p WHERE p.id = i.product_id ORDER BY i.ID ASC LIMIT ?,?", [offset + "", limit + ""]);
+
+        const pendingInventoryCount = await Inventory.getPendingInventoryCount();
+        const totalPages = Math.ceil(pendingInventoryCount / limit);
+
+        return {
+            pendingInventory: rows,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages
+        };
+    } catch (err) {
+        console.log('Unable to find inventory.');
+        // rethrow error
         throw err;
     } finally {
         connection.release();
