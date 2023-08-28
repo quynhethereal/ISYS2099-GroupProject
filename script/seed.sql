@@ -1,6 +1,5 @@
 -- Use the created database
 USE `lazada_ecommerce`;
-
 -- Path: script/seed.sql
 
 -- Create `users` table
@@ -55,10 +54,9 @@ CREATE TABLE IF NOT EXISTS `products` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- Indexing
-ALTER TABLE products 
-	ADD INDEX idx_products_category_id(category_id);
+ALTER TABLE products ADD INDEX idx_products_category_id(category_id);
 
--- add foregin keys
+-- add foreign keys
 ALTER TABLE `products` ADD FOREIGN KEY (`seller_id`) REFERENCES `users`(`id`);
 
 
@@ -92,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `inventory` (
 -- Indexing
 ALTER TABLE inventory
 	ADD INDEX idx_inventory_product_id_quantity(product_id, quantity),
-	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id),
+	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id);
 
 -- Add foreign keys
 ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
