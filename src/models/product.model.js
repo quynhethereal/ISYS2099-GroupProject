@@ -139,7 +139,6 @@ Product.countByKey = (key) => {
 }
 
 Product.findByKey = async (params) => {
-    console.log(params.queryParams);
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
@@ -153,7 +152,7 @@ Product.findByKey = async (params) => {
         const productCount = await Product.countByKey(params.queryParams.key);
         const totalPages = Math.ceil(productCount / limit);
 
-        let query = " "
+        query = " ";
         if (sortDirection === 'ASC') {
             query = 'SELECT * FROM `products` \
                     WHERE title LIKE CONCAT(\'%\',?,\'%\') OR description LIKE CONCAT(\'%\',?,\'%\') \
