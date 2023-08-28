@@ -164,10 +164,12 @@ ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`)
 ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
 
 
--- Drop role 
-DROP ROLE IF EXISTS 'admin', 'customer', 'seller';
--- Create roles
-CREATE ROLE IF NOT EXISTS 'admin', 'customer', 'seller';
+-- Drop all roles and users if exists
+drop role if exists 'admin', 'customer', 'seller', 'wh_admin';
+drop user if exists 'admin'@'localhost', 'customer'@'localhost', 'seller'@'localhost', 'wh_admin'@'localhost';
+
+-- Create role
+create role 'admin', 'customer', 'seller', 'wh_admin';
 
 -- Grant permissions for each user role
 -- Admin: All rights
@@ -190,6 +192,7 @@ GRANT SELECT ON lazada_ecommerce.inventory TO 'seller';
 CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
 CREATE USER IF NOT EXISTS 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
 CREATE USER IF NOT EXISTS 'seller'@'localhost' IDENTIFIED BY 'Lseller';
+CREATE USER IF NOT EXISTS 'wh_admin'@'localhost' IDENTIFIED BY 'Lwhadmin';
 
 -- Warehouse admin: All privilege related to warehouse and inventory, select and update products (if needed)
 grant insert, select, update on lazada_ecommerce.users_info to 'wh_admin';
@@ -197,11 +200,14 @@ grant insert, select, update on lazada_ecommerce.users to 'wh_admin';
 grant all on lazada_ecommerce.inventory to 'wh_admin';
 grant all on lazada_ecommerce.warehouses to 'wh_admin';
 grant select, update on lazada_ecommerce.products to 'wh_admin';
+grant insert, select, update, delete on lazada_ecommerce.pending_inventory to 'wh_admin';
+grant execute on procedure lazada_ecommerce.ASSIGN_INVENTORY_TO_WAREHOUSE to 'wh_admin';
 
 -- Assign roles to users
 GRANT 'admin' TO 'admin'@'localhost';
 GRANT 'customer' TO 'customer'@'localhost';
 GRANT 'seller' TO 'seller'@'localhost';
+GRANT 'wh_admin' TO 'wh_admin'@'localhost';
 
 -- Flush privileges
 FLUSH PRIVILEGES;
