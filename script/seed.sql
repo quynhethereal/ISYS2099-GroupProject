@@ -191,6 +191,13 @@ CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
 CREATE USER IF NOT EXISTS 'customer'@'localhost' IDENTIFIED BY 'Lcustomer';
 CREATE USER IF NOT EXISTS 'seller'@'localhost' IDENTIFIED BY 'Lseller';
 
+-- Warehouse admin: All privilege related to warehouse and inventory, select and update products (if needed)
+grant insert, select, update on lazada_ecommerce.users_info to 'wh_admin';
+grant insert, select, update on lazada_ecommerce.users to 'wh_admin';
+grant all on lazada_ecommerce.inventory to 'wh_admin';
+grant all on lazada_ecommerce.warehouses to 'wh_admin';
+grant select, update on lazada_ecommerce.products to 'wh_admin';
+
 -- Assign roles to users
 GRANT 'admin' TO 'admin'@'localhost';
 GRANT 'customer' TO 'customer'@'localhost';
