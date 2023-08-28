@@ -499,16 +499,9 @@ Product.countByPriceRange = (minPrice, maxPrice) => {
 }
 
 Product.findByPriceRange = async (params) => {
-    console.log(params)
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
-
-        // Validate sorting order
-        // const validSortDirections = ['ASC', 'DESC'];
-        // if (!validSortDirections.includes(params.queryParams.sortDirection)) {
-        //     throw new Error('Invalid sorting order');
-        // }
         
         const sortDirection = params.queryParams.sortDirection || 'ASC'; // Default to 'asc' if not provided
 
@@ -519,7 +512,7 @@ Product.findByPriceRange = async (params) => {
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
-        let queryStr = " "
+        let queryStr = " ";
         if (sortDirection === 'ASC') {
             queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at ASC LIMIT ?,?"
         } else {
