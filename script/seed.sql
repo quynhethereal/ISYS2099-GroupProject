@@ -100,13 +100,13 @@ ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`
 
 -- Triggers to create ULID for inventory on insert
 -- SET GLOBAL log_bin_trust_function_creators = 1; // run this if you have error
-DELIMITER //
 DROP trigger IF EXISTS before_inventory_insert;
+DELIMITER //
 CREATE TRIGGER before_inventory_insert
 BEFORE INSERT ON inventory
 FOR EACH ROW
 BEGIN
-  SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
+    SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
 END;
 //
 DELIMITER ;

@@ -503,7 +503,7 @@ Product.findByPriceRange = async (params) => {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
         
-        const sortDirection = params.queryParams.sortDirection || 'ASC'; // Default to 'asc' if not provided
+        const sortDirection = params.queryParams.sortDirection || 'DESC'; // Default to 'DESC' if not provided
 
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
@@ -545,6 +545,81 @@ Product.findByPriceRange = async (params) => {
     } catch (err) {
         console.log('Unable to find products.');
         throw err;
+    }
+}
+
+// Search keyword in title and description - Best match
+Product.countByKey = (key) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) AS count FROM `products` \
+            WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\')' ,
+            [key, key],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products');
+                    reject(err);
+                    return;
+                }
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        )
+    })
+}
+
+Product.findByKey = async (params) => {
+    try {
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+
+        const sortDirection = params.queryParams.sortDirection || 'DESC'; // Default to 'DESC' if not provided
+
+        const offset = (currentPage - 1) * limit;
+
+        const key = params.queryParams.key;
+
+        const productCount = await Product.countByKey(key); // Await after defining key
+        const totalPages = Math.ceil(productCount / limit);
+
+        let queryStr = '';
+        if (sortDirection === 'ASC') {
+            queryStr = 'SELECT * FROM `products` \
+                        WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\') \
+                        ORDER BY created_at ASC \
+                        LIMIT ?, ?';
+        } else {
+            queryStr = 'SELECT * FROM `products` \
+                        WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\') \
+                        ORDER BY created_at DESC \
+                        LIMIT ?, ?';
+        }
+
+        const res = await new Promise((resolve, reject) => {
+            customer_pool.execute(
+                queryStr,
+                [key, key, offset + "", limit + ""],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to search products');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        };
+    } catch (err) {
+        console.log('Unable to search products.');
     }
 }
 
