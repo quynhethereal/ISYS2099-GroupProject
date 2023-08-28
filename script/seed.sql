@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 -- Indexing
 ALTER TABLE products
 	ADD INDEX idx_products_price(price),
+    ADD INDEX idx_products_seller_id(seller_id),
 	ADD INDEX idx_products_category_id(category_id);
 
 -- add foreign keys
