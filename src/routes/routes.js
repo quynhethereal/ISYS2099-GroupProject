@@ -22,7 +22,6 @@ module.exports = app => {
     // authenticate a user
     router.post("/auth", auth.authenticate);
 
-
     // get a user by username and password
     router.post("/user", users.findByUsernamePassword);
 
@@ -37,7 +36,7 @@ module.exports = app => {
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
-
+    router.get("/products/price-range", products.findAllByPriceRange);
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);
