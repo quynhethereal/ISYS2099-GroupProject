@@ -172,7 +172,7 @@ exports.findAllByPriceRange = async (req, res) => {
         }
 
         const validSortDirections = ['ASC', 'DESC'];
-        const sortDirection = req.query.sortDirection || 'ASC';
+        const sortDirection = req.query.sortDirection || 'DESC';
 
         if (!validSortDirections.includes(sortDirection)) {
             throw new Error('Invalid sorting order.');
