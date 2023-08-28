@@ -21,6 +21,7 @@ exports.findById = async (req, res) => {
             });
             return;
         }
+
         res.status(200).json(product);
     } catch (err) {
         res.status(500).send({
@@ -33,13 +34,19 @@ exports.findAllByCategory = async (req, res) => {
     try {
         const categoryId = parseInt(req.params.id);
 
+        if (categoryId === null) {
+            res.status(404).send({
+                message: `Product with category id ${req.params.id} not found.`
+            });
+            return;
+        }
+
         const params = {
             categoryId,
             queryParams: req.query
         }
 
         const products = await Product.findByCategory(params);
-
         res.status(200).json(products);
     } catch (err) {
         res.status(500).send({
@@ -82,7 +89,7 @@ exports.updateImage = async (req, res) => {
         const image = Helper.encodeImage(req.file.path);
 
         // validate presence of params
-        if (productId === null || image === null) {
+        if (productId === null || imageName === null || image === null) {
             res.status(400).send({
                 message: "Invalid request."
             });
@@ -157,19 +164,36 @@ exports.findBySellerId = async (req, res) => {
 
 exports.findAllByPriceRange = async (req, res) => {
     try {
+        const minPrice = parseFloat(req.query.minPrice) || 0;
+        const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_VALUE;
+
+        if (isNaN(minPrice) || isNaN(maxPrice) || minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+            throw new Error('Invalid price range.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection || 'ASC';
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
         const params = {
-            minPrice: parseFloat(req.query.minPrice),
-            maxPrice: parseFloat(req.query.maxPrice),
             queryParams: req.query,
-            sortDirection: req.query.sortDirection || 'asc' // Default to ascending if not provided
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            sortDirection: sortDirection
         };
 
         const products = await Product.findByPriceRange(params);
 
         res.status(200).json(products);
     } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error retrieving products."
+        res.status(400).send({
+            message: err.message || "Invalid request parameters."
         });
     }
 }
+
+
+

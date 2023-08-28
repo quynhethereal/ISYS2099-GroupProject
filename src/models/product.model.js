@@ -499,28 +499,38 @@ Product.countByPriceRange = (minPrice, maxPrice) => {
 }
 
 Product.findByPriceRange = async (params) => {
+    console.log(params)
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
 
         // Validate sorting order
-        const validSortDirections = ['asc', 'desc'];
-        if (!validSortDirections.includes(params.sortDirection)) {
-            throw new Error('Invalid sorting order');
-        }
-        const sortDirection = params.sortDirection || 'asc'; // Default to 'asc' if not provided
+        // const validSortDirections = ['ASC', 'DESC'];
+        // if (!validSortDirections.includes(params.queryParams.sortDirection)) {
+        //     throw new Error('Invalid sorting order');
+        // }
+        
+        const sortDirection = params.queryParams.sortDirection || 'ASC'; // Default to 'asc' if not provided
 
-        const minPrice = parseFloat(params.minPrice) || 0;
-        const maxPrice = parseFloat(params.maxPrice) || Number.MAX_VALUE;
+        const minPrice = parseFloat(params.queryParams.minPrice) || 0;
+        const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
 
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
+        let queryStr = " "
+        if (sortDirection === 'ASC') {
+            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at ASC LIMIT ?,?"
+        } else {
+            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?,?"
+        }
+
         const res = await new Promise((resolve, reject) => {
+
             customer_pool.execute(
-                "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at " + sortDirection + " LIMIT ?,?",
-                [minPrice, maxPrice, offset, limit],
+                queryStr,
+                [minPrice, maxPrice, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -529,7 +539,7 @@ Product.findByPriceRange = async (params) => {
                     }
                     resolve(results);
                 }
-            );
+            )
         });
 
         return {
@@ -543,6 +553,6 @@ Product.findByPriceRange = async (params) => {
         console.log('Unable to find products.');
         throw err;
     }
-};
+}
 
 module.exports = Product;
