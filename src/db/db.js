@@ -32,7 +32,7 @@ admin_pool.on('release', function (connection) {
 
 admin_pool.getConnection(function (err, connection) {
     if (err) {
-        console.error('Error connecting customer pool to MySQL:', err);
+        console.error('Error connecting admin pool to MySQL:', err);
         connection.release();
         throw err;
     }
