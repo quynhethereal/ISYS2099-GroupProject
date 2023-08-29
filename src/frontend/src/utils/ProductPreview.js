@@ -96,6 +96,7 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
                     id="quantity"
                     min="0"
                     className="form-control"
+                    placeholder="Enter the quantity you want to add..."
                     {...register("quantity", {
                       required: "The quantity is required",
                       valueAsNumber: true,
