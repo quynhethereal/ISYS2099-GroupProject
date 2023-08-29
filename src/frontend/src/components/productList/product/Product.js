@@ -3,22 +3,28 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ProductPreview from "../../../utils/ProductPreview.js";
-// import unknownProduct from "../../../assets/image/unknownProduct.png";
+import ProductUpdateForm from "../../../utils/ProductUpdateForm.js";
 
 const Product = ({ info, update }) => {
-  const [showPreview, setShowPreview] = useState(false);
+  const [showUpdateQuantityForm, setShowUpdateQuantityForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
   const navigate = useNavigate();
   const hanleViewProduct = (item) => {
     navigate(`/customer/product/details/${item.id}`);
   };
-  const handleUpdateProduct = (item) => {
-    console.log("Going to update", item);
-    handleShowPreview();
+  const handleUpdateProductQuantity = (item) => {
+    handleOpenUpdateQuantityForm();
   };
 
-  const handleShowPreview = () => {
-    setShowPreview((prev) => !prev);
+  const handleOpenUpdateQuantityForm = () => {
+    setShowUpdateQuantityForm((prev) => !prev);
   };
+
+  const handleOpenUpdateForm = () => {
+    setShowUpdateForm((prev) => !prev);
+  };
+
+  const handleUpdateProduct = (item) => {};
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
@@ -43,22 +49,38 @@ const Product = ({ info, update }) => {
               {info?.price}
             </p>
           </div>
-          {update && showPreview && (
+          {update && showUpdateQuantityForm && (
             <ProductPreview
               data={info}
-              show={showPreview}
-              handleClose={handleShowPreview}
+              show={showUpdateQuantityForm}
+              handleClose={handleOpenUpdateQuantityForm}
               update={true}
             />
           )}
+          {update && showUpdateForm && (
+            <ProductUpdateForm
+              data={info}
+              show={showUpdateForm}
+              handleClose={handleOpenUpdateForm}
+            />
+          )}
           {update ? (
-            <button
-              type="button"
-              className="btn btn-warning"
-              onClick={() => handleUpdateProduct(info)}
-            >
-              Update product
-            </button>
+            <div>
+              <button
+                type="button"
+                className="btn btn-warning"
+                onClick={() => handleUpdateProductQuantity(info)}
+              >
+                Update quantity
+              </button>
+              <button
+                type="button"
+                className="btn btn-warning"
+                onClick={() => handleUpdateProduct(info)}
+              >
+                Update quantity
+              </button>
+            </div>
           ) : (
             <button
               type="button"

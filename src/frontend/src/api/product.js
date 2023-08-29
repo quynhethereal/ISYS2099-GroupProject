@@ -20,3 +20,11 @@ export const updateProductQuantity = (token, id, formData) =>
   axios.put(`${backend_url}/api/product/${id}/quantity`, formData, {
     headers: { "x-access-token": token },
   });
+export const updateProduct = (token, id, formData) =>
+  axios.put(`${backend_url}/api/product/${id}`, formData, {
+    headers: { "x-access-token": token },
+  });
+export const uploadImage = (token, id, imgData) =>
+  axios.put(`${backend_url}/api/product/${id}/image`, imgData, {
+    headers: { "x-access-token": token },
+  });

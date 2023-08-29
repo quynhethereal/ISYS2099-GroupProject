@@ -27,7 +27,7 @@ const ControlPanel = () => {
       <ul className="nav nav-pills flex-column mb-auto">
         <li className="nav-item my-2">
           <a
-            href="/admin"
+            href="/seller"
             className={`nav-link text-black d-flex justify-content-start align-items-center ${
               location === "/seller" && "active"
             }`}
@@ -46,7 +46,7 @@ const ControlPanel = () => {
         </li>
         <li className="nav-item my-2">
           <a
-            href="/admin/warehouse"
+            href="/seller/inventory"
             className={`nav-link text-black d-flex justify-content-start align-items-center ${
               location === "/seller/inventory" && "active"
             }`}

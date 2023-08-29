@@ -39,3 +39,23 @@ export const updateProductQuantity = async (token, id, formData) => {
     console.log(error);
   }
 };
+
+export const updateProduct = async (token, id, formData) => {
+  try {
+    const { data } = await api.updateProduct(token, id, formData);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const uploadImage = async (token, id, imgData) => {
+  try {
+    const { data } = await api.updateProduct(token, id, imgData);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
