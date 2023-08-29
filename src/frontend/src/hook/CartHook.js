@@ -32,6 +32,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeItem = (data) => {
+    if (cart.length === 1) {
+      setCart(null);
+    }
     setCart(cart.filter((item) => item.id !== data.id));
   };
 

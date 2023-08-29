@@ -58,7 +58,7 @@ const WarehouseCreateForm = () => {
   return (
     <>
       <Button variant="primary" onClick={() => handleToggleModal()}>
-        Launch demo modal
+        Create Warehouse
       </Button>
 
       <Modal

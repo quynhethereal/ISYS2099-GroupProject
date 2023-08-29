@@ -95,7 +95,7 @@ const WarehouseList = () => {
       <div className="row mb-md-4">
         <WarehouseCreateForm />
       </div>
-      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-center p-0">
+      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-start p-0">
         {warehouses?.warehouses?.map((item, index) => {
           return <WarehouseItem key={index} data={item} token={token} />;
         })}

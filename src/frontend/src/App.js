@@ -7,7 +7,8 @@ import ProductDetail from "./components/productList/product/ProductDetail";
 import CustomerOrderPage from "./components/orderPage/CustomerOrderPage";
 
 import Admin from "./components/admin/Admin";
-// import WarehouseList from "./components/warehouseList/WarehouseList";
+
+import Seller from "./components/seller/Seller";
 
 import BlockPage from "./components/blockPage/BlockPage";
 import NotFoundPage from "./components/notFoundPage/NotFoundPage";
@@ -65,6 +66,14 @@ function App() {
                 element={
                   <ProtectedRoute role={"admin"}>
                     <Admin />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
+                path="/seller/*"
+                element={
+                  <ProtectedRoute role={"seller"}>
+                    <Seller />
                   </ProtectedRoute>
                 }
               ></Route>
