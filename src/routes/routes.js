@@ -37,6 +37,8 @@ module.exports = app => {
     router.get("/product/:id/image", products.getImage);
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
+    router.get("/products/search", products.findAllByKey);
+
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);

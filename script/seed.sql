@@ -55,7 +55,9 @@ CREATE TABLE IF NOT EXISTS `products` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- Indexing
 ALTER TABLE products
+    ADD FULLTEXT INDEX idx_products_title_description(title, description),
 	ADD INDEX idx_products_price(price),
+    ADD INDEX idx_products_seller_id(seller_id),
 	ADD INDEX idx_products_category_id(category_id);
 
 -- add foreign keys
@@ -100,13 +102,13 @@ ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`
 
 -- Triggers to create ULID for inventory on insert
 -- SET GLOBAL log_bin_trust_function_creators = 1; // run this if you have error
-DELIMITER //
 DROP trigger IF EXISTS before_inventory_insert;
+DELIMITER //
 CREATE TRIGGER before_inventory_insert
 BEFORE INSERT ON inventory
 FOR EACH ROW
 BEGIN
-  SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
+    SET NEW.id = ULID_FROM_DATETIME(NEW.created_at);
 END;
 //
 DELIMITER ;
@@ -204,6 +206,8 @@ grant all on lazada_ecommerce.warehouses to 'wh_admin';
 grant select, update on lazada_ecommerce.products to 'wh_admin';
 grant insert, select, update, delete on lazada_ecommerce.pending_inventory to 'wh_admin';
 grant execute on procedure lazada_ecommerce.ASSIGN_INVENTORY_TO_WAREHOUSE to 'wh_admin';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.orders TO 'wh_admin';
+GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order_items TO 'wh_admin';
 
 -- Assign roles to users
 GRANT 'admin' TO 'admin'@'localhost';
@@ -245,7 +249,7 @@ VALUES
 INSERT INTO `products` (`title`, `description`, `price`, `image`, `image_name`, `length`, `width`, `height`, `category_id`, `seller_id`, `created_at`, `updated_at`)
 VALUES
     ('Smartphone X', 'High-end smartphone with advanced features.', 799.99, 'https://technostore.es/wp-content/uploads/smartphone_x_series_1.jpeg', 'smartphone_x.jpg', 5.7, 2.8, 0.35, 1, 2, NOW(), NOW()),
-    ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, 'lhttps://cdn.tgdd.vn/Products/Images/44/282885/apple-macbook-pro-m2-2022-xam-600x600.jpg', 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, 2, NOW() - INTERVAL 1 HOUR, NOW() - INTERVAL 1 HOUR),
+    ('Laptop Pro', 'Powerful laptop for professionals and creators.', 1499.99, 'https://cdn.tgdd.vn/Products/Images/44/282885/apple-macbook-pro-m2-2022-xam-600x600.jpg', 'laptop_pro.jpg', 14.0, 9.5, 0.75, 2, 2, NOW() - INTERVAL 1 HOUR, NOW() - INTERVAL 1 HOUR),
     ('Fitness Tracker', 'Track your fitness activities and stay healthy.', 49.95, 'https://media.wired.com/photos/61b26233c2f5f4d2aaf1c2b5/master/w_2580,c_limit/Gear-Fitbit-Charge-5.jpg', 'fitness_tracker.jpg', 1.5, 1.2, 0.2, 3, 2, NOW() - INTERVAL 2 HOUR, NOW() - INTERVAL 2 HOUR),
     ('Wireless Earbuds', 'Enjoy high-quality sound without the wires.', 89.99, 'https://cdn-amz.woka.io/images/I/61ERSWgDaOL.jpg', 'earbuds.jpg', 2.0, 1.5, 0.5, 1, 2, NOW() - INTERVAL 3 HOUR, NOW() - INTERVAL 3 HOUR),
     ('Coffee Maker', 'Brew your favorite coffee with ease.', 39.99, 'https://www.realsimple.com/thmb/hSXYZv75NB9gny3R1Kn0YtxTw4Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/best-coffee-makers-with-grinders-test-tout-a5f577a81be746489d952770f8181c12.jpg', 'coffee_maker.jpg', 9.0, 6.0, 8.0, 4, 2, NOW() - INTERVAL 4 HOUR, NOW() - INTERVAL 4 HOUR),
