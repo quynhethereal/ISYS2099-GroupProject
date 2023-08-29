@@ -22,12 +22,10 @@ export const getProductById = async (id) => {
 
 export const getProductBySellerId = async (token, currentPage, limit) => {
   try {
-    const data = await api.getProductBySellerId(token, currentPage, limit);
-
-    console.log(data);
+    const { data } = await api.getProductBySellerId(token, currentPage, limit);
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
   }
 };

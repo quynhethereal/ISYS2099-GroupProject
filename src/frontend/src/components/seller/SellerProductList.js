@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hook/AuthHook.js";
 import { getProductBySellerId } from "../../action/product/product.js";
 
-import Product from "../";
+import Product from "../productList/product/Product.js";
 
 const SellerProductList = () => {
   const { token } = useAuth();
