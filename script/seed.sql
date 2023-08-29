@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `products` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 -- Indexing
 ALTER TABLE products
+    ADD FULLTEXT INDEX idx_products_title_description(title, description),
 	ADD INDEX idx_products_price(price),
     ADD INDEX idx_products_seller_id(seller_id),
 	ADD INDEX idx_products_category_id(category_id);

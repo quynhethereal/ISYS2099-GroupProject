@@ -553,8 +553,8 @@ Product.countByKey = (key) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
             'SELECT COUNT(*) AS count FROM `products` \
-            WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\')' ,
-            [key, key],
+            WHERE MATCH(title, description) AGAINST(?)' ,
+            [key],
             (err, results) => {
                 if (err) {
                     console.log('Unable to count products');
@@ -586,12 +586,12 @@ Product.findByKey = async (params) => {
         let queryStr = '';
         if (sortDirection === 'ASC') {
             queryStr = 'SELECT * FROM `products` \
-                        WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\') \
+                        WHERE MATCH(title, description) AGAINST(?) \
                         ORDER BY created_at ASC \
                         LIMIT ?, ?';
         } else {
             queryStr = 'SELECT * FROM `products` \
-                        WHERE title LIKE CONCAT(\'%\', ?, \'%\') OR description LIKE CONCAT(\'%\', ?, \'%\') \
+                        WHERE MATCH(title, description) AGAINST(?) \
                         ORDER BY created_at DESC \
                         LIMIT ?, ?';
         }
@@ -599,7 +599,7 @@ Product.findByKey = async (params) => {
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
                 queryStr,
-                [key, key, offset + "", limit + ""],
+                [key, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to search products');
