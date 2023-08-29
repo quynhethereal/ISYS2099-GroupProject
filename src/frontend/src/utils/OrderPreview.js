@@ -35,7 +35,7 @@ const OrderPreview = ({ data, show, handleClose }) => {
   }, []);
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title className="ms-auto">#{data?.id} Order</Modal.Title>
       </Modal.Header>
@@ -56,8 +56,9 @@ const OrderPreview = ({ data, show, handleClose }) => {
           </div>
           <div className="col-12 d-flex flex-column my-3">
             <div className="d-flex flex-row justify-content-between align-items-center p-2 text-start fw-bold">
-              <div className="col-3">Name</div>
-              <div className="col-6">Description</div>
+              <div className="col-2">Name</div>
+              <div className="col-3">Image</div>
+              <div className="col-4">Description</div>
               <div className="col-2">Quantity</div>
             </div>
             {detail?.orderItems?.map((product, index) => {
@@ -66,8 +67,9 @@ const OrderPreview = ({ data, show, handleClose }) => {
                   key={index}
                   className="d-flex flex-row justify-content-between align-items-center p-2 text-start text-secondary"
                 >
-                  <div className="col-3">{product?.title}</div>
-                  <div className="col-6">{product?.description}</div>
+                  <div className="col-2">{product?.title}</div>
+                  <div className="col-3">{product?.image}</div>
+                  <div className="col-4">{product?.description}</div>
                   <div className="col-2">{product?.quantity}</div>
                 </div>
               );

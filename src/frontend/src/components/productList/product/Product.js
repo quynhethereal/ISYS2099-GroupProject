@@ -1,34 +1,23 @@
 import React from "react";
 
-import axios from "axios";
-
 import { useNavigate } from "react-router-dom";
 
 import unknownProduct from "../../../assets/image/unknownProduct.png";
 
-const Product = ({ info }) => {
+const Product = ({ info, update }) => {
   const navigate = useNavigate();
   const hanleViewProduct = (item) => {
     navigate(`/customer/product/details/${item.id}`);
   };
-
-  // async function CheckImage(path) {
-  //   await axios
-  //     .get(info?.image)
-  //     .then((result) => {
-  //       return true;
-  //     })
-  //     .catch(() => {
-  //       return false;
-  //     });
-  // }
+  const handleUpdateProduct = (item) => {
+    console.log("we are going to update this");
+  };
 
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
         <div className="card-img-top text-center">
           <img
-            // src={`data:image/png;base64,${base64String}`}
             src={info?.image || unknownProduct}
             alt={info?.image_name ? info?.image_name : "product"}
             style={{ width: 200, height: 200 }}
@@ -49,12 +38,21 @@ const Product = ({ info }) => {
             </p>
           </div>
 
-          <button
-            className="btn btn-success"
-            onClick={() => hanleViewProduct(info)}
-          >
-            View product
-          </button>
+          {update ? (
+            <button
+              className="btn btn-success"
+              onClick={() => handleUpdateProduct(info)}
+            >
+              Update product
+            </button>
+          ) : (
+            <button
+              className="btn btn-success"
+              onClick={() => hanleViewProduct(info)}
+            >
+              View product
+            </button>
+          )}
         </div>
       </div>
     </>

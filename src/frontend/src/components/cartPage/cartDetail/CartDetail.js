@@ -86,11 +86,19 @@ const CartDetail = () => {
           });
         }
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Maximum 30 items are allowed per order",
-        });
+        if (result?.status === 400) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Maximum 30 items are allowed per order",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: result?.response?.data?.message,
+          });
+        }
       }
     });
     setIsOrdering(false);

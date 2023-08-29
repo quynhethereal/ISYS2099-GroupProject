@@ -7,6 +7,7 @@ export const createOrder = async (token, cart) => {
     return respone;
   } catch (error) {
     console.log(error);
+    return error;
   }
 };
 
