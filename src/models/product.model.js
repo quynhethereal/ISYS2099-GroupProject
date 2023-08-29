@@ -79,6 +79,67 @@ Product.countByCategory = (categoryId) => {
     });
 }
 
+Product.countBySellerID = (sellerId) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) as count FROM `products` WHERE seller_id = ?',
+            [sellerId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products.');
+                    reject(err);
+                    return;
+                }
+
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        );
+    });
+}
+
+// use offset - limit
+Product.findBySellerId = async (params) => {
+    try {
+        console.log(params);
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+        const offset = (currentPage - 1) * limit;
+        const productCount = await Product.countBySellerID(params.sellerId);
+        const totalPages = Math.ceil(productCount / limit);
+
+        const res = await new Promise((resolve, reject) => {
+            seller_pool.execute(
+                "SELECT * FROM `products` WHERE seller_id = ? ORDER BY id ASC LIMIT ?,?",
+                [params.sellerId, offset +"", limit+""],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to find products.');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        }
+        
+    } catch (err) {
+        console.log(err.stack);
+        console.log('Unable to find products.');
+        throw err;
+    } 
+
+}
+
 // use offset - limit
 // example params = { category: 1, limit: 10, currentPage: 1 }
 Product.findByCategory = async (params) => {
@@ -265,6 +326,7 @@ Product.updateQuantity = (params) => {
         );
     });
 }
+
 Product.updateImage = async (params) => {
     try {
         const product = await Product.findById(params.productId);
@@ -301,7 +363,6 @@ Product.updateImage = async (params) => {
     }
 };
 
-
 Product.updateCategory = (params) => {
     Product.findById(params.id).then((product) => {
         if (!product) {
@@ -323,7 +384,6 @@ Product.updateCategory = (params) => {
         );
     });
 }
-
 
 // example payload
 // {
@@ -417,4 +477,75 @@ Product.getImage = async (productId) => {
         throw err;
     }
 }
+
+Product.countByPriceRange = (minPrice, maxPrice) => {
+    return new Promise((resolve, reject) => {
+        customer_pool.execute(
+            'SELECT COUNT(*) as count FROM `products` WHERE price >= ? AND price <= ?',
+            [minPrice, maxPrice],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to count products.');
+                    reject(err);
+                    return;
+                }
+
+                const count = results[0].count;
+                console.log("Counted products.");
+                resolve(count);
+            }
+        );
+    });
+}
+
+Product.findByPriceRange = async (params) => {
+    try {
+        const limit = parseInt(params.queryParams.limit) || 10;
+        const currentPage = parseInt(params.queryParams.currentPage) || 1;
+        
+        const sortDirection = params.queryParams.sortDirection || 'ASC'; // Default to 'asc' if not provided
+
+        const minPrice = parseFloat(params.queryParams.minPrice) || 0;
+        const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
+
+        const offset = (currentPage - 1) * limit;
+        const productCount = await Product.countByPriceRange(minPrice, maxPrice);
+        const totalPages = Math.ceil(productCount / limit);
+
+        let queryStr = " ";
+        if (sortDirection === 'ASC') {
+            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at ASC LIMIT ?,?"
+        } else {
+            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?,?"
+        }
+
+        const res = await new Promise((resolve, reject) => {
+
+            customer_pool.execute(
+                queryStr,
+                [minPrice, maxPrice, offset + "", limit + ""],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to find products.');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            )
+        });
+
+        return {
+            products: res,
+            limit: limit,
+            currentPage: currentPage,
+            totalPages: totalPages,
+            totalProductCount: productCount
+        };
+    } catch (err) {
+        console.log('Unable to find products.');
+        throw err;
+    }
+}
+
 module.exports = Product;

@@ -1,3 +1,7 @@
+-- Create the database if not exists
+DROP DATABASE IF EXISTS `lazada_ecommerce`;
+CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+
 USE lazada_ecommerce;
 
 -- Generate ULID from datetime
@@ -116,11 +120,9 @@ DELIMITER ;
 
 -- end of update inventory on order reject
 
-
-
 drop procedure IF EXISTS ASSIGN_INVENTORY_TO_WAREHOUSE;
 DELIMITER $$
-create procedure ASSIGN_INVENTORY_TO_WAREHOUSE(IN product_id INT, IN total_quantity INT)
+create procedure ASSIGN_INVENTORY_TO_WAREHOUSE(IN product_id INT, IN total_quantity INT, OUT pending_items_count INT)
 BEGIN
      DECLARE items_to_stock INT;
      DECLARE max_warehouse_id INT;
@@ -157,10 +159,10 @@ BEGIN
             IF items_to_stock = 0 THEN
                 -- insert into pending inventory
                 INSERT INTO pending_inventory (product_id, quantity) VALUES (product_id, remaining_quantity);
+                SET pending_items_count = remaining_quantity;
                 SET remaining_quantity = 0;
                 SET has_warehouse = 1;
                 COMMIT;
-                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No space available in any warehouse';
                 LEAVE add_loop;
             END IF;
 
