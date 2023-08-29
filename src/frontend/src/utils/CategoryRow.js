@@ -1,6 +1,6 @@
 import React from "react";
 
-import AttributeRow from "./AttributeRow.js";
+// import AttributeRow from "./AttributeRow.js";
 
 const CategoryRow = ({ data }) => {
   console.log(data);
