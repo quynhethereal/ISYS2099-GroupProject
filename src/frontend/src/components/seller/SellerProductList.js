@@ -13,10 +13,13 @@ const SellerProductList = () => {
     totalPage: null,
   });
 
-  //   params.currentPage, params.limit;
   useEffect(() => {
     async function getProducts() {
-      await getProductBySellerId(token(), 2, 10).then((res) => {
+      await getProductBySellerId(
+        token(),
+        params.currentPage,
+        params.limit
+      ).then((res) => {
         if (res) {
           setParams({
             product: res?.products,
@@ -35,7 +38,17 @@ const SellerProductList = () => {
   }, []);
 
   return (
-    <div className="container p-4 d-flex flex-column justify-content-start align-items-center"></div>
+    <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
+      <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
+        {params?.product?.map((item, index) => {
+          return (
+            <div key={index}>
+              <Product info={item} update={true}></Product>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 

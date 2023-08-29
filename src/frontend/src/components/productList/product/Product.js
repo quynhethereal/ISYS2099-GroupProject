@@ -12,7 +12,6 @@ const Product = ({ info, update }) => {
   const handleUpdateProduct = (item) => {
     console.log("we are going to update this");
   };
-
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
@@ -40,13 +39,15 @@ const Product = ({ info, update }) => {
 
           {update ? (
             <button
-              className="btn btn-success"
+              type="button"
+              className="btn btn-warning"
               onClick={() => handleUpdateProduct(info)}
             >
               Update product
             </button>
           ) : (
             <button
+              type="button"
               className="btn btn-success"
               onClick={() => hanleViewProduct(info)}
             >

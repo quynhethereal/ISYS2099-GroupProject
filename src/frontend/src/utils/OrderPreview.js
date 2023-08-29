@@ -4,9 +4,11 @@ import Button from "react-bootstrap/Button";
 
 import { useAuth } from "../hook/AuthHook.js";
 import { getOrderById } from "../action/order/order.js";
+import { getProductById } from "../action/product/product.js";
 
 const OrderPreview = ({ data, show, handleClose }) => {
   const [detail, setDetail] = useState([]);
+  const [imgSource, setImageSoure] = useState([]);
   function stateProgressBar() {
     switch (detail?.status) {
       case "pending":
@@ -25,6 +27,16 @@ const OrderPreview = ({ data, show, handleClose }) => {
       await getOrderById(token(), data?.id).then((res) => {
         if (res) {
           setDetail(res);
+          res?.orderItems.forEach((element) => {
+            // getImage()
+          });
+        }
+      });
+    }
+    async function getImage(id) {
+      await getProductById(id).then((res) => {
+        if (res?.image) {
+          setImageSoure([...imgSource, res?.image]);
         }
       });
     }

@@ -31,6 +31,7 @@ const CartDetail = () => {
         quantity: item?.quantity,
       })),
     };
+    console.log(payload);
     await createOrder(token(), payload).then((result) => {
       if (result && result?.status === 200) {
         var unFullFilledId = result?.data?.unfulfilledProducts;
