@@ -29,3 +29,13 @@ export const getProductBySellerId = async (token, currentPage, limit) => {
     console.log(error.message);
   }
 };
+
+export const updateProductQuantity = async (token, id, formData) => {
+  try {
+    const { data } = await api.updateProductQuantity(token, id, formData);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

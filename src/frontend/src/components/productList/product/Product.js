@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ProductPreview from "../../../utils/ProductPreview.js";
-import unknownProduct from "../../../assets/image/unknownProduct.png";
+// import unknownProduct from "../../../assets/image/unknownProduct.png";
 
 const Product = ({ info, update }) => {
   const [showPreview, setShowPreview] = useState(false);
@@ -12,7 +12,7 @@ const Product = ({ info, update }) => {
     navigate(`/customer/product/details/${item.id}`);
   };
   const handleUpdateProduct = (item) => {
-    console.log("This item is going to update", item);
+    console.log("Going to update", item);
     handleShowPreview();
   };
 
@@ -24,7 +24,7 @@ const Product = ({ info, update }) => {
       <div className="card" style={{ width: "16rem" }}>
         <div className="card-img-top text-center">
           <img
-            src={info?.image || unknownProduct}
+            src={info?.image}
             alt={info?.image_name ? info?.image_name : "product"}
             style={{ width: 200, height: 200 }}
           />

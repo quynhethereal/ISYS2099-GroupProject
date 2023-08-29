@@ -15,3 +15,8 @@ export const getProductBySellerId = (token, currentPage, limit) =>
       headers: { "x-access-token": token },
     }
   );
+
+export const updateProductQuantity = (token, id, formData) =>
+  axios.put(`${backend_url}/api/product/${id}/quantity`, formData, {
+    headers: { "x-access-token": token },
+  });
