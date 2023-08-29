@@ -1,8 +1,11 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-import { updateProductQuantity } from "../action/product/product.js";
+import {
+  updateProductQuantity,
+  getProductInInventory,
+} from "../action/product/product.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +15,7 @@ import Button from "react-bootstrap/Button";
 const ProductPreview = ({ data, show, handleClose, update }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [product, setProduct] = useState();
   const {
     register,
     handleSubmit,
@@ -21,6 +25,26 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
       quantity: null,
     },
   });
+  function sumTotal(productData, isQuantity) {
+    if (!productData) {
+      return;
+    }
+    if (isQuantity) {
+      if (productData.length === 0) {
+        return productData?.quantity;
+      }
+      return productData?.reduce((accumulator, object) => {
+        return accumulator + object.quantity;
+      }, 0);
+    } else {
+      if (productData.length === 0) {
+        return productData?.reserved_quantity;
+      }
+      return productData?.reduce((accumulator, object) => {
+        return accumulator + object.reserved_quantity;
+      }, 0);
+    }
+  }
   function formatDate(dateString) {
     const options = {
       year: "numeric",
@@ -32,11 +56,22 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
 
+  useEffect(() => {
+    async function getProduct(params) {
+      await getProductInInventory(token(), data?.id).then((res) => {
+        if (res) {
+          setProduct(res);
+        }
+      });
+    }
+    getProduct();
+    // eslint-disable-next-line
+  }, []);
+  console.log(product);
   const handleUpdateChangeQuantity = async (value) => {
     await updateProductQuantity(token(), data?.id, value).then((res) => {
       if (res) {
         if (res?.pendingQuantity === 0) {
-          console.log(res);
           Swal.fire({
             icon: "success",
             title: res?.message,
@@ -89,7 +124,7 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
               {update ? (
                 <div className="w-100 px-3">
                   <label htmlFor="quantity" className="text-muted">
-                    Quantity {data?.quantity} (current)
+                    Quantity {product && sumTotal(product, true)}(current)
                   </label>
                   <input
                     type="number"
@@ -107,11 +142,13 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
                   </p>
                 </div>
               ) : (
-                <p className="text-secondary">Quantity: {data?.quantity}</p>
+                <p className="text-secondary">
+                  Quantity: {product && sumTotal(product, true)}
+                </p>
               )}
               {!update && (
                 <p className="text-secondary">
-                  Reserved Quantity: {data?.reserved_quantity}
+                  Reserved Quantity: {product && sumTotal(product, false)}
                 </p>
               )}
             </div>

@@ -58,7 +58,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
             Cancel
           </Button>
           <Button className="btn btn-primary" type="submit">
-            Update
+            Update Product
           </Button>
         </Modal.Footer>
       </form>

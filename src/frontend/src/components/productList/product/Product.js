@@ -68,17 +68,17 @@ const Product = ({ info, update }) => {
             <div>
               <button
                 type="button"
-                className="btn btn-warning"
+                className="btn btn-success"
                 onClick={() => handleUpdateProductQuantity(info)}
               >
                 Update quantity
               </button>
               <button
                 type="button"
-                className="btn btn-warning"
+                className="btn btn-warning mt-3"
                 onClick={() => handleUpdateProduct(info)}
               >
-                Update quantity
+                Update Product
               </button>
             </div>
           ) : (

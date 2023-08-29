@@ -20,6 +20,16 @@ export const getProductById = async (id) => {
   }
 };
 
+export const getProductInInventory = async (token, id) => {
+  try {
+    const { data } = await api.getProductInInventory(token, id);
+
+    return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 export const getProductBySellerId = async (token, currentPage, limit) => {
   try {
     const { data } = await api.getProductBySellerId(token, currentPage, limit);
