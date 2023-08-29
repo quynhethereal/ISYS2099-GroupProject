@@ -59,26 +59,6 @@ Product.count = () => {
     });
 }
 
-Product.countByCategory = (categoryId) => {
-    return new Promise((resolve, reject) => {
-        customer_pool.execute(
-            'SELECT COUNT(*) as count FROM `products` WHERE category_id = ?',
-            [categoryId],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to count products.');
-                    reject(err);
-                    return;
-                }
-
-                const count = results[0].count;
-                console.log("Counted products.");
-                resolve(count);
-            }
-        );
-    });
-}
-
 Product.countBySellerID = (sellerId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
@@ -99,7 +79,6 @@ Product.countBySellerID = (sellerId) => {
     });
 }
 
-// use offset - limit
 Product.findBySellerId = async (params) => {
     try {
         console.log(params);
@@ -140,21 +119,16 @@ Product.findBySellerId = async (params) => {
 
 }
 
-// use offset - limit
-// example params = { category: 1, limit: 10, currentPage: 1 }
 Product.findByCategory = async (params) => {
     try {
-        const limit = parseInt(params.queryParams.limit) || 10;
-        const currentPage = parseInt(params.queryParams.currentPage) || 1;
         const categoryId = parseInt(params.categoryId) || 1;
-        const offset = (currentPage - 1) * limit;
-        const productCount = await Product.countByCategory(categoryId);
-        const totalPages = Math.ceil(productCount / limit);
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                "SELECT * FROM `products` WHERE category_id = ? ORDER BY id ASC LIMIT ?,?",
-                [categoryId + "", offset + "", limit + ""],
+                `SELECT * FROM \`products\` WHERE category_id = ? ORDER BY ${sortTerm} ${sortDirection}`,
+                [categoryId + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -168,10 +142,7 @@ Product.findByCategory = async (params) => {
 
         return {
             products: res,
-            limit: limit,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalProductCount: productCount
+            totalProductCount: res.length // You need to calculate this based on the length of the result array
         }
     } catch (err) {
         console.log('Unable to find products.');
@@ -478,52 +449,18 @@ Product.getImage = async (productId) => {
     }
 }
 
-Product.countByPriceRange = (minPrice, maxPrice) => {
-    return new Promise((resolve, reject) => {
-        customer_pool.execute(
-            'SELECT COUNT(*) as count FROM `products` WHERE price >= ? AND price <= ?',
-            [minPrice, maxPrice],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to count products.');
-                    reject(err);
-                    return;
-                }
-
-                const count = results[0].count;
-                console.log("Counted products.");
-                resolve(count);
-            }
-        );
-    });
-}
-
 Product.findByPriceRange = async (params) => {
     try {
-        const limit = parseInt(params.queryParams.limit) || 10;
-        const currentPage = parseInt(params.queryParams.currentPage) || 1;
-        
-        const sortDirection = params.queryParams.sortDirection || 'DESC'; // Default to 'DESC' if not provided
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
 
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
 
-        const offset = (currentPage - 1) * limit;
-        const productCount = await Product.countByPriceRange(minPrice, maxPrice);
-        const totalPages = Math.ceil(productCount / limit);
-
-        let queryStr = " ";
-        if (sortDirection === 'ASC') {
-            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at ASC LIMIT ?,?"
-        } else {
-            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?,?"
-        }
-
         const res = await new Promise((resolve, reject) => {
-
             customer_pool.execute(
-                queryStr,
-                [minPrice, maxPrice, offset + "", limit + ""],
+                `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? ORDER BY ${sortTerm} ${sortDirection}`,
+                [minPrice, maxPrice],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -532,15 +469,12 @@ Product.findByPriceRange = async (params) => {
                     }
                     resolve(results);
                 }
-            )
+            );
         });
 
         return {
             products: res,
-            limit: limit,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalProductCount: productCount
+            totalProductCount: res.length
         };
     } catch (err) {
         console.log('Unable to find products.');
@@ -548,58 +482,18 @@ Product.findByPriceRange = async (params) => {
     }
 }
 
-// Search keyword in title and description - Best match
-Product.countByKey = (key) => {
-    return new Promise((resolve, reject) => {
-        customer_pool.execute(
-            'SELECT COUNT(*) AS count FROM `products` \
-            WHERE MATCH(title, description) AGAINST(?)' ,
-            [key],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to count products');
-                    reject(err);
-                    return;
-                }
-                const count = results[0].count;
-                console.log("Counted products.");
-                resolve(count);
-            }
-        )
-    })
-}
-
 Product.findByKey = async (params) => {
     try {
-        const limit = parseInt(params.queryParams.limit) || 10;
-        const currentPage = parseInt(params.queryParams.currentPage) || 1;
-
-        const sortDirection = params.queryParams.sortDirection || 'DESC'; // Default to 'DESC' if not provided
-
-        const offset = (currentPage - 1) * limit;
-
         const key = params.queryParams.key;
-
-        const productCount = await Product.countByKey(key); // Await after defining key
-        const totalPages = Math.ceil(productCount / limit);
-
-        let queryStr = '';
-        if (sortDirection === 'ASC') {
-            queryStr = 'SELECT * FROM `products` \
-                        WHERE MATCH(title, description) AGAINST(?) \
-                        ORDER BY created_at ASC \
-                        LIMIT ?, ?';
-        } else {
-            queryStr = 'SELECT * FROM `products` \
-                        WHERE MATCH(title, description) AGAINST(?) \
-                        ORDER BY created_at DESC \
-                        LIMIT ?, ?';
-        }
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                queryStr,
-                [key, offset + "", limit + ""],
+                `SELECT * FROM \`products\`
+                WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                ORDER BY ${sortTerm} ${sortDirection}`,
+                [key],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to search products');
@@ -613,14 +507,12 @@ Product.findByKey = async (params) => {
 
         return {
             products: res,
-            limit: limit,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            totalProductCount: productCount
+            totalProductCount: res.length
         };
     } catch (err) {
         console.log('Unable to search products.');
     }
 }
+
 
 module.exports = Product;
