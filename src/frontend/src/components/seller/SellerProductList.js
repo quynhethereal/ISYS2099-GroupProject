@@ -10,13 +10,15 @@ const SellerProductList = () => {
   const [params, setParams] = useState({
     limit: null,
     currentPage: null,
-    totalPage: null,
+    totalPages: null,
   });
 
   const [products, setProducts] = useState([]);
   const [more, setMore] = useState(false);
 
   useEffect(() => {
+    console.log(params);
+    console.log("compare", params?.currentPage === params?.totalPages);
     async function getProducts() {
       await getProductBySellerId(
         token(),
@@ -31,20 +33,20 @@ const SellerProductList = () => {
           }
           setParams({
             limit: res?.limit,
-            currentPage: res?.currentPage,
-            totalPage: res?.totalPage,
+            currentPage: res?.currentPage + 1,
+            totalPages: res?.totalPages,
           });
         }
       });
     }
 
-    if ((params?.currentPage !== params?.totalPage) !== null && token()) {
+    if (params?.currentPage !== params?.totalPages || products?.length === 0) {
       getProducts();
     }
     // eslint-disable-next-line
   }, [more]);
 
-  console.log(products);
+  // console.log(products);
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
       <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
