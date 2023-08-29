@@ -4,11 +4,9 @@ import Button from "react-bootstrap/Button";
 
 import { useAuth } from "../hook/AuthHook.js";
 import { getOrderById } from "../action/order/order.js";
-import { getProductById } from "../action/product/product.js";
 
 const OrderPreview = ({ data, show, handleClose }) => {
   const [detail, setDetail] = useState([]);
-  const [imgSource, setImageSoure] = useState([]);
   function stateProgressBar() {
     switch (detail?.status) {
       case "pending":
@@ -27,16 +25,6 @@ const OrderPreview = ({ data, show, handleClose }) => {
       await getOrderById(token(), data?.id).then((res) => {
         if (res) {
           setDetail(res);
-          res?.orderItems.forEach((element) => {
-            // getImage()
-          });
-        }
-      });
-    }
-    async function getImage(id) {
-      await getProductById(id).then((res) => {
-        if (res?.image) {
-          setImageSoure([...imgSource, res?.image]);
         }
       });
     }
@@ -69,7 +57,7 @@ const OrderPreview = ({ data, show, handleClose }) => {
           <div className="col-12 d-flex flex-column my-3">
             <div className="d-flex flex-row justify-content-between align-items-center p-2 text-start fw-bold">
               <div className="col-2">Name</div>
-              <div className="col-3">Image</div>
+              <div className="col-3">Product</div>
               <div className="col-4">Description</div>
               <div className="col-2">Quantity</div>
             </div>
@@ -79,9 +67,16 @@ const OrderPreview = ({ data, show, handleClose }) => {
                   key={index}
                   className="d-flex flex-row justify-content-between align-items-center p-2 text-start text-secondary"
                 >
-                  <div className="col-2">{product?.title}</div>
-                  <div className="col-3">{product?.image}</div>
-                  <div className="col-4">{product?.description}</div>
+                  <div className="col-2 text-break">{product?.title}</div>
+                  <div className="col-3">
+                    <img
+                      src={product?.image}
+                      alt="product img"
+                      width="64px"
+                      heigh="64px"
+                    />
+                  </div>
+                  <div className="col-4 text-break">{product?.description}</div>
                   <div className="col-2">{product?.quantity}</div>
                 </div>
               );
