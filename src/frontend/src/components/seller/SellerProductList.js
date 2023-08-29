@@ -17,8 +17,6 @@ const SellerProductList = () => {
   const [more, setMore] = useState(false);
 
   useEffect(() => {
-    console.log(params);
-    console.log("compare", params?.currentPage === params?.totalPages);
     async function getProducts() {
       await getProductBySellerId(
         token(),
@@ -29,11 +27,13 @@ const SellerProductList = () => {
           if (products.length === 0) {
             setProducts(res?.products);
           } else {
-            setProducts([...products, res?.products]);
+            setProducts([...products, ...res?.products]);
           }
           setParams({
             limit: res?.limit,
-            currentPage: res?.currentPage + 1,
+            currentPage: params?.currentPage
+              ? res?.currentPage + 1
+              : res?.currentPage,
             totalPages: res?.totalPages,
           });
         }
@@ -45,8 +45,6 @@ const SellerProductList = () => {
     }
     // eslint-disable-next-line
   }, [more]);
-
-  // console.log(products);
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
       <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
@@ -59,12 +57,14 @@ const SellerProductList = () => {
         })}
       </div>
       <div className="col-12 text-center">
-        <button
-          className="btn btn-warning"
-          onClick={() => setMore((prev) => !prev)}
-        >
-          More products...
-        </button>
+        {params?.currentPage !== params?.totalPages && (
+          <button
+            className="btn btn-warning"
+            onClick={() => setMore((prev) => !prev)}
+          >
+            More products...
+          </button>
+        )}
       </div>
     </div>
   );

@@ -55,7 +55,10 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
           </p>
           <div className="w-100 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
             {update ? (
-              <form onSubmit={handleSubmit(handleUpdateChangeQuantity)}>
+              <form
+                onSubmit={handleSubmit(handleUpdateChangeQuantity)}
+                className="w-100 px-3"
+              >
                 <label
                   htmlFor="quantity-input"
                   className="form-label text-muted"
@@ -83,10 +86,17 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
             ) : (
               <p className="text-secondary">Quantity: {data?.quantity}</p>
             )}
-            <p className="text-secondary">
+            {!update && (
+              <p className="text-secondary">
+                Reserved Quantity: {data?.reserved_quantity}
+              </p>
+            )}
+          </div>
+          {update && (
+            <p className="w-100 text-center text-secondary">
               Reserved Quantity: {data?.reserved_quantity}
             </p>
-          </div>
+          )}
           <p className="w-100 text-center text-secondary ">
             Created: {formatDate(data?.created_at)}
           </p>
