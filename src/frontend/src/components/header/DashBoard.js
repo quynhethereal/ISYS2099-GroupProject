@@ -65,9 +65,9 @@ const DashBoard = () => {
         </li>
         <li className="nav-item my-2">
           <a
-            href="/admin/products"
+            href="/admin/category"
             className={`nav-link text-black d-flex justify-content-start align-items-center ${
-              location === "/admin/products" && "active"
+              location === "/admin/category" && "active"
             }`}
             aria-current="page"
           >
@@ -79,7 +79,7 @@ const DashBoard = () => {
                 style={{ width: "28px" }}
               />
             </span>
-            Products
+            Categories
           </a>
         </li>
       </ul>
