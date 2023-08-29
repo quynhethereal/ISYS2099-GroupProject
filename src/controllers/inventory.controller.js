@@ -97,3 +97,22 @@ exports.getPendingInventory = async (req, res) => {
         });
     }
 }
+
+exports.getInventoryByProductId = async (req, res) => {
+    try {
+        // check if user is seller
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const inventory = await Inventory.getInventoryByProductId(req.params.id);
+        if (inventory === null) {
+            return res.status(404).json({ message: "Inventory not found." });
+        }
+        res.status(200).json(inventory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving inventory."
+        });
+    }
+}
