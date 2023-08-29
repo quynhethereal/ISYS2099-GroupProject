@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hook/AuthHook.js";
 import { getProductBySellerId } from "../../action/product/product.js";
 
+import Product from "../";
+
 const SellerProductList = () => {
   const { token } = useAuth();
   const [params, setParams] = useState({
@@ -17,6 +19,7 @@ const SellerProductList = () => {
       await getProductBySellerId(token(), 2, 10).then((res) => {
         if (res) {
           setParams({
+            product: res?.products,
             limit: res?.limit,
             currentPage: res?.currentPage,
             totalPage: res?.totalPage,
