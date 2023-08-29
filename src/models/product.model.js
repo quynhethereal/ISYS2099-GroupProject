@@ -111,7 +111,7 @@ Product.findBySellerId = async (params) => {
 
         const res = await new Promise((resolve, reject) => {
             seller_pool.execute(
-                "SELECT * FROM `products` WHERE seller_id = ? ORDER BY id ASC LIMIT ?,?",
+                "SELECT p.title, p.price, p.description, i.quantity, i.reserved_quantity, p.height, p.width, p.length, p.created_at, p.updated_at FROM `products` p join `inventory` i on i.product_id = p.id WHERE p.seller_id = ? ORDER BY p.id ASC LIMIT ?,?",
                 [params.sellerId, offset +"", limit+""],
                 (err, results) => {
                     if (err) {
