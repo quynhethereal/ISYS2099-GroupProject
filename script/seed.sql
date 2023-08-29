@@ -201,8 +201,8 @@ CREATE USER IF NOT EXISTS 'wh_admin'@'localhost' IDENTIFIED BY 'Lwhadmin';
 -- Warehouse admin: All privilege related to warehouse and inventory, select and update products (if needed)
 grant insert, select, update on lazada_ecommerce.users_info to 'wh_admin';
 grant insert, select, update on lazada_ecommerce.users to 'wh_admin';
-grant all on lazada_ecommerce.inventory to 'wh_admin';
-grant all on lazada_ecommerce.warehouses to 'wh_admin';
+grant all privileges on lazada_ecommerce.inventory to 'wh_admin';
+grant all privileges on lazada_ecommerce.warehouses to 'wh_admin';
 grant select, update on lazada_ecommerce.products to 'wh_admin';
 grant insert, select, update, delete on lazada_ecommerce.pending_inventory to 'wh_admin';
 grant execute on procedure lazada_ecommerce.ASSIGN_INVENTORY_TO_WAREHOUSE to 'wh_admin';

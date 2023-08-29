@@ -102,7 +102,6 @@ Product.countBySellerID = (sellerId) => {
 // use offset - limit
 Product.findBySellerId = async (params) => {
     try {
-        console.log(params);
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
         const offset = (currentPage - 1) * limit;
@@ -111,7 +110,7 @@ Product.findBySellerId = async (params) => {
 
         const res = await new Promise((resolve, reject) => {
             seller_pool.execute(
-                "SELECT p.id, p.title, p.price, p.image, p.description, i.quantity, i.reserved_quantity, p.height, p.width, p.length, p.created_at, p.updated_at FROM `products` p join `inventory` i on i.product_id = p.id WHERE p.seller_id = ? ORDER BY p.id ASC LIMIT ?,?",
+                "SELECT * FROM `products` WHERE seller_id = ? ORDER BY id ASC LIMIT ?,?",
                 [params.sellerId, offset +"", limit+""],
                 (err, results) => {
                     if (err) {

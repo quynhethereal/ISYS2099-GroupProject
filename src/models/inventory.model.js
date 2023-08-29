@@ -207,4 +207,25 @@ Inventory.getPendingInventory = async (params) => {
     }
 }
 
+Inventory.getInventoryByProductId  = async (productId) => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        const rows = await connection.execute("SELECT i.*, w.name, w.province, w.city FROM `inventory` i join `warehouses` w on w.id = i.warehouse_id WHERE product_id = ?", [productId]);
+
+        if (rows[0].length === 0) {
+            console.log('Inventory not found.');
+            return null;
+        }
+
+        return rows[0];
+    } catch (err) {
+        console.log('Unable to find inventory.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
 module.exports = Inventory;
