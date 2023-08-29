@@ -63,7 +63,7 @@ exports.moveInventory = async (req, res) => {
 exports.updateInventory = async (req, res) => {
     try {
         // check if user is admin
-        if (req.currentUser.role !== 'admin') {
+        if (req.currentUser.role !== 'seller') {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
