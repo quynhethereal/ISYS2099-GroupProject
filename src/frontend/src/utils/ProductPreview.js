@@ -56,7 +56,10 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
           <div className="w-100 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
             {update ? (
               <form onSubmit={handleSubmit(handleUpdateChangeQuantity)}>
-                <label htmlFor="quantity-input" className="form-label">
+                <label
+                  htmlFor="quantity-input"
+                  className="form-label text-muted"
+                >
                   Quantity {data?.quantity} (current)
                 </label>
                 <input
@@ -72,6 +75,7 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
                     },
                   })}
                 />
+                {console.log(errors)}
                 <p className="text-danger fw-bold">
                   {errors?.number && errors?.number?.message}
                 </p>
