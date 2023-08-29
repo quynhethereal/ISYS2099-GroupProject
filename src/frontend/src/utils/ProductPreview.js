@@ -1,10 +1,21 @@
 import React, { memo } from "react";
+import { useForm } from "react-hook-form";
+
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 import unknownProduct from "../assets/image/unknownProduct.png";
 
 const ProductPreview = ({ data, show, handleClose, update }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      quantity: null,
+    },
+  });
   function formatDate(dateString) {
     const options = {
       year: "numeric",
@@ -15,6 +26,10 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
+
+  const handleUpdateChangeQuantity = (e) => {
+    console.log(e);
+  };
   const handleUpdateProduct = () => {};
   return (
     <Modal show={show} onHide={handleClose}>
@@ -39,7 +54,31 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
             {data?.width} x {data?.height} x {data?.length} (x,y,z in meter)
           </p>
           <div className="w-100 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
-            <p className="text-secondary">Quantity: {data?.quantity}</p>
+            {update ? (
+              <form onSubmit={handleSubmit(handleUpdateChangeQuantity)}>
+                <label htmlFor="quantity-input" className="form-label">
+                  Quantity {data?.quantity} (current)
+                </label>
+                <input
+                  type="number"
+                  id="quantity-input"
+                  className="form-control"
+                  {...register("quantity", {
+                    required: "The quantity is required",
+                    valueAsNumber: true,
+                    pattern: {
+                      value: /^[0-9]*[1-9][0-9]*$/,
+                      message: "Input must be a number greater than 0.",
+                    },
+                  })}
+                />
+                <p className="text-danger fw-bold">
+                  {errors?.number && errors?.number?.message}
+                </p>
+              </form>
+            ) : (
+              <p className="text-secondary">Quantity: {data?.quantity}</p>
+            )}
             <p className="text-secondary">
               Reserved Quantity: {data?.reserved_quantity}
             </p>
@@ -62,7 +101,7 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
             variant="primary"
             onClick={() => handleUpdateProduct()}
           >
-            Update
+            Update quantity
           </Button>
         )}
       </Modal.Footer>

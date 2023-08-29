@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import ProductPreview from "../../../utils/ProductPreview.js";
 import unknownProduct from "../../../assets/image/unknownProduct.png";
 
 const Product = ({ info, update }) => {
+  const [showPreview, setShowPreview] = useState(false);
   const navigate = useNavigate();
   const hanleViewProduct = (item) => {
     navigate(`/customer/product/details/${item.id}`);
   };
   const handleUpdateProduct = (item) => {
-    console.log("we are going to update this");
+    console.log("This item is going to update", item);
+    handleShowPreview();
+  };
+
+  const handleShowPreview = () => {
+    setShowPreview((prev) => !prev);
   };
   return (
     <>
@@ -36,7 +43,14 @@ const Product = ({ info, update }) => {
               {info?.price}
             </p>
           </div>
-
+          {update && showPreview && (
+            <ProductPreview
+              data={info}
+              show={showPreview}
+              handleClose={handleShowPreview}
+              update={true}
+            />
+          )}
           {update ? (
             <button
               type="button"
