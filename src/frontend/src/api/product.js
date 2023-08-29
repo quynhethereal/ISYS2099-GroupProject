@@ -7,3 +7,12 @@ export const getAllProduct = (nextId, limit) =>
 
 export const getProductById = (id) =>
   axios.get(`${backend_url}/api/product/${id}`);
+
+export const getProductBySellerId = (token, currentPage, limit) => {
+  axios.get(
+    `${backend_url}/api/seller/products?currentPage=${currentPage}&limit=${limit}`,
+    {
+      headers: { "x-access-token": token },
+    }
+  );
+};

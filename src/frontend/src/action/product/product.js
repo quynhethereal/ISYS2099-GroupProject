@@ -19,3 +19,15 @@ export const getProductById = async (id) => {
     console.log(error.message);
   }
 };
+
+export const getProductBySellerId = async (token, currentPage, limit) => {
+  try {
+    const data = await api.getProductBySellerId(token, currentPage, limit);
+
+    console.log(data);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
