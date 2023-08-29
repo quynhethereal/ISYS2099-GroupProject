@@ -41,8 +41,24 @@ exports.findAllByCategory = async (req, res) => {
             return;
         }
 
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection;
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
         const params = {
             categoryId,
+            sortTerm: sortTerm,
+            sortDirection: sortDirection,
             queryParams: req.query
         }
 
@@ -171,8 +187,15 @@ exports.findAllByPriceRange = async (req, res) => {
             throw new Error('Invalid price range.');
         }
 
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
         const validSortDirections = ['ASC', 'DESC'];
-        const sortDirection = req.query.sortDirection || 'DESC';
+        const sortDirection = req.query.sortDirection;
 
         if (!validSortDirections.includes(sortDirection)) {
             throw new Error('Invalid sorting order.');
@@ -182,6 +205,7 @@ exports.findAllByPriceRange = async (req, res) => {
             queryParams: req.query,
             minPrice: minPrice,
             maxPrice: maxPrice,
+            sortTerm: sortTerm,
             sortDirection: sortDirection
         };
 
@@ -195,5 +219,41 @@ exports.findAllByPriceRange = async (req, res) => {
     }
 }
 
+exports.findAllByKey = async (req, res) => {
+    try {
+        const key = req.query.key;
 
+        if (!key) {
+            throw new Error('Invalid search key.');
+        }
 
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection;
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
+        const params = {
+            queryParams: req.query,
+            key: key,
+            sortTerm: sortTerm,
+            sortDirection: sortDirection
+        }
+
+        const products = await Product.findByKey(params);
+
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).json({
+            message: err.message || "Error finding products by key."
+        });
+    }
+}

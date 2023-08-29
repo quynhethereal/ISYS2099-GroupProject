@@ -70,7 +70,6 @@ Product.countByCategory = (categoryId) => {
                     reject(err);
                     return;
                 }
-
                 const count = results[0].count;
                 console.log("Counted products.");
                 resolve(count);
@@ -82,6 +81,7 @@ Product.countByCategory = (categoryId) => {
 Product.countBySellerID = (sellerId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
+
             'SELECT COUNT(*) as count FROM `products` WHERE seller_id = ?',
             [sellerId],
             (err, results) => {
@@ -150,10 +150,13 @@ Product.findByCategory = async (params) => {
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByCategory(categoryId);
         const totalPages = Math.ceil(productCount / limit);
+        
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                "SELECT * FROM `products` WHERE category_id = ? ORDER BY id ASC LIMIT ?,?",
+                `SELECT * FROM \`products\` WHERE category_id = ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
                 [categoryId + "", offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -503,7 +506,8 @@ Product.findByPriceRange = async (params) => {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
         
-        const sortDirection = params.queryParams.sortDirection || 'ASC'; // Default to 'asc' if not provided
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
 
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
@@ -512,17 +516,10 @@ Product.findByPriceRange = async (params) => {
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
-        let queryStr = " ";
-        if (sortDirection === 'ASC') {
-            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at ASC LIMIT ?,?"
-        } else {
-            queryStr = "SELECT * FROM `products` WHERE price BETWEEN ? AND ? ORDER BY created_at DESC LIMIT ?,?"
-        }
-
         const res = await new Promise((resolve, reject) => {
 
             customer_pool.execute(
-                queryStr,
+                `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
                 [minPrice, maxPrice, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -545,6 +542,39 @@ Product.findByPriceRange = async (params) => {
     } catch (err) {
         console.log('Unable to find products.');
         throw err;
+    }
+}
+
+// Search keyword in title and description
+Product.findByKey = async (params) => {
+    try {
+        const sortTerm = params.queryParams.sortTerm;
+        const sortDirection = params.queryParams.sortDirection;
+        const key = params.queryParams.key;
+
+        const res = await new Promise((resolve, reject) => {
+            customer_pool.execute(
+                `SELECT * FROM \`products\`
+                WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                ORDER BY ${sortTerm} ${sortDirection}`,
+                [key],
+                (err, results) => {
+                    if (err) {
+                        console.log('Unable to search products');
+                        reject(err);
+                        return;
+                    }
+                    resolve(results);
+                }
+            );
+        });
+
+        return {
+            products: res,
+            totalProductCount: res.length
+        };
+    } catch (err) {
+        console.log('Unable to search products.');
     }
 }
 
