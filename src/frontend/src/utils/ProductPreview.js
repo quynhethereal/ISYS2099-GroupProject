@@ -4,7 +4,7 @@ import Button from "react-bootstrap/Button";
 
 import unknownProduct from "../assets/image/unknownProduct.png";
 
-const ProductPreview = ({ data, show, handleClose }) => {
+const ProductPreview = ({ data, show, handleClose, update }) => {
   function formatDate(dateString) {
     const options = {
       year: "numeric",
@@ -15,6 +15,7 @@ const ProductPreview = ({ data, show, handleClose }) => {
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
   }
+  const handleUpdateProduct = () => {};
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -52,9 +53,18 @@ const ProductPreview = ({ data, show, handleClose }) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="primary" onClick={() => handleClose()}>
-          Ok
+        <Button type="button" variant="primary" onClick={() => handleClose()}>
+          {update ? "Cancel" : "Ok"}
         </Button>
+        {update && (
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => handleUpdateProduct()}
+          >
+            Update
+          </Button>
+        )}
       </Modal.Footer>
     </Modal>
   );
