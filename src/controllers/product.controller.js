@@ -77,7 +77,7 @@ exports.update = async (req, res) => {
         const {title, description, price, categoryId} = req.body;
 
         // validate presence of params
-        if (productId === null || title === null || description === null || price === null || categoryId === null) {
+        if (productId === null || title === null || description === null || price === null || categoryId === null || image === null) {
             res.status(400).send({
                 message: "Invalid request."
             });

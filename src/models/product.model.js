@@ -400,14 +400,13 @@ Product.update = async (params) => {
     try {
         // validate params
         productValidator.validateUpdateParams(params);
-        console.log(params);
         const title = params.title + "";
         const description = params.description + "";
         const price = parseFloat(params.price);
         const category = params.category + "";
         const id = params.productId;
+        const image = params.image;
 
-        console.log(price);
 
         const product = await Product.findById(id);
 
@@ -416,8 +415,8 @@ Product.update = async (params) => {
         } else {
             await new Promise((resolve, reject) => {
                 seller_pool.execute(
-                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ? WHERE id = ?',
-                    [title, description, price, category, id],
+                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?',
+                    [title, description, price, category, image, id],
                     (err, results) => {
                         if (err) {
                             console.log('Unable to update product.');
