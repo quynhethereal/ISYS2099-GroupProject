@@ -67,7 +67,6 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
     getProduct();
     // eslint-disable-next-line
   }, []);
-  console.log(product);
   const handleUpdateChangeQuantity = async (value) => {
     await updateProductQuantity(token(), data?.id, value).then((res) => {
       if (res) {

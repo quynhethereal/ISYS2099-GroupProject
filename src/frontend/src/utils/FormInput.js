@@ -9,6 +9,7 @@ const FormInput = ({
   inputFocus,
   register,
   errors,
+  step,
 }) => {
   return (
     <div>
@@ -23,6 +24,7 @@ const FormInput = ({
             valueAsNumber: inputType ? true : false,
           })}
           min="1"
+          step={step && step}
         />
       </Form.Group>
       <p className="text-danger">

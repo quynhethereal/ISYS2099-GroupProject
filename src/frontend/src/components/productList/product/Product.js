@@ -24,7 +24,9 @@ const Product = ({ info, update }) => {
     setShowUpdateForm((prev) => !prev);
   };
 
-  const handleUpdateProduct = (item) => {};
+  const handleUpdateProduct = (item) => {
+    handleOpenUpdateForm();
+  };
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
