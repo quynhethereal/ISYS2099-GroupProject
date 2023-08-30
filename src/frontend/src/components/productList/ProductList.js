@@ -290,7 +290,7 @@ const ProductList = () => {
       });
     }
 
-    if (categoryP) {
+    if (categoryP && parseInt(categoryP)) {
       if (
         searchCategoryData?.currentPage !== searchCategoryData?.totalPages ||
         searchCategoryData?.totalPages === null
