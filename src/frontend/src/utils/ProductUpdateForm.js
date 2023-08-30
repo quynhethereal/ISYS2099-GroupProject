@@ -2,17 +2,17 @@ import React, { memo, useState } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-import { updateProduct } from "../action/product/product.js";
-import { useAuth } from "../hook/AuthHook.js";
-import { useNavigate } from "react-router-dom";
+// import { updateProduct } from "../action/product/product.js";
+// import { useAuth } from "../hook/AuthHook.js";
+// import { useNavigate } from "react-router-dom";
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
 const ProductUpdateForm = ({ data, show, handleClose }) => {
-  const { token } = useAuth();
-  const navigate = useNavigate();
+  // const { token } = useAuth();
+  // const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
   const {
     register,

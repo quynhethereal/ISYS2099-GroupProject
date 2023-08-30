@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hook/AuthHook.js";
 
 import logo from "../../assets/image/icon.png";
-import searchIcon from "../../assets/image/searchIcon.png";
+
 import cart from "../../assets/image/cart.png";
 import logoutImage from "../../assets/image/logout.png";
 
@@ -32,29 +32,8 @@ const Header = ({ user }) => {
               <img src={logo} alt="app logo" className="img-fluid" />
             </button>
           </div>
-          <div className="col-12 col-md-5 d-flex justtify-content-center align-items-center">
-            <div className="w-100 input-group-lg mb-3 d-flex justify-content-center algin-items-center">
-              <input
-                type="text"
-                className="form-control rounded-start"
-                placeholder="Search product"
-                aria-label="Recipient's username"
-                aria-describedby="button-addon2"
-                style={{ background: "#f0f0f0" }}
-              />
-              <span className="input-group-append rounded-end">
-                <button className="btn btn-warning" type="button">
-                  <img
-                    src={searchIcon}
-                    alt="search logo"
-                    style={{ width: "36px", height: "36px" }}
-                  />
-                </button>
-              </span>
-            </div>
-          </div>
 
-          <div className="col-12 col-md-1 d-flex justify-content-center align-items-center my-3 m-md-0">
+          <div className="col-12 col-md-auto d-flex justify-content-md-end align-items-center my-3 m-md-0">
             <button
               className="btn btn-outline-warning"
               onClick={() => handleToCartPage()}
@@ -66,7 +45,7 @@ const Header = ({ user }) => {
               />
             </button>
           </div>
-          <div className="col-12 col-md-2 d-flex flex-column justtify-content-center align-items-center">
+          <div className="col-12 col-md-4 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
             <button
               className="btn btn-outline-warning text-black my-2"
               onClick={() => handleToOrderPage()}

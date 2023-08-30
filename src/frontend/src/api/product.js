@@ -32,3 +32,16 @@ export const uploadImage = (token, id, imgData) =>
   axios.put(`${backend_url}/api/product/${id}/image`, imgData, {
     headers: { "x-access-token": token },
   });
+
+export const searchBySearchKey = (
+  token,
+  searchKey,
+  sortDirection,
+  sortedTerm
+) =>
+  axios.get(
+    `${backend_url}/api/products/search?key=${searchKey}&sortDirection=${sortDirection}&sortTerm=${sortedTerm}`,
+    {
+      headers: { "x-access-token": token },
+    }
+  );
