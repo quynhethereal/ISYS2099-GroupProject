@@ -335,3 +335,30 @@ exports.findAllByKey = async (req, res) => {
         });
     }
 }
+
+exports.delete = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+
+        if (productId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        // check if user is seller
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const deletedProduct = await Product.delete(productId, req.currentUser.id);
+        res.status(200).json({
+            message: `Product with id ${productId} deleted successfully.`
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error deleting product."
+        });
+    }
+}
