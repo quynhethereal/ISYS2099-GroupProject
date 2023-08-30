@@ -74,7 +74,7 @@ exports.findAllByCategory = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const productId = parseInt(req.params.id);
-        const {title, description, price, categoryId} = req.body;
+        const {title, description, price, categoryId, image} = req.body;
 
         // validate presence of params
         if (productId === null || title === null || description === null || price === null || categoryId === null || image === null) {
