@@ -149,13 +149,25 @@ Product.findByCategory = async (params) => {
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByCategory(categoryId);
         const totalPages = Math.ceil(productCount / limit);
-        
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
+
+        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
+        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
+
+        let queryStr = '';
+
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2} LIMIT ?,?`;
+        } else {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm1} ${sortDirection1} LIMIT ?,?`;
+        }
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\` WHERE category_id = ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
+                queryStr,
                 [categoryId + "", offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -506,21 +518,32 @@ Product.findByPriceRange = async (params) => {
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
-        
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
 
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
+
+        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
+        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
 
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
-        const res = await new Promise((resolve, reject) => {
+        let queryStr = '';
 
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? 
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2} LIMIT ?,?`;
+        } else {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? 
+                        ORDER BY ${sortTerm1} ${sortDirection1} LIMIT ?,?`;
+        }
+
+        const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
+                queryStr,
                 [minPrice, maxPrice, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -549,15 +572,28 @@ Product.findByPriceRange = async (params) => {
 // Search keyword in title and description
 Product.findByKey = async (params) => {
     try {
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
+        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
+        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
+
         const key = params.queryParams.key;
+
+        let queryStr = '';
+
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}`;
+        } else {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm1} ${sortDirection1}`;
+        }
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\`
-                WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY ${sortTerm} ${sortDirection}`,
+                queryStr,
                 [key],
                 (err, results) => {
                     if (err) {
