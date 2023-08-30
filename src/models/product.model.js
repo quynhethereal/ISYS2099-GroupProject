@@ -410,8 +410,11 @@ Product.update = async (params) => {
 
         const product = await Product.findById(id);
 
+        // TODO: check if category is valid
+
         if (!product) {
             console.log("Product not found.");
+            throw new Error("Product not found.");
         } else {
             await new Promise((resolve, reject) => {
                 seller_pool.execute(
