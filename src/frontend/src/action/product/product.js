@@ -111,3 +111,25 @@ export const searchByPrice = async (
     console.log(error);
   }
 };
+
+export const searchByCategory = async (
+  id,
+  sortDirection,
+  sortedTerm,
+  limit,
+  currentPage
+) => {
+  try {
+    const { data } = await api.searchByCategory(
+      id,
+      sortDirection,
+      sortedTerm,
+      limit,
+      currentPage
+    );
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

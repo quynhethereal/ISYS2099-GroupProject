@@ -49,3 +49,15 @@ export const searchByPrice = (
   axios.get(
     `${backend_url}/api/products/price-range?minPrice=${minPrice}&maxPrice=${maxPrice}&sortDirection=${sortDirection}&limit=${limit}&currentPage=${currentPage}&sortTerm=${sortedTerm}`
   );
+
+// /category/:id/products
+export const searchByCategory = (
+  id,
+  sortDirection,
+  sortedTerm,
+  limit,
+  currentPage
+) =>
+  axios.get(
+    `${backend_url}/api/category/${id}/products?sortDirection=${sortDirection}&limit=${limit}&currentPage=${currentPage}&sortTerm=${sortedTerm}`
+  );
