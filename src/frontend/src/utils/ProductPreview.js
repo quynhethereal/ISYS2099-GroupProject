@@ -58,11 +58,13 @@ const ProductPreview = ({ data, show, handleClose, update }) => {
 
   useEffect(() => {
     async function getProduct(params) {
-      await getProductInInventory(token(), data?.id).then((res) => {
-        if (res) {
-          setProduct(res);
-        }
-      });
+      if (data?.id) {
+        await getProductInInventory(token(), data?.id).then((res) => {
+          if (res) {
+            setProduct(res);
+          }
+        });
+      }
     }
     getProduct();
     // eslint-disable-next-line
