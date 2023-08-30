@@ -71,17 +71,39 @@ export const uploadImage = async (token, id, imgData) => {
 };
 
 export const searchBySearchKey = async (
-  token,
   searchKey,
   sortDirection,
   sortedTerm
 ) => {
   try {
     const { data } = await api.searchBySearchKey(
-      token,
       searchKey,
       sortDirection,
       sortedTerm
+    );
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const searchByPrice = async (
+  minPrice,
+  maxPrice,
+  sortDirection,
+  sortedTerm,
+  limit,
+  currentPage
+) => {
+  try {
+    const { data } = await api.searchByPrice(
+      minPrice,
+      maxPrice,
+      sortDirection,
+      sortedTerm,
+      limit,
+      currentPage
     );
 
     return data;

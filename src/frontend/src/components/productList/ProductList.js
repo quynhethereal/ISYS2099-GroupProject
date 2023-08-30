@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
-import { getAllProduct } from "../../action/product/product.js";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  getAllProduct,
+  searchBySearchKey,
+  searchByPrice,
+} from "../../action/product/product.js";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Product from "./product/Product.js";
 
 import searchIcon from "../../assets/image/searchIcon.png";
 
 const ProductList = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { searchKeyP, minPriceP, maxPriceP, sortedDirectionP, sortedTermP } =
-    useParams();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm({
+  const searchKeyP = searchParams?.get("searchKeyP");
+  const minPriceP = searchParams?.get("minPriceP");
+  const maxPriceP = searchParams?.get("maxPriceP");
+  const categoryP = searchParams?.get("categoryP");
+  const sortedDirectionP = searchParams?.get("sortedDirectionP");
+  const sortedTermP = searchParams?.get("sortedTermP");
+  const { register, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
       searchKey: searchKeyP ? searchKeyP : "",
-      minPrice: minPriceP ? minPriceP : "",
+      minPrice: minPriceP ? minPriceP : 0,
       maxPrice: maxPriceP ? maxPriceP : "",
       sortedDirection: sortedDirectionP ? sortedDirectionP : "DESC",
       sortedTerm: sortedTermP ? sortedTermP : "created_at",
@@ -33,7 +36,22 @@ const ProductList = () => {
   const [nextRequest, setNextRequest] = useState({
     nextId: 0,
     limit: 10,
+    currentPage: 0,
+    totalPages: 0,
   });
+  const [searchKeyData, setSearchKeyData] = useState([]);
+  const [searchCategoryData, setSearchCategoryData] = useState([]);
+  const [searchPriceData, setSearchPriceData] = useState({
+    currentPage: null,
+    totalPages: null,
+    litmit: 10,
+    data: [],
+  });
+  const [isSearching, setIsSearching] = useState(false);
+  const [moreSearch, setMoreSearch] = useState(false);
+  const handleSetMoreSearch = () => {
+    setMoreSearch((prev) => !prev);
+  };
   const handleChangeDirection = () => {
     if (getValues("sortedDirection") === "DESC") {
       setValue("sortedDirection", "ASC");
@@ -41,6 +59,57 @@ const ProductList = () => {
       setValue("sortedDirection", "DESC");
     }
   };
+
+  function mergeTwoDataWithoutDuplicate(array1, array2) {
+    var ids1 = new Set(array1?.map((product) => product?.id));
+    var merged = [...array2.filter((item) => ids1.has(item?.id))];
+    return merged;
+  }
+
+  function mergeAllData() {
+    var newData = [];
+    if (searchKeyData?.length !== 0) {
+      newData = searchKeyData;
+    } else if (searchPriceData?.data?.length !== 0) {
+      newData = searchPriceData?.data;
+    } else if (searchCategoryData?.length !== 0) {
+      newData = searchCategoryData;
+    }
+    if (
+      searchKeyData?.length !== 0 &&
+      searchPriceData?.data?.length !== 0 &&
+      !searchCategoryData?.length !== 0
+    ) {
+      newData = mergeTwoDataWithoutDuplicate(
+        searchKeyData,
+        searchPriceData?.data
+      );
+    } else if (
+      !searchKeyData?.length !== 0 &&
+      searchPriceData?.data?.length !== 0 &&
+      searchCategoryData?.length !== 0
+    ) {
+      newData = mergeTwoDataWithoutDuplicate(
+        searchPriceData?.data,
+        searchCategoryData
+      );
+    } else if (
+      searchKeyData?.length !== 0 &&
+      !searchPriceData?.data?.length !== 0 &&
+      searchCategoryData?.length !== 0
+    ) {
+      newData = mergeTwoDataWithoutDuplicate(searchKeyData, searchCategoryData);
+    }
+    if (
+      searchKeyData?.length !== 0 &&
+      searchPriceData?.data?.length !== 0 &&
+      searchCategoryData?.length !== 0
+    ) {
+      newData = mergeTwoDataWithoutDuplicate(searchKeyData, searchCategoryData);
+      newData = mergeTwoDataWithoutDuplicate(newData, searchPriceData);
+    }
+    return newData;
+  }
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
@@ -70,43 +139,77 @@ const ProductList = () => {
         }
       );
     }
-    if (
-      !(searchKeyP || minPriceP || maxPriceP || sortedDirectionP || sortedTermP)
-    ) {
+
+    if (!(searchKeyP || minPriceP || maxPriceP || categoryP)) {
       getInitialData();
     }
     // eslint-disable-next-line
   }, []);
-
   useEffect(() => {
     async function searchForDesAndTile() {
-      console.log("search params", searchKeyP);
       //api
-      searchForDesAndTile();
+      await searchBySearchKey(searchKeyP, sortedDirectionP, sortedTermP).then(
+        (res) => {
+          if (res?.products) {
+            setSearchKeyData(res?.products);
+          }
+        }
+      );
     }
 
     if (searchKeyP) {
       searchForDesAndTile();
+      setIsSearching(true);
     }
     // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    async function searchForMinAndMax() {
-      console.log("minPriceP", minPriceP);
-      console.log("maxPriceP", maxPriceP);
-      //api
-      searchForMinAndMax();
+    if (
+      !(
+        searchPriceData?.currentPage !== searchPriceData?.totalPages ||
+        searchPriceData?.totalPages === null
+      )
+    ) {
+      setIsFechtedEverything(true);
+      return;
     }
-
-    if (minPriceP && maxPriceP) {
-      searchForMinAndMax();
+    async function searchForMinAndMax() {
+      await searchByPrice(
+        minPriceP,
+        maxPriceP,
+        sortedDirectionP,
+        sortedTermP,
+        searchPriceData?.limit,
+        searchPriceData?.currentPage ? searchPriceData?.currentPage + 1 : 1
+      ).then((res) => {
+        if (res?.products) {
+          setSearchPriceData({
+            ...searchPriceData,
+            data: [...searchPriceData?.data, ...res?.products],
+            currentPage: res?.currentPage,
+            totalPages: res?.totalPages,
+          });
+        }
+      });
+    }
+    if (minPriceP && maxPriceP && maxPriceP !== "NaN") {
+      if (
+        searchPriceData?.currentPage !== searchPriceData?.totalPages ||
+        searchPriceData?.totalPages === null
+      ) {
+        searchForMinAndMax();
+        setIsSearching(true);
+      }
     }
     // eslint-disable-next-line
-  }, []);
+  }, [moreSearch]);
 
   const handleSearchProduct = (e) => {
-    console.log(e);
+    setSearchParams(
+      `?searchKeyP=${e.searchKey}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
+    );
+    navigate(0);
   };
 
   return (
@@ -117,7 +220,7 @@ const ProductList = () => {
           className="my-4 d-flex flex-wrap flex-row justify-content-between align-items-center"
         >
           <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center">
-            <div className="w-100 input-group mb-3 d-flex justify-content-center algin-items-center">
+            <div className="w-100 input-group d-flex justify-content-center algin-items-center">
               <input
                 type="text"
                 className="form-control rounded-start"
@@ -136,6 +239,30 @@ const ProductList = () => {
               </span>
             </div>
           </div>
+          <div className="col-12 col-md-4 d-flex flex-column flex-md-row justtify-content-center align-items-center px-3 my-3 my-md-0 gap-0 gap-md-2 gap-lg-3">
+            <div className="col-12 col-md-6">
+              <label htmlFor="quantity">Min</label>
+              <input
+                id="quantity"
+                className="form-control"
+                type="number"
+                {...register("minPrice", {
+                  valueAsNumber: "This must be a number",
+                })}
+              />
+            </div>
+            <div className="col-12 col-md-6">
+              <label htmlFor="quantity">Max</label>
+              <input
+                id="quantity"
+                className="form-control"
+                type="number"
+                {...register("maxPrice", {
+                  valueAsNumber: "This must be a number",
+                })}
+              />
+            </div>
+          </div>
           <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center">
             <div className="w-100 d-flex flex-column justify-content-center algin-items-center">
               <div className="col-12 d-flex flex-row flex-wrap justify-content-evenly align-items-center">
@@ -143,7 +270,7 @@ const ProductList = () => {
                   <select
                     id="fromWarehouse"
                     type="number"
-                    className="form-select form-select-lg mb-3"
+                    className="form-select form-select-lg"
                     {...register("sortedTerm", {})}
                   >
                     <option value="created_at">Create Date</option>
@@ -177,6 +304,16 @@ const ProductList = () => {
               </div>
             );
           })}
+          {mergeAllData()?.map((item, index) => {
+            return (
+              <div key={index} className="">
+                <Product info={item}></Product>
+              </div>
+            );
+          })}
+          {mergeAllData()?.length === 0 && isSearching && (
+            <div className="w-100 text-center fs-3 fw-bold">None was found</div>
+          )}
         </div>
         <div className="my-4 d-flex justify-content-center algin-items-center">
           {isloading && (
@@ -184,13 +321,22 @@ const ProductList = () => {
               <span className="visually-hidden">Loading...</span>
             </div>
           )}
-          {!isFechtedEverything && (
+          {!isFechtedEverything && !isSearching && (
             <button
               type="button"
               className="btn btn-warning"
               onClick={() => handleAddMoreProduct()}
             >
               More products...
+            </button>
+          )}
+          {!isFechtedEverything && searchByPrice && (
+            <button
+              type="button"
+              className="btn btn-warning"
+              onClick={() => handleSetMoreSearch()}
+            >
+              More searching...
             </button>
           )}
         </div>
