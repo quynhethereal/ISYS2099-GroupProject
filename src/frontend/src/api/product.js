@@ -32,3 +32,32 @@ export const uploadImage = (token, id, imgData) =>
   axios.put(`${backend_url}/api/product/${id}/image`, imgData, {
     headers: { "x-access-token": token },
   });
+
+export const searchBySearchKey = (searchKey, sortDirection, sortedTerm) =>
+  axios.get(
+    `${backend_url}/api/products/search?key=${searchKey}&sortDirection=${sortDirection}&sortTerm=${sortedTerm}`
+  );
+
+export const searchByPrice = (
+  minPrice,
+  maxPrice,
+  sortDirection,
+  sortedTerm,
+  limit,
+  currentPage
+) =>
+  axios.get(
+    `${backend_url}/api/products/price-range?minPrice=${minPrice}&maxPrice=${maxPrice}&sortDirection=${sortDirection}&limit=${limit}&currentPage=${currentPage}&sortTerm=${sortedTerm}`
+  );
+
+// /category/:id/products
+export const searchByCategory = (
+  id,
+  sortDirection,
+  sortedTerm,
+  limit,
+  currentPage
+) =>
+  axios.get(
+    `${backend_url}/api/category/${id}/products?sortDirection=${sortDirection}&limit=${limit}&currentPage=${currentPage}&sortTerm=${sortedTerm}`
+  );

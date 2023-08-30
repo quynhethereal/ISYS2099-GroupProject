@@ -24,7 +24,9 @@ const Product = ({ info, update }) => {
     setShowUpdateForm((prev) => !prev);
   };
 
-  const handleUpdateProduct = (item) => {};
+  const handleUpdateProduct = (item) => {
+    handleOpenUpdateForm();
+  };
   return (
     <>
       <div className="card" style={{ width: "16rem" }}>
@@ -32,7 +34,7 @@ const Product = ({ info, update }) => {
           <img
             src={info?.image}
             alt={info?.image_name ? info?.image_name : "product"}
-            style={{ width: 200, height: 200 }}
+            style={{ width: "100%", height: 200 }}
           />
         </div>
         <div className="card-body">

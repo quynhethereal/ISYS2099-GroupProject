@@ -72,10 +72,10 @@ export const moveTheIventoryToWarehouse = async (token, data) => {
 
 export const getPendingInventory = async (token, limit, currentPage) => {
   try {
-    const res = await api.moveTheIventoryToWarehouse(token, limit, currentPage);
+    const res = await api.getPendingInventory(token, limit, currentPage);
     if (res.status === 200) {
-      console.log("Data with res = 200", res);
-      return res;
+      const { data } = res;
+      return data;
     } else {
       return;
     }

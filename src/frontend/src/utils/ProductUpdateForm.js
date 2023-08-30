@@ -1,28 +1,63 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-import { updateProduct } from "../action/product/product.js";
-import { useAuth } from "../hook/AuthHook.js";
-import { useNavigate } from "react-router-dom";
+// import { updateProduct } from "../action/product/product.js";
+// import { useAuth } from "../hook/AuthHook.js";
+// import { useNavigate } from "react-router-dom";
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import FormInput from "./FormInput.js";
 
 const ProductUpdateForm = ({ data, show, handleClose }) => {
-  const { token } = useAuth();
-  const navigate = useNavigate();
+  // const { token } = useAuth();
+  // const navigate = useNavigate();
+  const [imageSoure, setImageSoure] = useState();
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      quantity: null,
+      title: data?.title,
+      description: data?.description,
+      price: data?.price,
+      image: data?.image,
     },
   });
 
-  const handleUpdateProduct = async (value) => {};
+  const handleFetchImageSoure = async (imgUrl) => {
+    const checkImage = (path) =>
+      new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve({ path, status: "ok" });
+        img.onerror = () => resolve({ path, status: "error" });
+
+        img.src = path;
+      });
+    await checkImage(imgUrl).then((res) => {
+      if (res?.status === "ok") {
+        setImageSoure("ok");
+        setValue("image", imgUrl);
+      } else {
+        setImageSoure("error");
+      }
+    });
+  };
+
+  const handleUpdateProduct = async (value) => {
+    if (imageSoure === "error") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please provide valid image URLs!",
+      });
+      return;
+    }
+  };
   return (
     <Modal show={show} onHide={handleClose}>
       <form onSubmit={handleSubmit(handleUpdateProduct)}>
@@ -31,25 +66,58 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
         </Modal.Header>
         <Modal.Body>
           <div className="col-12 d-flex flex-column justify-content-center align-items-center">
-            <div className="w-100 text-center">
-              <img
-                src={data?.image}
-                alt={data?.image_name ? data?.image_name : "product"}
-                style={{ width: "150px" }}
-              />
-            </div>
-            <h3 className="w-100 text-center fw-bolder mt-2">{data?.title}</h3>
-            <p className="w-100 fs-5 text-center text-muted my-4">
-              {data?.description}
-            </p>
-            <p className="w-100 text-center text-muted">$ {data?.price}</p>
-            <p className="w-100 text-center text-muted ">
-              {data?.width} x {data?.height} x {data?.length} (x,y,z in meter)
-            </p>
-            <div className="w-100 d-flex flex-column flex-md-row justify-content-center justify-content-md-evenly align-items-center">
-              <p className="text-secondary">
-                Reserved Quantity: {data?.reserved_quantity}
-              </p>
+            <div className="col-12">
+              <div className="mb-4 d-flex justify-content-center align-items-center">
+                <img
+                  src={getValues("image")}
+                  alt="product"
+                  width="200px"
+                  height="200px"
+                />
+              </div>
+              <div className="d-flex flex-column justify-content-center">
+                <div>
+                  <label htmlFor="image-input">
+                    <p className="mb-2">Image URLs</p>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-100 form-control"
+                    id="image-input"
+                    placeholder="Enter valid image URLS"
+                    {...register("image", {
+                      required: "The image is required as web url",
+                    })}
+                    onChange={(e) => handleFetchImageSoure(e.target.value)}
+                  />
+                  <p className="text-danger text-center">
+                    {errors?.image && errors?.image?.message}
+                  </p>
+                </div>
+                <FormInput
+                  inputName={"title"}
+                  inputLabel={"Product Title"}
+                  inputPlaceHolder={"Ennter title of product"}
+                  register={register}
+                  errors={errors}
+                ></FormInput>
+                <FormInput
+                  inputName={"description"}
+                  inputLabel={"Product Description"}
+                  inputPlaceHolder={"Ennter description of product"}
+                  register={register}
+                  errors={errors}
+                ></FormInput>
+                <FormInput
+                  inputName={"price"}
+                  inputLabel={"Product Price"}
+                  inputPlaceHolder={"Ennter new price of product"}
+                  register={register}
+                  inputType={"number"}
+                  errors={errors}
+                  step={"0.01"}
+                ></FormInput>
+              </div>
             </div>
           </div>
         </Modal.Body>
