@@ -71,6 +71,15 @@ function App() {
                 }
               ></Route>
               <Route
+                exact
+                path="/customer/browse/*"
+                element={
+                  <ProtectedRoute role={"customer"}>
+                    <Customer />
+                  </ProtectedRoute>
+                }
+              ></Route>
+              <Route
                 path="/admin/*"
                 element={
                   <ProtectedRoute role={"admin"}>

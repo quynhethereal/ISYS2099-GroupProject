@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import {
-  getAllProduct,
-  searchBySearchKey,
   searchByPrice,
   searchByCategory,
 } from "../../action/product/product.js";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Product from "./product/Product.js";
-
-import searchIcon from "../../assets/image/searchIcon.png";
 
 var testData = [
   {
@@ -61,11 +57,9 @@ var testData = [
   },
 ];
 
-const ProductList = () => {
-  // eslint-disable-next-line
+const ProductListBrowse = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const searchKeyP = searchParams?.get("searchKeyP");
   const minPriceP = searchParams?.get("minPriceP");
   const maxPriceP = searchParams?.get("maxPriceP");
   const categoryP = searchParams?.get("categoryP");
@@ -73,7 +67,6 @@ const ProductList = () => {
   const sortedTermP = searchParams?.get("sortedTermP");
   const { register, handleSubmit, setValue, getValues } = useForm({
     defaultValues: {
-      searchKey: searchKeyP ? searchKeyP : "",
       categoryID: categoryP ? categoryP : "",
       minPrice: minPriceP ? minPriceP : 0,
       maxPrice: maxPriceP ? maxPriceP : "",
@@ -81,16 +74,8 @@ const ProductList = () => {
       sortedTerm: sortedTermP ? sortedTermP : "created_at",
     },
   });
-  const [product, setProduct] = useState([]);
-  const [isloading, setIsLoading] = useState(false);
+  //   const [isloading, setIsLoading] = useState(false);
   const [isFechtedEverything, setIsFechtedEverything] = useState(false);
-  const [nextRequest, setNextRequest] = useState({
-    nextId: 0,
-    limit: 10,
-    currentPage: 0,
-    totalPages: 0,
-  });
-  const [searchKeyData, setSearchKeyData] = useState([]);
   const [searchCategoryData, setSearchCategoryData] = useState({
     currentPage: null,
     totalPages: null,
@@ -124,107 +109,23 @@ const ProductList = () => {
 
   function mergeAllData() {
     var newData = [];
-    if (searchKeyData?.length !== 0) {
-      newData = searchKeyData;
-    } else if (searchPriceData?.data?.length !== 0) {
+    if (searchPriceData?.data?.length !== 0) {
       newData = searchPriceData?.data;
     } else if (searchCategoryData?.data?.length !== 0) {
       newData = searchCategoryData?.data;
     }
+
     if (
-      searchKeyData?.length !== 0 &&
-      searchPriceData?.data?.length !== 0 &&
-      !searchCategoryData?.data.length !== 0
+      searchCategoryData?.data?.length !== 0 &&
+      searchPriceData?.data?.length !== 0
     ) {
       newData = mergeTwoDataWithoutDuplicate(
-        searchKeyData,
+        searchCategoryData?.data,
         searchPriceData?.data
       );
-    } else if (
-      !searchKeyData?.length !== 0 &&
-      searchPriceData?.data?.length !== 0 &&
-      searchCategoryData?.data?.length !== 0
-    ) {
-      newData = mergeTwoDataWithoutDuplicate(
-        searchPriceData?.data,
-        searchCategoryData?.data
-      );
-    } else if (
-      searchKeyData?.length !== 0 &&
-      !searchPriceData?.data?.length !== 0 &&
-      searchCategoryData?.data?.length !== 0
-    ) {
-      newData = mergeTwoDataWithoutDuplicate(
-        searchKeyData,
-        searchCategoryData?.data
-      );
-    }
-    if (
-      searchKeyData?.length !== 0 &&
-      searchPriceData?.data?.length !== 0 &&
-      searchCategoryData?.data?.length !== 0
-    ) {
-      newData = mergeTwoDataWithoutDuplicate(
-        searchKeyData,
-        searchCategoryData?.data
-      );
-      newData = mergeTwoDataWithoutDuplicate(newData, searchPriceData?.data);
     }
     return newData;
   }
-
-  const handleAddMoreProduct = async () => {
-    setIsLoading(true);
-    await getAllProduct(nextRequest?.nextId, nextRequest?.limit).then(
-      (data) => {
-        setProduct([...product, ...data?.products]);
-        setNextRequest({
-          nextId: data?.nextId,
-          limit: data?.limit,
-        });
-        setIsLoading(false);
-        if (data?.totalProductCount === data?.nextId) {
-          setIsFechtedEverything(true);
-        }
-      }
-    );
-  };
-  useEffect(() => {
-    async function getInitialData() {
-      await getAllProduct(nextRequest?.nextId, nextRequest?.limit).then(
-        (data) => {
-          setProduct(data?.products);
-          setNextRequest({
-            nextId: data?.nextId,
-            limit: data?.limit,
-          });
-        }
-      );
-    }
-
-    if (!(searchKeyP || minPriceP || maxPriceP || categoryP)) {
-      getInitialData();
-    }
-    // eslint-disable-next-line
-  }, []);
-  useEffect(() => {
-    async function searchForDesAndTile() {
-      //api
-      await searchBySearchKey(searchKeyP, sortedDirectionP, sortedTermP).then(
-        (res) => {
-          if (res?.products) {
-            setSearchKeyData(res?.products);
-          }
-        }
-      );
-    }
-
-    if (searchKeyP) {
-      searchForDesAndTile();
-      setIsSearching(true);
-    }
-    // eslint-disable-next-line
-  }, []);
 
   useEffect(() => {
     if (
@@ -304,12 +205,11 @@ const ProductList = () => {
   }, [moreSearch]);
 
   const handleSearchProduct = (e) => {
-    // setSearchParams(
-    //   `?searchKeyP=${e.searchKey}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
-    // );
-    navigate(
-      `/customer/search?searchKeyP=${e.searchKey}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
+    console.log(e);
+    setSearchParams(
+      `?categoryP=${e.categoryID}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
     );
+    navigate(0);
   };
 
   return (
@@ -319,24 +219,27 @@ const ProductList = () => {
           onSubmit={handleSubmit(handleSearchProduct)}
           className="my-4 d-flex flex-wrap flex-row justify-content-between align-items-center"
         >
-          <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center">
-            <div className="w-100 input-group d-flex justify-content-center algin-items-center">
-              <input
-                type="text"
-                className="form-control rounded-start"
-                placeholder="Search product title and description"
-                style={{ background: "#f0f0f0" }}
-                {...register("searchKey", {})}
-              />
-              <span className="input-group-append rounded-end">
-                <button className="btn btn-warning" type="submit">
-                  <img
-                    src={searchIcon}
-                    alt="search logo"
-                    style={{ width: "36px", height: "36px" }}
-                  />
-                </button>
-              </span>
+          <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center mt-md-3">
+            <div className="col-12">
+              <select
+                id="categoryID"
+                type="number"
+                className="form-select form-select-lg"
+                {...register("categoryID", {
+                  valueAsNumber: true,
+                })}
+              >
+                <option value="" disabled>
+                  Select category
+                </option>
+                {testData?.map((category, index) => {
+                  return (
+                    <option value={category?.id} key={index}>
+                      {category?.name}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
           </div>
           <div className="col-12 col-md-4 d-flex flex-column flex-md-row justtify-content-center align-items-center px-3 my-3 my-md-0 gap-0 gap-md-2 gap-lg-3">
@@ -370,7 +273,7 @@ const ProductList = () => {
               <div className="col-12 d-flex flex-row flex-wrap justify-content-evenly align-items-center">
                 <div className="col-6">
                   <select
-                    id="fromWarehouse"
+                    id="sortedTerm"
                     type="number"
                     className="form-select form-select-lg"
                     {...register("sortedTerm", {})}
@@ -397,49 +300,13 @@ const ProductList = () => {
               </div>
             </div>
           </div>
-          <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center mt-md-3">
-            <div className="col-12">
-              <select
-                id="fromWarehouse"
-                type="number"
-                className="form-select form-select-lg"
-                {...register("categoryID", {
-                  valueAsNumber: true,
-                })}
-                onChange={(e) => {
-                  navigate(
-                    `/customer/browse?categoryP=${
-                      e.target.value
-                    }&minPriceP=${getValues("minPrice")}&maxPriceP=${getValues(
-                      "maxPrice"
-                    )}&sortedDirectionP=${getValues(
-                      "sortedDirection"
-                    )}&sortedTermP=${getValues("sortedTerm")}`
-                  );
-                }}
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {testData?.map((category, index) => {
-                  return (
-                    <option value={category?.id} key={index}>
-                      {category?.name}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+          <div className="col-12 my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
+            <button type="submit" className="btn btn-success">
+              Searching ...
+            </button>
           </div>
         </form>
         <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
-          {product?.map((item, index) => {
-            return (
-              <div key={index} className="">
-                <Product info={item}></Product>
-              </div>
-            );
-          })}
           {mergeAllData()?.map((item, index) => {
             return (
               <div key={index} className="">
@@ -452,20 +319,6 @@ const ProductList = () => {
           )}
         </div>
         <div className="my-4 d-flex justify-content-center algin-items-center">
-          {isloading && (
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          )}
-          {!isFechtedEverything && !isSearching && (
-            <button
-              type="button"
-              className="btn btn-warning"
-              onClick={() => handleAddMoreProduct()}
-            >
-              More products...
-            </button>
-          )}
           {!isFechtedEverything && searchByPrice && isSearching && (
             <button
               type="button"
@@ -481,4 +334,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default ProductListBrowse;

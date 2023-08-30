@@ -1,14 +1,20 @@
 import React from "react";
 import { useAuth } from "../../hook/AuthHook.js";
+import { useLocation } from "react-router-dom";
 import Header from "../header/Header.js";
 import ProductList from "../productList/ProductList.js";
+import ProductListBrowse from "../productList/ProductListBrowse.js";
+import ProductListSearch from "../productList/ProductListSearch.js";
 
 const Customer = () => {
   const { user } = useAuth();
+  const location = useLocation().pathname;
   return (
     <>
       <Header user={user}></Header>
-      <ProductList></ProductList>
+      {location === "/customer/browse" && <ProductListBrowse />}
+      {location === "/customer/search" && <ProductListSearch />}
+      {location === "/customer" && <ProductList />}
     </>
   );
 };
