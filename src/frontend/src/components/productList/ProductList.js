@@ -330,7 +330,7 @@ const ProductList = () => {
               More products...
             </button>
           )}
-          {!isFechtedEverything && searchByPrice && (
+          {!isFechtedEverything && searchByPrice && isSearching && (
             <button
               type="button"
               className="btn btn-warning"
