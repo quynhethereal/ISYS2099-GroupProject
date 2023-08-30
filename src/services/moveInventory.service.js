@@ -1,5 +1,5 @@
 const Inventory = require('../models/inventory.model');
-const { admin_pool } = require('../db/db');
+const {admin_pool} = require('../db/db');
 const Warehouse = require('../models/warehouse.model');
 const checkWarehouseCapacityService = require('./checkWarehouseCapacity.service');
 
@@ -58,17 +58,44 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
         // check if toWarehouse alr has inventory of the product, if not create new one
-        const toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+        let toWarehouseInventory;
 
-        if (toWarehouseInventory[0].length === 0) {
-            await connection.execute('INSERT INTO `inventory` (product_id, warehouse_id, quantity, reserved_quantity) VALUES (?, ?, ?, ?)', [productId, toWarehouse, 0, 0]);
+        // obtain lock in the correct order to avoid deadlock
+        // TODO: refactor this into funcs to reduce duplicate code
+        if (fromWarehouse > toWarehouse) {
+            toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+
+            if (toWarehouseInventory[0].length === 0) {
+                toWarehouseInventory = await connection.execute('INSERT INTO `inventory` (product_id, warehouse_id, quantity, reserved_quantity) VALUES (?, ?, ?, ?)', [productId, toWarehouse, 0, 0]);
+
+                toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+            }
+
+            await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [fromWarehouse, productId]);
+
+        } else {
+            await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [fromWarehouse, productId]);
+
+            toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+
+
+            if (toWarehouseInventory[0].length === 0) {
+                await connection.query('INSERT INTO inventory (product_id, warehouse_id, quantity, reserved_quantity) VALUES (?, ?, ?, ?)', [productId, toWarehouse, 0, 0]);
+
+                toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+            }
         }
+
+        // const toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
+
+        // if (toWarehouseInventory[0].length === 0) {
+        //     await connection.execute('INSERT INTO `inventory` (product_id, warehouse_id, quantity, reserved_quantity) VALUES (?, ?, ?, ?)', [productId, toWarehouse, 0, 0]);
+        // }
 
         // update inventory of toWarehouse
         const moveInventoryQuery = await connection.execute('UPDATE `inventory` SET quantity = quantity + ?, reserved_quantity = reserved_quantity + ? WHERE warehouse_id = ? AND product_id = ?', [quantity, fromWarehouseInventory[0][0].reserved_quantity, toWarehouse, productId]);
 
-        // obtain lock
-         await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [fromWarehouse, productId]);
+        //  await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [fromWarehouse, productId]);
 
         const updateFromWarehouseInventoryQuery = await connection.execute('UPDATE `inventory` SET quantity = quantity - ?, reserved_quantity = reserved_quantity - ? WHERE warehouse_id = ? AND product_id = ?', [quantity, fromWarehouseInventory[0][0].reserved_quantity, fromWarehouse, productId]);
 
@@ -77,7 +104,7 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
         // update the order items that have inventory_id of fromWarehouse
-        const affectedOrderItemsQuery = await connection. execute("SELECT * FROM `order_items` WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = 'pending') FOR UPDATE", [fromWarehouseInventory[0][0].id]);
+        const affectedOrderItemsQuery = await connection.execute("SELECT * FROM `order_items` WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = 'pending') FOR UPDATE", [fromWarehouseInventory[0][0].id]);
 
         if (affectedOrderItemsQuery[0].length > 0) {
             const updateOrderItemsQuery = await connection.execute('UPDATE `order_items` SET inventory_id = ? WHERE inventory_id = ? AND order_id IN (SELECT id FROM `orders` WHERE status = "pending")', [toWarehouseInventory[0][0].id, fromWarehouseInventory[0][0].id]);
@@ -95,6 +122,7 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
     } catch (err) {
+        console.log(err.stack);
         console.log('Unable to move inventory.');
         await connection.query('ROLLBACK');
 

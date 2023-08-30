@@ -21,6 +21,7 @@ exports.findById = async (req, res) => {
             });
             return;
         }
+
         res.status(200).json(product);
     } catch (err) {
         res.status(500).send({
@@ -33,13 +34,35 @@ exports.findAllByCategory = async (req, res) => {
     try {
         const categoryId = parseInt(req.params.id);
 
+        if (categoryId === null) {
+            res.status(404).send({
+                message: `Product with category id ${req.params.id} not found.`
+            });
+            return;
+        }
+
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection;
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
         const params = {
             categoryId,
+            sortTerm: sortTerm,
+            sortDirection: sortDirection,
             queryParams: req.query
         }
 
         const products = await Product.findByCategory(params);
-
         res.status(200).json(products);
     } catch (err) {
         res.status(500).send({
@@ -100,7 +123,7 @@ exports.updateImage = async (req, res) => {
         const image = Helper.encodeImage(req.file.path);
 
         // validate presence of params
-        if (productId === null || image === null) {
+        if (productId === null || imageName === null || image === null) {
             res.status(400).send({
                 message: "Invalid request."
             });
@@ -139,6 +162,116 @@ exports.getImage = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error retrieving product image."
+        });
+    }
+}
+
+exports.findBySellerId = async (req, res) => {
+    try {
+        const sellerId = parseInt(req.currentUser.id);
+
+        if (sellerId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        // check if user is seller 
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const params = {
+            sellerId,
+            queryParams: req.query
+        }
+
+        const products = await Product.findBySellerId(params);
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving products."
+        });
+    }
+}
+
+exports.findAllByPriceRange = async (req, res) => {
+    try {
+        const minPrice = parseFloat(req.query.minPrice) || 0;
+        const maxPrice = parseFloat(req.query.maxPrice) || Number.MAX_VALUE;
+
+        if (isNaN(minPrice) || isNaN(maxPrice) || minPrice < 0 || maxPrice < 0 || minPrice > maxPrice) {
+            throw new Error('Invalid price range.');
+        }
+
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection;
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
+        const params = {
+            queryParams: req.query,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            sortTerm: sortTerm,
+            sortDirection: sortDirection
+        };
+
+        const products = await Product.findByPriceRange(params);
+
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(400).send({
+            message: err.message || "Invalid request parameters."
+        });
+    }
+}
+
+exports.findAllByKey = async (req, res) => {
+    try {
+        const key = req.query.key;
+
+        if (!key) {
+            throw new Error('Invalid search key.');
+        }
+
+        const validSortTerms = ['created_at', 'price'];
+        const sortTerm = req.query.sortTerm;
+
+        if (!validSortTerms.includes(sortTerm)) {
+            throw new Error('Invalid sort term.');
+        }
+
+        const validSortDirections = ['ASC', 'DESC'];
+        const sortDirection = req.query.sortDirection;
+
+        if (!validSortDirections.includes(sortDirection)) {
+            throw new Error('Invalid sorting order.');
+        }
+
+        const params = {
+            queryParams: req.query,
+            key: key,
+            sortTerm: sortTerm,
+            sortDirection: sortDirection
+        }
+
+        const products = await Product.findByKey(params);
+
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).json({
+            message: err.message || "Error finding products by key."
         });
     }
 }

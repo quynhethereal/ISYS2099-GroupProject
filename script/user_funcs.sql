@@ -1,9 +1,13 @@
--- funcs
+-- Create the database if not exists
+DROP DATABASE IF EXISTS `lazada_ecommerce`;
+CREATE DATABASE IF NOT EXISTS `lazada_ecommerce`;
+
+USE lazada_ecommerce;
 
 -- Generate ULID from datetime
 delimiter //
-DROP FUNCTION IF EXISTS ULID_ENCODE//
-CREATE FUNCTION ULID_ENCODE (b BINARY(16)) RETURNS CHAR(26) DETERMINISTIC
+drop function IF EXISTS ULID_ENCODE//
+create function ULID_ENCODE (b BINARY(16)) RETURNS CHAR(26) deterministic
 BEGIN
 DECLARE s_hex CHAR(32);
 SET s_hex = LPAD(HEX(b), 32, '0');
@@ -15,7 +19,9 @@ delimiter //
 drop function IF EXISTS ULID_FROM_DATETIME//
 create function ULID_FROM_DATETIME (t DATETIME) RETURNS CHAR(26) deterministic
 BEGIN
-RETURN ULID_ENCODE(CONCAT(UNHEX(CONV(UNIX_TIMESTAMP(t) * 1000, 10, 16)), binary(10)));
+DECLARE random_bytes BINARY(10);
+SET random_bytes = RANDOM_BYTES(10);
+RETURN ULID_ENCODE(CONCAT(UNHEX(CONV(UNIX_TIMESTAMP(t) * 1000, 10, 16)), random_bytes));
 END//
 delimiter ;
 
@@ -113,3 +119,71 @@ BEGIN
 DELIMITER ;
 
 -- end of update inventory on order reject
+
+drop procedure IF EXISTS ASSIGN_INVENTORY_TO_WAREHOUSE;
+DELIMITER $$
+create procedure ASSIGN_INVENTORY_TO_WAREHOUSE(IN product_id INT, IN total_quantity INT, OUT pending_items_count INT)
+BEGIN
+     DECLARE items_to_stock INT;
+     DECLARE max_warehouse_id INT;
+     DECLARE max_available_volume DECIMAL(10,2);
+     DECLARE remaining_quantity INT DEFAULT total_quantity;
+     DECLARE product_unit_size DECIMAL(10,2);
+     DECLARE has_warehouse INT DEFAULT 0;
+     DECLARE inventory_row_id VARCHAR(255);
+
+
+    DECLARE EXIT handler FOR SQLEXCEPTION
+      BEGIN
+        ROLLBACK;
+        RESIGNAL;
+      END;
+
+    SELECT (width * length * height) INTO product_unit_size FROM products WHERE id = product_id;
+
+     IF product_unit_size IS NULL THEN
+     begin
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Product not found';
+     end;
+     END IF;
+
+
+    add_loop: WHILE remaining_quantity > 0 AND has_warehouse = 0 DO
+
+        START TRANSACTION;
+
+        SELECT id, available_volume INTO max_warehouse_id, max_available_volume
+          FROM warehouses WHERE available_volume = (SELECT MAX(available_volume) FROM warehouses) LIMIT 1 FOR UPDATE;
+
+           SET items_to_stock = LEAST(remaining_quantity, FLOOR(max_available_volume / product_unit_size));
+
+            IF items_to_stock = 0 THEN
+                -- insert into pending inventory
+                INSERT INTO pending_inventory (product_id, quantity) VALUES (product_id, remaining_quantity);
+                SET pending_items_count = remaining_quantity;
+                SET remaining_quantity = 0;
+                SET has_warehouse = 1;
+                COMMIT;
+                LEAVE add_loop;
+            END IF;
+
+            -- see if the product is already in the warehouse
+            SELECT id INTO inventory_row_id FROM inventory WHERE product_id = product_id AND warehouse_id = max_warehouse_id LIMIT 1;
+
+            -- if the product is already in the warehouse, update the quantity
+            IF inventory_row_id IS NOT NULL THEN
+                UPDATE inventory SET quantity = quantity + items_to_stock WHERE product_id = product_id AND warehouse_id = max_warehouse_id;
+            -- else insert the product into the warehouse
+            ELSE
+                INSERT INTO inventory (product_id, warehouse_id, quantity, reserved_quantity)
+                VALUES (product_id, max_warehouse_id, items_to_stock, 0);
+            END IF;
+
+            UPDATE warehouses SET available_volume = available_volume - (items_to_stock * product_unit_size) WHERE id = max_warehouse_id;
+
+            SET remaining_quantity = remaining_quantity - items_to_stock;
+            COMMIT;
+    END WHILE;
+END;
+$$
+DELIMITER ;

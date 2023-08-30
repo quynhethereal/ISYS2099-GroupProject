@@ -23,7 +23,6 @@ module.exports = app => {
     // authenticate a user
     router.post("/auth", auth.authenticate);
 
-
     // get a user by username and password
     router.post("/user", users.findByUsernamePassword);
 
@@ -37,8 +36,9 @@ module.exports = app => {
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
-    router.get("/products/search", products.findByKey);
-
+    router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
+    router.get("/products/price-range", products.findAllByPriceRange);
+    router.get("/products/search", products.findAllByKey);
 
     // order-related API
     router.post("/order", authMiddleware.verifyToken, orders.createOrder);
@@ -61,6 +61,10 @@ module.exports = app => {
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
     router.get("/inventories", authMiddleware.verifyToken, inventories.getAll);
     router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
+    router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
+    router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
+    router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
+
 
     // category api for testing
     router.post("/category", categories.createCategory);

@@ -15,11 +15,9 @@ npm install
 ```
 
 - Setup **MySQL** database:
-  - Create a database called `lazada_ecommerce`
-    // TODO: Add SQL instructions for creating the database + roles
-
+  - Login to the mysql shell and create a database called `lazada_ecommerce`
 ```SQL
-CREATE DATABASE IF NOT EXISTS lazada_ecommerce;
+CREATE DATABASE lazada_ecommerce;
 ```
 
 - Setup MongoDB database:
@@ -41,14 +39,19 @@ cp .env.dev.sample .env
 (windows)
 copy .env.dev.sample .env
 ```
-
+- Populate seed data by **copying the SQL files** in `user_funcs.sql` and `seed.sql` in **script** folder (must be in exact order!).
+  
 - Run the server:
 
 ```bash
 npm start
 ```
 
-- Run the client:
+**Debug Notes:**
+- If mySQL refuses connection on server startup, try changing MYSQL_HOST=127.0.0.1 in .env file. 
+
+
+- Navigate to the FE server:
 
 ```bash
 cd src/frontend
@@ -66,7 +69,7 @@ npm install
 cp .env.dev.sample .env
 ```
 
-- Finally, run the react app
+- Finally, run the React app
 
 ```bash
 npm start

@@ -48,7 +48,6 @@ const Login = () => {
                   type="text"
                   className="form-control"
                   id="username"
-                  aria-describedby="basic-addon3"
                   placeholder="Enter username"
                   {...register("username", {
                     required: "The username is required",

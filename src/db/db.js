@@ -13,9 +13,10 @@ const mongodb_connection = mongoose.connect(mongodb_uri)
 const admin_pool = mysql.createPool({
     connectionLimit: 10,
     host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_ADMIN_USER,
-    password: process.env.MYSQL_ADMIN_PASSWORD,
+    user: process.env.MYSQL_WH_USER,
+    password: process.env.MYSQL_WH_PASSWORD,
     database: process.env.MYSQL_DATABASE,
+    multipleStatements: true,
     debug: false
 });
 
@@ -25,12 +26,12 @@ admin_pool.on('release', function (connection) {
 
 admin_pool.getConnection(function (err, connection) {
     if (err) {
-        console.error('Error connecting customer pool to MySQL:', err);
+        console.error('Error connecting warehouse admin pool to MySQL:', err);
         connection.release();
         throw err;
     }
 
-    console.log('Connected admin pool to MySQL!');
+    console.log('Connected warehouse admin pool to MySQL!');
     connection.on('error', function (err) {
         throw err;
     });

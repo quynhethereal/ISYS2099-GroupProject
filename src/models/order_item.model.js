@@ -6,6 +6,7 @@ class OrderItem {
         this.inventoryId = params.inventoryId;
         this.title = params.title;
         this.description = params.description;
+        this.image = params.image;
     }
 }
 

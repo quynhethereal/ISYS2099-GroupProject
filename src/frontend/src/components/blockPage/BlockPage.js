@@ -5,6 +5,10 @@ import http403 from "../../assets/image/http-403.avif";
 
 const BlockPage = () => {
   const navigate = useNavigate();
+
+  const redirectToPage = () => {
+    navigate("/");
+  };
   return (
     <>
       <div
@@ -26,7 +30,7 @@ const BlockPage = () => {
           </p>
         </div>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => redirectToPage()}
           type="button"
           className="btn btn-info shadow p-3 mb-5 rouded"
           style={{ borderRadius: "15px" }}

@@ -30,21 +30,7 @@ const WarehouseList = () => {
   function returnNumberToArray(totalPage) {
     var rows = [];
     var i = 0;
-    if (totalPage < 3) {
-      while (++i <= totalPage) rows.push(i);
-      return rows;
-    }
-    if (totalPage - page >= 3) {
-      i = page - 1;
-      while (++i <= page + 1) rows.push(i);
-      rows.push("...");
-      rows.push(totalPage);
-    } else {
-      i = totalPage - 3;
-      while (++i <= totalPage - 1) rows.push(i);
-      rows.push("...");
-      rows.push(totalPage);
-    }
+    while (++i <= totalPage) rows.push(i);
     return rows;
   }
 
@@ -109,7 +95,7 @@ const WarehouseList = () => {
       <div className="row mb-md-4">
         <WarehouseCreateForm />
       </div>
-      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-center p-0">
+      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-start p-0">
         {warehouses?.warehouses?.map((item, index) => {
           return <WarehouseItem key={index} data={item} token={token} />;
         })}

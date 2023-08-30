@@ -59,3 +59,60 @@ exports.moveInventory = async (req, res) => {
         });
     }
 }
+
+exports.updateInventory = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        // check if quantity is valid
+        if (req.body.quantity < 0 || req.body.quantity === null || req.body.quantity === undefined) {
+            return res.status(400).json({ message: "Invalid quantity." });
+        }
+
+        const inventory = await Inventory.updateInventory(req.params.id, req.body.quantity);
+
+        res.status(200).json(inventory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error updating inventory."
+        });
+    }
+}
+
+exports.getPendingInventory = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const inventory = await Inventory.getPendingInventory(req.query);
+        res.status(200).json(inventory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving inventory."
+        });
+    }
+}
+
+exports.getInventoryByProductId = async (req, res) => {
+    try {
+        // check if user is seller
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const inventory = await Inventory.getInventoryByProductId(req.params.id);
+        if (inventory === null) {
+            return res.status(404).json({ message: "Inventory not found." });
+        }
+        res.status(200).json(inventory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error retrieving inventory."
+        });
+    }
+}

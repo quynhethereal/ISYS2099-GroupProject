@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import { useParams, useNavigate } from "react-router-dom";
+
 import { useAuth } from "../../../hook/AuthHook.js";
 import { useCart } from "../../../hook/CartHook.js";
-import { useParams, useNavigate } from "react-router-dom";
 import { getProductById } from "../../../action/product/product.js";
 
 import Header from "../../header/Header.js";
@@ -13,10 +15,11 @@ const ProductDetail = () => {
   const productId = useParams().id;
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { addItem } = useCart();
+  const { addItem, cart } = useCart();
 
   const [product, setProduct] = useState(null);
   const [amount, setAmount] = useState(1);
+  const [randomComments, setRandomCommemts] = useState();
 
   useEffect(() => {
     async function findProduct() {
@@ -27,6 +30,7 @@ const ProductDetail = () => {
       });
     }
     findProduct();
+    setRandomCommemts(Math.ceil(500 + Math.random() * (10000 - 500)));
     // eslint-disable-next-line
   }, []);
 
@@ -42,11 +46,27 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
+    if (cart?.length > 30) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Your cart is maximum 30 type of products. Remove some products and try again",
+      });
+      return;
+    }
     addItem(product, amount);
+    Swal.fire({
+      icon: "success",
+      title: "Added product to cart",
+      text: "You can see the details in cart",
+      showConfirmButton: false,
+      timer: 1000,
+      timerProgressBar: true,
+    });
   };
   const handleBuyNow = () => {
     addItem(product, amount);
-    navigate("/customer/cart", { replace: true });
+    navigate("/customer/cart");
   };
   return (
     <>
@@ -81,9 +101,7 @@ const ProductDetail = () => {
                   />
                 );
               })}
-              <span className="ms-4 fs-5">
-                {Math.ceil(500 + Math.random() * (10000 - 500))}
-              </span>
+              <span className="ms-4 fs-5">{randomComments}</span>
               <span className="ms-2 text-muteed text-decoration-underline">
                 Ratings
               </span>

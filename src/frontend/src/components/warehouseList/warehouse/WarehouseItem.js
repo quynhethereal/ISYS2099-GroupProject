@@ -1,16 +1,15 @@
 import React, { useState, useEffect, memo } from "react";
-// import axios from "axios";
 
 import { getInventoryByWarehouseId } from "../../../action/warehouse/warehouse.js";
 
 import WarehouseInventory from "./WarehouseInventory.js";
 
-const WarehouseItem = ({ data, token }) => {
+const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
 
   const handleNextPage = () => {
-    if (page < inventory.totalPages) {
+    if (page < inventory?.totalPages) {
       setPage((prev) => prev + 1);
     }
   };
@@ -58,21 +57,33 @@ const WarehouseItem = ({ data, token }) => {
 
   useEffect(() => {
     async function getData() {
-      await getInventoryByWarehouseId(token(), data.id, 5, page).then((res) => {
-        setInventory(res);
-      });
+      await getInventoryByWarehouseId(token(), data?.id, 5, page).then(
+        (res) => {
+          setInventory(res);
+
+          if (setWareHouseInventoryData) {
+            setWareHouseInventoryData(res);
+          }
+        }
+      );
     }
-    getData();
+    if (data?.id) {
+      getData();
+    }
     // eslint-disable-next-line
-  }, [page]);
+  }, [page, data]);
 
   return (
-    <div className="col-12 col-md-5 my-3 my-md-0 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className={`col-12 ${
+        size ? size : "col-md-5"
+      } my-3 my-md-0 d-flex flex-column justify-content-center align-items-center`}
+    >
       <div className="card w-100">
         <div className="card-body">
           <div className="card-title d-flex flex-row">
-            <div className="fs-4 fw-bolder">#{data.id}</div>
-            <div className="fs-4 fw-bolder">{data.name}</div>
+            <div className="fs-4 fw-bolder">#{data?.id}</div>
+            <div className="mx-auto fs-4 fw-bolder">{data?.name}</div>
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
@@ -85,10 +96,10 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{data.city}</p>
+                <p className="bold px-2 py-1 ">{data?.city}</p>
               </div>
             </div>
-            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-start">
               <div className="col-12 col-lg-7">
                 <label htmlFor="address" className="text-muted">
                   Address
@@ -99,7 +110,7 @@ const WarehouseItem = ({ data, token }) => {
                   style={{ background: "#f0f0f0" }}
                 >
                   <p className="bold px-2 py-1 ">
-                    {data.province}, {data.district}, {data.street}
+                    {data?.province}, {data?.district}, {data?.street}
                   </p>
                 </div>
               </div>
@@ -112,7 +123,33 @@ const WarehouseItem = ({ data, token }) => {
                   className="mt-2 rounded"
                   style={{ background: "#f0f0f0" }}
                 >
-                  <p className="bold px-2 py-1 ">{data.number}</p>
+                  <p className="bold px-2 py-1 ">{data?.number}</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 d-flex flex-column flex-lg-row justify-content-between align-items-start">
+              <div className="col-12 col-lg-5">
+                <label htmlFor="total-volume" className="text-muted">
+                  Total Volume
+                </label>
+                <div
+                  id="total-volume"
+                  className="mt-2 rounded"
+                  style={{ background: "#f0f0f0" }}
+                >
+                  <p className="bold px-2 py-1 ">{data?.total_volume}</p>
+                </div>
+              </div>
+              <div className="col-12 col-lg-5">
+                <label htmlFor="number" className="text-muted">
+                  Available Volume
+                </label>
+                <div
+                  id="number"
+                  className="mt-2 rounded"
+                  style={{ background: "#f0f0f0" }}
+                >
+                  <p className="bold px-2 py-1 ">{data?.available_volume}</p>
                 </div>
               </div>
             </div>
@@ -125,7 +162,9 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{formatDate(data.created_at)}</p>
+                <p className="bold px-2 py-1 ">
+                  {formatDate(data?.created_at)}
+                </p>
               </div>
             </div>
             <div className="col-12">
@@ -137,7 +176,9 @@ const WarehouseItem = ({ data, token }) => {
                 className="mt-2 rounded"
                 style={{ background: "#f0f0f0" }}
               >
-                <p className="bold px-2 py-1 ">{formatDate(data.updated_at)}</p>
+                <p className="bold px-2 py-1 ">
+                  {formatDate(data?.updated_at)}
+                </p>
               </div>
             </div>
             <div className="col-12 d-flex justify-content-center">
@@ -145,6 +186,7 @@ const WarehouseItem = ({ data, token }) => {
                 <ul className="pagination pagination-sm">
                   <li className="page-item">
                     <button
+                      type="button"
                       className="page-link"
                       onClick={() => handlePreviousPage()}
                     >
@@ -163,6 +205,7 @@ const WarehouseItem = ({ data, token }) => {
                               aria-current="page"
                             >
                               <button
+                                type="button"
                                 className="page-link"
                                 onClick={() => handleChangePage(number)}
                               >
@@ -171,7 +214,11 @@ const WarehouseItem = ({ data, token }) => {
                             </li>
                           ) : (
                             <li aria-current="page">
-                              <button className="page-link" disabled>
+                              <button
+                                className="page-link"
+                                disabled
+                                type="button"
+                              >
                                 {number}
                               </button>
                             </li>
@@ -182,6 +229,7 @@ const WarehouseItem = ({ data, token }) => {
                   )}
                   <li className="page-item">
                     <button
+                      type="button"
                       className="page-link"
                       onClick={() => handleNextPage()}
                     >

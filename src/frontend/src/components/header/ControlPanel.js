@@ -1,15 +1,15 @@
 import React from "react";
+
 import { useLocation } from "react-router-dom";
 
 import { useAuth } from "../../hook/AuthHook.js";
 
 import logo from "../../assets/image/icon.png";
-import home from "../../assets/image/home.png";
 import logoutImage from "../../assets/image/logout.png";
 import warehouse from "../../assets/image/warehouse.png";
 import product from "../../assets/image/product.png";
 
-const DashBoard = () => {
+const ControlPanel = () => {
   const { logout } = useAuth();
   const location = useLocation().pathname;
   return (
@@ -27,47 +27,9 @@ const DashBoard = () => {
       <ul className="nav nav-pills flex-column mb-auto">
         <li className="nav-item my-2">
           <a
-            href="/admin"
+            href="/seller"
             className={`nav-link text-black d-flex justify-content-start align-items-center ${
-              location === "/admin" && "active"
-            }`}
-            aria-current="page"
-          >
-            <span>
-              <img
-                src={home}
-                alt="home logo"
-                className="img-fluid me-3"
-                style={{ width: "28px" }}
-              />
-            </span>
-            Inventory
-          </a>
-        </li>
-        <li className="nav-item my-2">
-          <a
-            href="/admin/warehouse"
-            className={`nav-link text-black d-flex justify-content-start align-items-center ${
-              location === "/admin/warehouse" && "active"
-            }`}
-            aria-current="page"
-          >
-            <span>
-              <img
-                src={warehouse}
-                alt="warehouse logo"
-                className="img-fluid me-3"
-                style={{ width: "28px" }}
-              />
-            </span>
-            WareHouse
-          </a>
-        </li>
-        <li className="nav-item my-2">
-          <a
-            href="/admin/category"
-            className={`nav-link text-black d-flex justify-content-start align-items-center ${
-              location === "/admin/category" && "active"
+              location === "/seller" && "active"
             }`}
             aria-current="page"
           >
@@ -79,7 +41,26 @@ const DashBoard = () => {
                 style={{ width: "28px" }}
               />
             </span>
-            Categories
+            Product
+          </a>
+        </li>
+        <li className="nav-item my-2">
+          <a
+            href="/seller/inventory"
+            className={`nav-link text-black d-flex justify-content-start align-items-center ${
+              location === "/seller/inventory" && "active"
+            }`}
+            aria-current="page"
+          >
+            <span>
+              <img
+                src={warehouse}
+                alt="warehouse logo"
+                className="img-fluid me-3"
+                style={{ width: "28px" }}
+              />
+            </span>
+            Inventory
           </a>
         </li>
       </ul>
@@ -105,4 +86,4 @@ const DashBoard = () => {
   );
 };
 
-export default DashBoard;
+export default ControlPanel;
