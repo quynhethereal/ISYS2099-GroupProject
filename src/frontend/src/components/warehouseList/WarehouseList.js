@@ -44,6 +44,16 @@ const WarehouseList = () => {
     while (++i <= totalPage) rows.push(i);
     return rows;
   }
+  function formatDate(dateString) {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  }
 
   useEffect(() => {
     async function getData() {
@@ -81,6 +91,9 @@ const WarehouseList = () => {
       !pendingParams?.data?.length
     ) {
       getPendingInventoryData();
+    }
+    if (pendingParams?.currentPage === pendingParams?.totalPages) {
+      setMore(true);
     }
     // eslint-disable-next-line
   }, []);
@@ -150,6 +163,35 @@ const WarehouseList = () => {
           <h3 className="text-primary text-center">Pending Inventory</h3>
         </div>
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
+          <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
+            {pendingParams?.data?.map((item, index) => {
+              return (
+                <div className="card" style={{ width: "16rem" }} key={index}>
+                  <div className="card-img-top text-center">
+                    <img
+                      src={item?.image}
+                      alt={item?.image ? item?.image : item?.title}
+                      style={{ width: 200, height: 200 }}
+                    />
+                  </div>
+                  <div className="card-body">
+                    <h5 className="card-title text-wrap">{item?.title}</h5>
+                    <div className="card-text ">
+                      <p className="fw-bolder overflow-hidden text-wrap">
+                        Inventory ID : #{item?.inventory_id}
+                      </p>
+                      <p className="fw-bolder overflow-hidden text-wrap">
+                        Quantity : {item?.quantity}
+                      </p>
+                      <p className="text-wrap">
+                        {formatDate(item?.inventory_created_date)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
           {!more && (
             <button
               type="button"
