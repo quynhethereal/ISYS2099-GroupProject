@@ -1,12 +1,147 @@
-const Category = require('../models/category.model');
+const {Category, Subcategory, Sequence} = require('../models/category.model');
+const {faker} = require('@faker-js/faker');
+const mongoose = require('mongoose');
 const Product = require('../models/product.model');
+
+// Generate ID for Category
+const generateID = async (model) => {
+    const doc = await Sequence.findOneAndUpdate(
+        {_id: model},      // Define the model that need to adjust ID value 
+        {$inc: {sequence : 1}}, // Increase ID by 1
+        {new: true, upsert: true}
+    )
+    return doc.sequence;
+};
+
+// Generate data for Category
+const generateMany = (count) => {
+    const categories = [];
+
+    for (let i = 0; i < count; i++) {
+
+        const category = generateOne();
+        categories.push(category);
+    }
+
+    console.log(categories);
+
+    return categories;
+}
+
+const generateOne = () => {
+    generateID('category')
+        .then((nextId) => {  
+            // console.log(nextId);      
+            const category = {
+                id: nextId,
+                name: faker.commerce.department(),
+                subcategories: [],
+                attributes: [],
+            }
+        
+            const attributeCount = faker.number.int({min: 1, max: 3});
+            for (let i = 0; i < attributeCount; i++) {
+                const attribute = generateAttribute();
+                category.attributes.push(attribute);
+            }
+
+            const subcategoryCount = faker.number.int({min: 0, max: 3});
+            for (let i = 0; i < subcategoryCount; i++) {
+                const subcategory = generateSubcategory();
+                // console.log(generateSubcategory())
+                console.log('Subcat', subcategory);
+
+                category.subcategories.push(new Subcategory({
+                    id: subcategory.id, 
+                    name: subcategory.name, 
+                    attributes: subcategory.attributes
+                }));
+            }
+
+            const cat = new Category({
+                id: category.id,
+                name: category.name,
+                subcategories: category.subcategories,
+                attributes: category.attributes
+            });                                       
+            
+            console.log(cat);
+            return cat.save();
+        })
+        .then(() => {
+            // console.log('Category saved');
+        })
+        .catch((error) => {
+            console.error('Error saving subcategory:', error);
+        });
+}
+
+const generateSubcategory = () => {
+    generateID('subcategory')
+      .then((nextId) => {
+        // console.log('nextId:' , nextId)
+        const subcategory = {
+            id: nextId,
+            name: faker.commerce.department(),
+            attributes: [],
+        }
+
+        // console.log('subcat in generate: ', subcategory)
+        
+        const attributeCount = faker.number.int({min: 0, max: 3});
+        for (let i = 0; i < attributeCount; i++) {
+            const attribute = generateAttribute();
+            subcategory.attributes.push(attribute);
+        }
+
+        const subcat = new Subcategory({
+            id: subcategory.id,
+            name: subcategory.name,
+            attributes: subcategory.attributes
+        });
+    
+        console.log(subcat);
+    
+        return subcat.save();
+
+      })
+      .then(() => {
+        // console.log('Subcategory saved');
+      })
+      .catch((error) => {
+        console.error('Error saving subcategory:', error);
+      });
+}
+
+const generateAttribute = () => {
+    const attribute = {
+        description: faker.lorem.word(),
+        type: faker.helpers.arrayElement(['string', 'number'])
+    };
+
+    if (attribute.type == 'string') {
+        attribute.description = faker.lorem.words();
+    } else {
+        attribute.description = faker.number.int();
+    }
+    
+    return attribute;
+}
+
+// Auto-generate 10 category
+Category.insertMany(generateMany(1))
+    .then((result) => {
+    console.log(`${result.length} categories saved to MongoDB`);
+    })
+    .catch((error) => {
+    console.error('Error saving categories to MongoDB:', error);
+    });
 
 // NOTE: Not create auto increment ID yet, update feature later
 exports.createCategory = async (req, res) => {
     try {
         const name = req.body.name;
         const sameNameCategory = await Category.findOne({name: name});
-        const sameIdCategory = await Category.findOne({name: name});
         if (sameNameCategory || sameIdCategory) {
             res.status(400).send({
                 message: "Invalid request. Category is existed."
