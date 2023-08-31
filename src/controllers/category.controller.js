@@ -26,8 +26,8 @@ const generateMany = async (count) => {
             const category = await generateOne();
             categories.push(category);
         }
-
         console.log(categories);
+
         return categories;
     } catch (err) {
         console.error('Error saving many category:', err);
@@ -56,15 +56,10 @@ const generateOne = async () => {
         for (let i = 0; i < subcategoryCount; i++) {
             const subcategory = await generateSubcategory(category.id);
 
-            console.log('subcategory', subcategory);
-            const subcatObj = new Category({
-                id: subcategory.id,
-                parentId: subcategory.parentId,
-                name: subcategory.name,
-                subcategories: subcategory.subcategories,
-                attributes: subcategory.attributes,
-            });
-            category.subcategories.push(subcatObj);
+            // console.log('subcategory', subcategory);
+
+            category.subcategories.push(subcategory);
+            // console.log(category.subcategories);
         }
 
         const cat = new Category({
@@ -74,8 +69,9 @@ const generateOne = async () => {
             attributes: category.attributes,
         });
 
-        const savedCategory = await cat.save();
-        return savedCategory;
+        // console.log('cat', cat);
+
+        return cat;
     } catch (error) {
         console.error('Error saving category:', error);
     }
@@ -99,11 +95,11 @@ const generateSubcategory = async (parentId) => {
             subcategory.attributes.push(attribute);
         }
 
-        const subcategoryCount = faker.number.int({ min: 0, max: 2 });
+        const subcategoryCount = faker.number.int({ min: 0, max: 1 });
         for (let i = 0; i < subcategoryCount; i++) {
             const subcat = await generateSubcategory(subcategory.id);
 
-            const subcatObj = new Category({
+            const subcatObj = ({
                 id: subcat.id,
                 parentId: subcat.parentId,
                 name: subcat.name,
@@ -115,7 +111,7 @@ const generateSubcategory = async (parentId) => {
             subcategory.subcategories.push(subcatObj);
         }
     
-        const subcat = new Category({
+        const subcat = ({
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
@@ -123,8 +119,7 @@ const generateSubcategory = async (parentId) => {
             attributes: subcategory.attributes
         });
     
-        const savedCategory = await subcat.save();
-        return savedCategory;
+        return subcat;
     } catch (error) {
       console.error('Error saving subcategory:', error);
     }
@@ -153,12 +148,12 @@ const checkToInsert = async (req, res) => {
         const count = await Category.countDocuments();
 
         if (count == 0) {
-            Category.insertMany(generateMany(5))
+            Category.insertMany(await generateMany(5))
                 .then((result) => {
                     console.log(`Categories saved to MongoDB`);
                 })
                 .catch((error) => {
-                    console.log(`Categories could not save to MongoDB`);
+                    // console.log(`Categories could not save to MongoDB`, error);
                 });
         }
 
@@ -211,7 +206,7 @@ exports.createCategory = async (req, res) => {
 
 const findAll = async () => {
     try {
-        const categories = await Category.find({ parentId: { $exists: false } });
+        const categories = await Category.find({});
         return categories;  
     } catch (error) {
         throw new Error("Error finding categories.");
@@ -222,9 +217,9 @@ exports.findAll = async (req, res) => {
     try {
         const categories = await findAll();
 
-        if ((await categories).length > 0) {
+        if (categories.length > 0) {
             res.status(200).json(categories);
-        } else if ((await categories).length == 0) {
+        } else if (categories.length == 0) {
             res.status(200).send({
                 message: "No category."
             })
@@ -240,15 +235,41 @@ exports.findAll = async (req, res) => {
     }
 }
 
+const findNestedSubcategories = async (category) => {
+    const catObj = {
+        id: category.id,
+        parentId: category.parentId,
+        name: category.name
+    };
+
+    const data = [];
+    data.push(catObj);
+
+    if (category.subcategories && category.subcategories.length > 0) {
+        
+        const subcategories = await Promise.all(category.subcategories.map((subcategory) => (findNestedSubcategories(subcategory))));
+
+        for (const subcategory of subcategories) {
+            data.push(...subcategory);
+        }
+    }
+
+    return data;
+}
+
 const findAllCatAndSubCat = async () => {
     try {
-        const categories = await Category.find().select('id name').exec();
+        const categories = await Category.find({});
+        const data = [];
 
-        const data = categories.sort((x, y) => x.id - y.id);
+        for (const category of categories) {
+            const catObj = await findNestedSubcategories(category);
+            data.push(catObj);
+        }
 
         return data;
     } catch (err) {
-        throw new Error("Error fetching id and name of categories and subcategories.");
+        throw new Error("Error fetching id and name of categories and subcategories.", err);
     }
 }
 

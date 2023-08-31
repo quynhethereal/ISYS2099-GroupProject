@@ -35,12 +35,12 @@ const CategorySchema = new mongoose.Schema({
     }]   // Array of attribute documents
 }, {autoIndex: false});
 
-CategorySchema.add({subcategories: [CategorySchema]});
+// CategorySchema.add({subcategories: [CategorySchema]});
 
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
 
 // Category.collection.drop();
-// Sequence.collection.drop();
+// Sequence.collection.drop(); 
 
 module.exports = {Category, Sequence};
