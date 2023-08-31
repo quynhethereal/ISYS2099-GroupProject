@@ -7,10 +7,7 @@ import SellerProductList from "./SellerProductList";
 const SellerRenderPage = () => {
   const location = useLocation().pathname;
   return (
-    <>
-      {location === "/seller" && <SellerProductList></SellerProductList>}
-      {/* {location === "/seller/inventory" && <SellerInventory></SellerInventory>} */}
-    </>
+    <>{location === "/seller" && <SellerProductList></SellerProductList>}</>
   );
 };
 
