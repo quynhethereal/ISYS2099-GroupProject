@@ -72,14 +72,18 @@ export const uploadImage = async (token, id, imgData) => {
 
 export const searchBySearchKey = async (
   searchKey,
-  sortDirection,
-  sortedTerm
+  sortDirection1,
+  sortedTerm1,
+  sortedTerm2,
+  sortDirection2
 ) => {
   try {
     const { data } = await api.searchBySearchKey(
       searchKey,
-      sortDirection,
-      sortedTerm
+      sortDirection1,
+      sortedTerm1,
+      sortedTerm2,
+      sortDirection2
     );
 
     return data;

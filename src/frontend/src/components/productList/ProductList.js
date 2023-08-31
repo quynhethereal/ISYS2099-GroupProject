@@ -304,11 +304,8 @@ const ProductList = () => {
   }, [moreSearch]);
 
   const handleSearchProduct = (e) => {
-    // setSearchParams(
-    //   `?searchKeyP=${e.searchKey}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
-    // );
     navigate(
-      `/customer/search?searchKeyP=${e.searchKey}&minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP=${e.sortedDirection}&sortedTermP=${e.sortedTerm}`
+      `/customer/search?searchKeyP=${e.searchKey}&sortedDirectionP1=${e.sortedDirection}&sortedTermP1=${e.sortedTerm}`
     );
   };
 

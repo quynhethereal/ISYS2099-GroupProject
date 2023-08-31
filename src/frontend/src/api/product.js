@@ -33,9 +33,15 @@ export const uploadImage = (token, id, imgData) =>
     headers: { "x-access-token": token },
   });
 
-export const searchBySearchKey = (searchKey, sortDirection, sortedTerm) =>
+export const searchBySearchKey = (
+  searchKey,
+  sortDirection1,
+  sortedTerm1,
+  sortedTerm2,
+  sortDirection2
+) =>
   axios.get(
-    `${backend_url}/api/products/search?key=${searchKey}&sortDirection=${sortDirection}&sortTerm=${sortedTerm}`
+    `${backend_url}/api/products/search?key=${searchKey}&sortDirection1=${sortDirection1}&sortTerm1=${sortedTerm1}&sortDirection2=${sortDirection2}&sortTerm2=${sortedTerm2}`
   );
 
 export const searchByPrice = (
