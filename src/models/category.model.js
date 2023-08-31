@@ -41,7 +41,7 @@ const CategorySchema = new mongoose.Schema({
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
 
-Category.collection.drop();
-Sequence.collection.drop(); 
+// Category.collection.drop();
+// Sequence.collection.drop(); 
 
 module.exports = {Category, Sequence};

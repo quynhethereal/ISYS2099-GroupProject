@@ -26,7 +26,7 @@ const generateMany = async (count) => {
             const category = await generateOne();
             categories.push(category);
         }
-        console.log(categories);
+        // console.log(categories);
 
         return categories;
     } catch (err) {
@@ -155,7 +155,7 @@ const checkToInsert = async (req, res) => {
                     console.log(`Categories saved to MongoDB`);
                 })
                 .catch((error) => {
-                    // console.log(`Categories could not save to MongoDB`, error);
+                    console.log(`Categories could not save to MongoDB`, error);
                 });
         }
 
@@ -165,7 +165,6 @@ const checkToInsert = async (req, res) => {
         });
     }
 }
-// Category.collection.getIndexes().then(console.log);
 
 // Generate dummy data
 checkToInsert();
@@ -363,9 +362,49 @@ exports.findOne = async (req, res) => {
     }
 }
 
-const getAttributes = async (id) => {
-    try {
+const findNestedAttributes = async (category, subcatId) => {
+    const catAttribute = {
+        attributes: category.attributes.map((attribute) => ({
+            description: attribute.description,
+            type: attribute.type
+        }))
+    };
+
+    const data = [];
+    data.push(catAttribute);
+
+    if (category.subcategories && category.id != subcatId) {
         
+        const subAttributes = await Promise.all(category.subcategories.map((subcategory) => (findNestedAttributes(subcategory, subcatId))));
+
+        for (const subAttribute of subAttributes) {
+            if (subAttribute != null) {
+                data.push(...subAttribute);
+            }
+        }
+    }
+
+    return data;
+}
+
+const findAttributes = async (id) => {
+    try {
+        const findCat = await Category.findOne({
+            $or: [
+                {id: id},
+                {subcategoriesArray: {$elemMatch: {$eq: id}}}
+            ]
+        });
+
+        if (findCat == null) {
+            throw new Error("Category is not existed.");
+        }
+
+        const attributes = [];
+        const catObj = await findNestedAttributes(findCat, id);
+        attributes.push(...catObj);
+
+        return attributes;
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
@@ -383,44 +422,15 @@ exports.getAttributes = async (req, res) => {
         }
 
         // Get the category
-        const category = await Category.findOne({id: id});
+        const data = await findAttributes(id);
 
-        if (!category) {
+        if (!data) {
             res.status(404).send ({
                 message: `Category with id ${req.params.id} not found.`
             })
         }
 
-        // Check if the category is a subcategory or main one
-        if (category.parent == null) {
-            res.status(200).json(category.attributes);
-            return;
-        }
-
-        const parentId = parseInt(category.parent);
-        const parentCategory = await Category.findOne({id: parentId});
-
-        if (!parentCategory) {
-            res.status(404).send({
-                message: `Parent category with id ${parentId} not found.`
-            })
-        }
-
-        const parentAttributes = await parentCategory.attributes;
-
-        if (parentAttributes == null) {
-            // This could responds empty
-            res.status(200).json(category.attributes);
-            return;
-        }
-
-        // Concat attributes of category and subcategory
-        const allAttributes = category.attributes.concat(parentAttributes);
-        const params = {
-            attributes: allAttributes
-        }
-
-        res.status(200).json(params);
+        res.status(200).json(data);
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."
