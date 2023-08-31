@@ -37,8 +37,8 @@ export const searchBySearchKey = (
   searchKey,
   sortDirection1,
   sortedTerm1,
-  sortedTerm2,
-  sortDirection2
+  sortDirection2,
+  sortedTerm2
 ) =>
   axios.get(
     `${backend_url}/api/products/search?key=${searchKey}&sortDirection1=${sortDirection1}&sortTerm1=${sortedTerm1}&sortDirection2=${sortDirection2}&sortTerm2=${sortedTerm2}`
@@ -61,11 +61,13 @@ export const searchByPrice = (
 // /category/:id/products
 export const searchByCategory = (
   id,
-  sortDirection,
-  sortedTerm,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
   limit,
   currentPage
 ) =>
   axios.get(
-    `${backend_url}/api/category/${id}/products?sortDirection=${sortDirection}&limit=${limit}&currentPage=${currentPage}&sortTerm=${sortedTerm}`
+    `${backend_url}/api/category/${id}/products?sortDirection1=${sortDirection1}&sortTerm1=${sortedTerm1}&sortDirection2=${sortDirection2}&sortTerm2=${sortedTerm2}&limit=${limit}&currentPage=${currentPage}`
   );

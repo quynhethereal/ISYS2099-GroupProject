@@ -66,12 +66,17 @@ const ProductList = () => {
   const categoryP = searchParams?.get("categoryP");
   const sortedDirectionP = searchParams?.get("sortedDirectionP");
   const sortedTermP = searchParams?.get("sortedTermP");
-  const { register, handleSubmit, setValue, getValues } = useForm({
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       searchKey: searchKeyP ? searchKeyP : "",
       categoryID: categoryP ? categoryP : "",
       minPrice: minPriceP ? minPriceP : 0,
-      maxPrice: maxPriceP ? maxPriceP : "",
+      maxPrice: "",
       sortedDirection: sortedDirectionP ? sortedDirectionP : "DESC",
       sortedTerm: sortedTermP ? sortedTermP : "created_at",
     },
@@ -85,13 +90,7 @@ const ProductList = () => {
     currentPage: 0,
     totalPages: 0,
   });
-  // const handleChangeDirection = () => {
-  //   if (getValues("sortedDirection") === "DESC") {
-  //     setValue("sortedDirection", "ASC");
-  //   } else if (getValues("sortedDirection") === "ASC") {
-  //     setValue("sortedDirection", "DESC");
-  //   }
-  // };
+  const [focus, setFocus] = useState(false);
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
@@ -132,6 +131,23 @@ const ProductList = () => {
     navigate(`/customer/search?searchKeyP=${e.searchKey}`);
   };
 
+  const handleFilterByPrice = () => {
+    if (!getValues("maxPrice")) {
+      setFocus(true);
+    } else {
+      navigate(
+        `/customer/price?minPrice=${getValues("minPrice")}&maxPrice=${getValues(
+          "maxPrice"
+        )}`
+      );
+    }
+  };
+
+  const handleFilterByCategory = (e) => {
+    navigate(`/customer/browse?categoryP=${e.target.value}`);
+  };
+
+  console.log(errors);
   return (
     <>
       <div className="container">
@@ -179,13 +195,18 @@ const ProductList = () => {
                 className="form-control"
                 type="number"
                 min="0"
+                autoFocus={focus}
                 {...register("maxPrice", {
                   require: "This is require before searching",
                 })}
               />
             </div>
             <div className="">
-              <button type="button" className="btn btn-success">
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={() => handleFilterByPrice()}
+              >
                 Apply
               </button>
             </div>
@@ -200,15 +221,7 @@ const ProductList = () => {
                   valueAsNumber: true,
                 })}
                 onChange={(e) => {
-                  navigate(
-                    `/customer/browse?categoryP=${
-                      e.target.value
-                    }&minPriceP=${getValues("minPrice")}&maxPriceP=${getValues(
-                      "maxPrice"
-                    )}&sortedDirectionP=${getValues(
-                      "sortedDirection"
-                    )}&sortedTermP=${getValues("sortedTerm")}`
-                  );
+                  handleFilterByCategory(e);
                 }}
               >
                 <option value="" disabled>

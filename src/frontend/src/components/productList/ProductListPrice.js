@@ -31,7 +31,6 @@ const ProductListBrowse = () => {
       sortedTerm2: sortedTermP2 ? sortedTermP2 : "",
     },
   });
-  //   const [isloading, setIsLoading] = useState(false);
   const [isFechtedEverything, setIsFechtedEverything] = useState(false);
   const [searchPriceData, setSearchPriceData] = useState({
     currentPage: null,
@@ -40,6 +39,10 @@ const ProductListBrowse = () => {
     data: [],
   });
   const [moreSearch, setMoreSearch] = useState(false);
+  const [change, setChange] = useState({
+    check1: getValues("sortedDirection1") === "DESC" ? false : true,
+    check2: getValues("sortedDirection2") === "DESC" ? false : true,
+  });
   const handleSetMoreSearch = () => {
     setMoreSearch((prev) => !prev);
   };
@@ -49,6 +52,7 @@ const ProductListBrowse = () => {
     } else if (getValues("sortedDirection1") === "ASC") {
       setValue("sortedDirection1", "DESC");
     }
+    setChange({ ...change, check1: !change?.check1 });
   };
   const handleChangeDirection2 = () => {
     if (getValues("sortedDirection2") === "DESC") {
@@ -56,6 +60,7 @@ const ProductListBrowse = () => {
     } else if (getValues("sortedDirection2") === "ASC") {
       setValue("sortedDirection2", "DESC");
     }
+    setChange({ ...change, check2: !change?.check2 });
   };
 
   useEffect(() => {
@@ -72,10 +77,10 @@ const ProductListBrowse = () => {
       await searchByPrice(
         minPriceP,
         maxPriceP,
-        sortedDirectionP1,
-        sortedTermP1,
-        sortedDirectionP2,
-        sortedTermP2,
+        sortedTermP1 ? sortedDirectionP1 : "",
+        sortedTermP1 || "",
+        sortedTermP2 ? sortedDirectionP2 : "",
+        sortedTermP2 || "",
         searchPriceData?.limit,
         searchPriceData?.currentPage ? searchPriceData?.currentPage + 1 : 1
       ).then((res) => {
@@ -101,7 +106,6 @@ const ProductListBrowse = () => {
   }, [moreSearch]);
 
   const handleSearchProduct = (e) => {
-    console.log(e);
     setSearchParams(
       `?minPriceP=${e.minPrice}&maxPriceP=${e.maxPrice}&sortedDirectionP1=${e.sortedDirection1}&sortedTermP1=${e.sortedTerm1}&sortedDirectionP2=${e.sortedDirection2}&sortedTermP2=${e.sortedTerm2}`
     );
@@ -157,9 +161,7 @@ const ProductListBrowse = () => {
                     className="form-select form-select-lg"
                     {...register("sortedTerm1", {})}
                   >
-                    <option value="" disabled>
-                      None was selected
-                    </option>
+                    <option value="">None</option>
                     <option value="created_at">Create Date</option>
                   </select>
                 </div>
@@ -168,9 +170,7 @@ const ProductListBrowse = () => {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={
-                        getValues("sortedDirectionP1") === "DESC" ? true : false
-                      }
+                      checked={change?.check1}
                       id="direction"
                       onChange={() => {
                         handleChangeDirection1();
@@ -188,9 +188,7 @@ const ProductListBrowse = () => {
                     className="form-select form-select-lg"
                     {...register("sortedTerm2", {})}
                   >
-                    <option value="" disabled>
-                      None was selected
-                    </option>
+                    <option value="">None</option>
                     <option value="price">Price</option>
                   </select>
                 </div>
@@ -199,9 +197,7 @@ const ProductListBrowse = () => {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={
-                        getValues("sortedDirectionP2") === "DESC" ? true : false
-                      }
+                      checked={change?.check2}
                       id="direction"
                       onChange={() => {
                         handleChangeDirection2();
@@ -217,7 +213,7 @@ const ProductListBrowse = () => {
           </div>
           <div className="col-12 my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
             <button type="submit" className="btn btn-success">
-              Searching ...
+              Submit
             </button>
           </div>
         </form>

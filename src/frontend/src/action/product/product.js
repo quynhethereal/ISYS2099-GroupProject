@@ -122,16 +122,20 @@ export const searchByPrice = async (
 
 export const searchByCategory = async (
   id,
-  sortDirection,
-  sortedTerm,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
   limit,
   currentPage
 ) => {
   try {
     const { data } = await api.searchByCategory(
       id,
-      sortDirection,
-      sortedTerm,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
       limit,
       currentPage
     );

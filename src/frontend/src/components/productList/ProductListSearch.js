@@ -25,6 +25,10 @@ const ProductList = () => {
       sortedTerm2: sortedTermP2 ? sortedTermP2 : "",
     },
   });
+  const [change, setChange] = useState({
+    check1: getValues("sortedDirection1") === "DESC" ? false : true,
+    check2: getValues("sortedDirection2") === "DESC" ? false : true,
+  });
   const [searchKeyData, setSearchKeyData] = useState([]);
   const handleChangeDirection1 = () => {
     if (getValues("sortedDirection1") === "DESC") {
@@ -32,6 +36,7 @@ const ProductList = () => {
     } else if (getValues("sortedDirection1") === "ASC") {
       setValue("sortedDirection1", "DESC");
     }
+    setChange({ ...change, check1: !change?.check1 });
   };
   const handleChangeDirection2 = () => {
     if (getValues("sortedDirection2") === "DESC") {
@@ -39,6 +44,7 @@ const ProductList = () => {
     } else if (getValues("sortedDirection2") === "ASC") {
       setValue("sortedDirection2", "DESC");
     }
+    setChange({ ...change, check2: !change?.check2 });
   };
 
   useEffect(() => {
@@ -46,10 +52,10 @@ const ProductList = () => {
       //api
       await searchBySearchKey(
         searchKeyP,
-        sortedDirectionP1,
-        sortedTermP1,
-        sortedDirectionP2,
-        sortedTermP2
+        sortedTermP1 ? sortedDirectionP1 : "",
+        sortedTermP1 || "",
+        sortedTermP2 ? sortedDirectionP2 : "",
+        sortedTermP2 || ""
       ).then((res) => {
         if (res?.products) {
           setSearchKeyData(res?.products);
@@ -106,9 +112,7 @@ const ProductList = () => {
                     className="form-select form-select-lg"
                     {...register("sortedTerm1", {})}
                   >
-                    <option value="" disabled>
-                      None was selected
-                    </option>
+                    <option value="">None</option>
                     <option value="created_at">Create Date</option>
                   </select>
                 </div>
@@ -117,9 +121,7 @@ const ProductList = () => {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={
-                        getValues("sortedDirectionP1") === "DESC" ? true : false
-                      }
+                      checked={change?.check1}
                       id="direction"
                       onChange={() => {
                         handleChangeDirection1();
@@ -137,9 +139,7 @@ const ProductList = () => {
                     className="form-select form-select-lg"
                     {...register("sortedTerm2", {})}
                   >
-                    <option value="" disabled>
-                      None was selected
-                    </option>
+                    <option value="">None</option>
                     <option value="price">Price</option>
                   </select>
                 </div>
@@ -148,9 +148,7 @@ const ProductList = () => {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={
-                        getValues("sortedDirectionP2") === "DESC" ? true : false
-                      }
+                      checked={change?.check2}
                       id="direction"
                       onChange={() => {
                         handleChangeDirection2();
@@ -165,6 +163,11 @@ const ProductList = () => {
             </div>
           </div>
         </form>
+        {searchKeyData?.length !== 0 && (
+          <div className="fw-bold fs-3 fw-bold text-info my-4 d-flex flex-warp flex-row justify-content-center align-items-center">
+            Finding {searchKeyData?.length} products :
+          </div>
+        )}
         <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
           {searchKeyData?.map((item, index) => {
             return (
