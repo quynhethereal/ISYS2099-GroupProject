@@ -95,8 +95,10 @@ export const searchBySearchKey = async (
 export const searchByPrice = async (
   minPrice,
   maxPrice,
-  sortDirection,
-  sortedTerm,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
   limit,
   currentPage
 ) => {
@@ -104,8 +106,10 @@ export const searchByPrice = async (
     const { data } = await api.searchByPrice(
       minPrice,
       maxPrice,
-      sortDirection,
-      sortedTerm,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
       limit,
       currentPage
     );
