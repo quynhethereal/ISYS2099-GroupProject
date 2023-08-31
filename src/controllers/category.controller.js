@@ -42,6 +42,7 @@ const generateOne = async () => {
         const category = {
             id: nextId,
             name: faker.commerce.department(),
+            subcategoriesArray: [],
             subcategories: [],
             attributes: [],
         };
@@ -55,21 +56,19 @@ const generateOne = async () => {
         const subcategoryCount = faker.number.int({ min: 0, max: 3 });
         for (let i = 0; i < subcategoryCount; i++) {
             const subcategory = await generateSubcategory(category.id);
-
-            // console.log('subcategory', subcategory);
-
-            category.subcategories.push(subcategory);
-            // console.log(category.subcategories);
+            
+            category.subcategoriesArray.push(subcategory.id,...subcategory.subcategoriesArray);   // For fast track cat
+            
+            category.subcategories.push(subcategory);   
         }
 
         const cat = new Category({
             id: category.id,
             name: category.name,
+            subcategoriesArray: category.subcategoriesArray,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
-
-        // console.log('cat', cat);
 
         return cat;
     } catch (error) {
@@ -85,10 +84,11 @@ const generateSubcategory = async (parentId) => {
             id: nextId,
             parentId: parentId,
             name: faker.commerce.department(),
+            subcategoriesArray: [],
             subcategories: [],
             attributes: [],
         };
-    
+
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {
             const attribute = await generateAttribute();
@@ -103,11 +103,12 @@ const generateSubcategory = async (parentId) => {
                 id: subcat.id,
                 parentId: subcat.parentId,
                 name: subcat.name,
+                subcategoriesArray: subcat.subcategoriesArray,
                 subcategories: subcat.subcategories,
                 attributes: subcat.attributes,
             });
 
-            // console.log(subcatObj);
+            subcategory.subcategoriesArray.push(subcatObj.id,...subcatObj.subcategoriesArray);  // Add to element in subcat and cat
             subcategory.subcategories.push(subcatObj);
         }
     
@@ -115,6 +116,7 @@ const generateSubcategory = async (parentId) => {
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
+            subcategoriesArray: subcategory.subcategoriesArray,
             subcategories: subcategory.subcategories,
             attributes: subcategory.attributes
         });

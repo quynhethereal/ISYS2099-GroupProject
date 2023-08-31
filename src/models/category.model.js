@@ -24,6 +24,7 @@ const CategorySchema = new mongoose.Schema({
         unique: true,
         index: true
     },
+    subcategoriesArray: [Number],
     subcategories: [],
     attributes: [{
         description: {
@@ -37,12 +38,10 @@ const CategorySchema = new mongoose.Schema({
     }]   // Array of attribute documents
 }, {autoIndex: true, _id: false});
 
-CategorySchema.index({id: 1, subcategories: 1}, {unique: true});
-
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
 
-// Category.collection.drop();
-// Sequence.collection.drop(); 
+Category.collection.drop();
+Sequence.collection.drop(); 
 
 module.exports = {Category, Sequence};
