@@ -264,7 +264,7 @@ const findAllCatAndSubCat = async () => {
 
         for (const category of categories) {
             const catObj = await findNestedSubcategories(category);
-            data.push(catObj);
+            data.push(...catObj);
         }
 
         return data;
