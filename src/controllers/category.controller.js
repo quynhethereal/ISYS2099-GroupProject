@@ -363,15 +363,7 @@ exports.findOne = async (req, res) => {
 }
 
 const findNestedAttributes = async (category, subcatId) => {
-    const catAttribute = {
-        attributes: category.attributes.map((attribute) => ({
-            description: attribute.description,
-            type: attribute.type
-        }))
-    };
-
-    const data = [];
-    data.push(catAttribute);
+    let attributes = category.attributes.map((attribute) => attribute.description);
 
     if (category.subcategories && category.id != subcatId) {
         
@@ -379,12 +371,12 @@ const findNestedAttributes = async (category, subcatId) => {
 
         for (const subAttribute of subAttributes) {
             if (subAttribute != null) {
-                data.push(...subAttribute);
+                attributes = attributes.concat(subAttribute);
             }
         }
     }
 
-    return data;
+    return attributes;
 }
 
 const findAttributes = async (id) => {
@@ -400,9 +392,7 @@ const findAttributes = async (id) => {
             throw new Error("Category is not existed.");
         }
 
-        const attributes = [];
-        const catObj = await findNestedAttributes(findCat, id);
-        attributes.push(...catObj);
+        const attributes = await findNestedAttributes(findCat, id);
 
         return attributes;
     } catch (err) {
