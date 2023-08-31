@@ -150,19 +150,30 @@ Product.findByCategory = async (params) => {
         const productCount = await Product.countByCategory(categoryId);
         const totalPages = Math.ceil(productCount / limit);
 
-        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
-        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
         const sortTerm2 = params.queryParams.sortTerm2 || '';
         const sortDirection2 = params.queryParams.sortDirection2 || '';
 
-        let queryStr = '';
+        let queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        LIMIT ?,?`;
+
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}
+                        LIMIT ?,?`;
+        }
 
         if (sortTerm2 && sortDirection2) {
             queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
-                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2} LIMIT ?,?`;
-        } else {
+                        ORDER BY ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
             queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
-                        ORDER BY ${sortTerm1} ${sortDirection1} LIMIT ?,?`;
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
         }
 
         const res = await new Promise((resolve, reject) => {
@@ -596,8 +607,8 @@ Product.findByPriceRange = async (params) => {
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
 
-        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
-        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
         const sortTerm2 = params.queryParams.sortTerm2 || '';
         const sortDirection2 = params.queryParams.sortDirection2 || '';
 
@@ -605,14 +616,25 @@ Product.findByPriceRange = async (params) => {
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
-        let queryStr = '';
+        let queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        LIMIT ?,?`;
+
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}
+                        LIMIT ?,?`;
+        }
 
         if (sortTerm2 && sortDirection2) {
-            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? 
-                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2} LIMIT ?,?`;
-        } else {
-            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? 
-                        ORDER BY ${sortTerm1} ${sortDirection1} LIMIT ?,?`;
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
         }
 
         const res = await new Promise((resolve, reject) => {
@@ -646,23 +668,32 @@ Product.findByPriceRange = async (params) => {
 // Search keyword in title and description
 Product.findByKey = async (params) => {
     try {
-        const sortTerm1 = params.queryParams.sortTerm1 || 'created_at';
-        const sortDirection1 = params.queryParams.sortDirection1 || 'DESC';
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
         const sortTerm2 = params.queryParams.sortTerm2 || '';
         const sortDirection2 = params.queryParams.sortDirection2 || '';
 
         const key = params.queryParams.key;
 
-        let queryStr = '';
+        let queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)`;
+
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm1} ${sortDirection1}`;
+        }
 
         if (sortTerm2 && sortDirection2) {
             queryStr = `SELECT * FROM \`products\`
                         WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
-                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}`;
-        } else {
+                        ORDER BY ${sortTerm2} ${sortDirection2}`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
             queryStr = `SELECT * FROM \`products\`
                         WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
-                        ORDER BY ${sortTerm1} ${sortDirection1}`;
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}`;
         }
 
         const res = await new Promise((resolve, reject) => {
