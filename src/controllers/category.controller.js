@@ -1,4 +1,4 @@
-const {Category, Subcategory, Sequence} = require('../models/category.model');
+const {Category, Sequence} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
 const Product = require('../models/product.model');
 
@@ -57,7 +57,7 @@ const generateOne = async () => {
             const subcategory = await generateSubcategory(category.id);
 
             console.log('subcategory', subcategory);
-            const subcatObj = new Subcategory({
+            const subcatObj = new Category({
                 id: subcategory.id,
                 parentId: subcategory.parentId,
                 name: subcategory.name,
@@ -103,7 +103,7 @@ const generateSubcategory = async (parentId) => {
         for (let i = 0; i < subcategoryCount; i++) {
             const subcat = await generateSubcategory(subcategory.id);
 
-            const subcatObj = new Subcategory({
+            const subcatObj = new Category({
                 id: subcat.id,
                 parentId: subcat.parentId,
                 name: subcat.name,
@@ -115,7 +115,7 @@ const generateSubcategory = async (parentId) => {
             subcategory.subcategories.push(subcatObj);
         }
     
-        const subcat = new Subcategory({
+        const subcat = new Category({
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
@@ -211,7 +211,7 @@ exports.createCategory = async (req, res) => {
 
 const findAll = async () => {
     try {
-        const categories = await Category.find({});
+        const categories = await Category.find({ parentId: { $exists: false } });
         return categories;  
     } catch (error) {
         throw new Error("Error finding categories.");
@@ -243,11 +243,8 @@ exports.findAll = async (req, res) => {
 const findAllCatAndSubCat = async () => {
     try {
         const categories = await Category.find().select('id name').exec();
-        const subcategories = await Subcategory.find().select('id name').exec();
 
-        const data = [...categories, ...subcategories];
-        
-        data.sort((x, y) => x.id - y.id);
+        const data = categories.sort((x, y) => x.id - y.id);
 
         return data;
     } catch (err) {
@@ -271,9 +268,6 @@ exports.findAllSameLevels = async (req, res) => {
 
 const findOne = async (id) => {
     try {
-        // Handle both subcat and cat
-        const cat = await Category.findOne({id: id});
-        console.log(cat);
         const model = [
             {
                 $facet: {
@@ -307,14 +301,11 @@ const findOne = async (id) => {
             }
         ];
 
-        const result = await Subcategory.aggregate(model);
+        const result = await Category.aggregate(model);
 
         if (result.length > 0) {
-            const detectedItem = result[0].result;
-            return detectedItem || cat;
-        } else {
-            return cat;
-        }
+            return result[0].result;
+        } 
     } catch (err) {
         throw new Error("Error getting category by id.");
     }
@@ -349,7 +340,11 @@ exports.findOne = async (req, res) => {
 }
 
 const getAttributes = async (id) => {
-
+    try {
+        
+    } catch (err) {
+        throw new Error("Error getting attributes by id.");
+    }
 }
 
 exports.getAttributes = async (req, res) => {
