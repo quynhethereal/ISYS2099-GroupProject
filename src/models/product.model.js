@@ -5,12 +5,12 @@ const Helpers = require('../helpers/helpers');
 
 class Product {
     constructor(params = {}) {
-        this.name = params.name;
         this.description = params.description;
         this.price = params.price;
-        // this.image = params.image;
+        this.image = params.image;
         // TODO: add category
         this.category = params.category;
+        this.title = params.title;
     }
 }
 
@@ -494,13 +494,13 @@ Product.update = async (params) => {
         const image = params.image;
 
 
-        const product = await Product.findById(id);
+        const product = await Product.findByIdAndSellerId(id, params.sellerId);
 
         // TODO: check if category is valid
 
         if (!product) {
             console.log("Product not found.");
-            throw new Error("Product not found.");
+            throw new Error("Product not found or you are not the owner of this product.");
         } else {
             await new Promise((resolve, reject) => {
                 seller_pool.execute(

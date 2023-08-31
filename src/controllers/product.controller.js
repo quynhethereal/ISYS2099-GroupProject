@@ -112,11 +112,15 @@ exports.update = async (req, res) => {
 
         const params = {
             productId,
+            sellerId: req.currentUser.id,
             ... req.body
         }
 
         const updatedProduct = await Product.update(params);
-        res.status(200).json(updatedProduct);
+        res.status(200).json({
+            message: `Product with id ${productId} updated successfully.`,
+            product: updatedProduct
+        });
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error updating product."
