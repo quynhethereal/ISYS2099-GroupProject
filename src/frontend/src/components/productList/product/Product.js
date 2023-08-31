@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
+import { deleteProduct } from "../../../action/product/product";
+import { useAuth } from "../../../hook/AuthHook.js";
+import Swal from "sweetalert2";
 
 import ProductPreview from "../../../utils/ProductPreview.js";
 import ProductUpdateForm from "../../../utils/ProductUpdateForm.js";
@@ -9,6 +12,7 @@ const Product = ({ info, update }) => {
   const [showUpdateQuantityForm, setShowUpdateQuantityForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const navigate = useNavigate();
+  const { token } = useAuth();
   const hanleViewProduct = (item) => {
     navigate(`/customer/product/details/${item.id}`);
   };
@@ -26,6 +30,34 @@ const Product = ({ info, update }) => {
 
   const handleUpdateProduct = (item) => {
     handleOpenUpdateForm();
+  };
+
+  const handleDeleteProduct = () => {
+    Swal.fire({
+      title: "Do you want to delete this product? This can't be reverted",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Cancel`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteProduct(token(), info?.id).then((res) => {
+          if (res?.message) {
+            Swal.fire({
+              icon: "success",
+              title: res?.message,
+              text: "Reloading in 2 secs for changes...",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            }).then(() => {
+              navigate(0);
+            });
+          }
+        });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
   };
   return (
     <>
@@ -79,6 +111,13 @@ const Product = ({ info, update }) => {
                 type="button"
                 className="btn btn-warning mt-3"
                 onClick={() => handleUpdateProduct(info)}
+              >
+                Update Product
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger mt-3"
+                onClick={() => handleDeleteProduct(info)}
               >
                 Update Product
               </button>

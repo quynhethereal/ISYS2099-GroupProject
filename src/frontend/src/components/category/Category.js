@@ -8,7 +8,7 @@ const Category = () => {
       _id: "64e234d2e360f233a9c99ad5",
       id: 1,
       name: "Clothing and Accessories",
-      attributes: [],
+      attributes: ["Entertaining", "Music", "Electrical"],
       parent: 2,
       __v: 0,
     },
@@ -69,7 +69,7 @@ const Category = () => {
   }
 
   return (
-    <div className="container m-4">
+    <div className="container m-md-4">
       {returnRecusiveData(testData)?.map((category, index) => {
         return (
           <div key={index}>

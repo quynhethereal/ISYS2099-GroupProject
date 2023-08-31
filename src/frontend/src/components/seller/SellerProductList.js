@@ -8,7 +8,7 @@ import Product from "../productList/product/Product.js";
 const SellerProductList = () => {
   const { token } = useAuth();
   const [params, setParams] = useState({
-    limit: null,
+    limit: 10,
     currentPage: null,
     totalPages: null,
   });
@@ -20,7 +20,7 @@ const SellerProductList = () => {
     async function getProducts() {
       await getProductBySellerId(
         token(),
-        params.currentPage,
+        params.currentPage || 1,
         params.limit
       ).then((res) => {
         if (res) {
@@ -31,9 +31,7 @@ const SellerProductList = () => {
           }
           setParams({
             limit: res?.limit,
-            currentPage: params?.currentPage
-              ? res?.currentPage + 1
-              : res?.currentPage,
+            currentPage: res?.currentPage + 1,
             totalPages: res?.totalPages,
           });
         }
@@ -45,6 +43,7 @@ const SellerProductList = () => {
     }
     // eslint-disable-next-line
   }, [more]);
+
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
       <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">

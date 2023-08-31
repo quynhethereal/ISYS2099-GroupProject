@@ -60,11 +60,16 @@ export const updateProduct = async (token, id, formData) => {
   }
 };
 
-export const uploadImage = async (token, id, imgData) => {
+export const deleteProduct = async (token, id) => {
   try {
-    const { data } = await api.updateProduct(token, id, imgData);
+    const res = await api.deleteProduct(token, id);
 
-    return data;
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    } else {
+      return res;
+    }
   } catch (error) {
     console.log(error);
   }
