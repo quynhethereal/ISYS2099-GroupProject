@@ -1,4 +1,4 @@
-const {Category, Subcategory, Sequence} = require('../models/category.model');
+const {Category, Sequence} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
 const mongoose = require('mongoose');
 const Product = require('../models/product.model');
@@ -57,9 +57,10 @@ const generateOne = async () => {
         for (let i = 0; i < subcategoryCount; i++) {
             const subcategory = await generateSubcategory();
 
-            const subcatObj = new Subcategory({
+            const subcatObj = new Category({
                 id: subcategory.id,
                 name: subcategory.name,
+                subcategories: category.subcategories,
                 attributes: subcategory.attributes,
             });
             category.subcategories.push(subcatObj);
@@ -94,10 +95,24 @@ const generateSubcategory = async () => {
             const attribute = await generateAttribute();
             subcategory.attributes.push(attribute);
         }
+
+        const subcategoryCount = faker.number.int({ min: 0, max: 1 });
+        for (let i = 0; i < subcategoryCount; i++) {
+            const subcategory = await generateSubcategory();
+
+            const subcatObj = new Category({
+                id: subcategory.id,
+                name: subcategory.name,
+                subcategories: subcategory.subcategories,
+                attributes: subcategory.attributes,
+            });
+            subcategory.subcategories.push(subcatObj);
+        }
     
-        const subcat = new Subcategory({
+        const subcat = new Category({
             id: subcategory.id,
             name: subcategory.name,
+            subcategories: subcategory.subcategories,
             attributes: subcategory.attributes,
         });
     
@@ -131,7 +146,7 @@ const checkToInsert = async (req, res) => {
         const count = await Category.countDocuments();
 
         if (count == 0) {
-            Category.insertMany(generateMany(10))
+            Category.insertMany(generateMany(5))
                 .then((result) => {
                     console.log(`Categories saved to MongoDB`);
                 })
@@ -149,7 +164,15 @@ const checkToInsert = async (req, res) => {
 
 checkToInsert();
 
-// NOTE: Not create auto increment ID yet, update feature later
+/*
+body params 
+{
+    name: New Category
+    attributes: [
+        descriptions: "abc"
+    ]
+}
+*/
 exports.createCategory = async (req, res) => {
     try {
         const name = req.body.name;
@@ -196,12 +219,9 @@ exports.getAllCategories = async (req, res) => {
 exports.getAllSameLevels = async (req, res) => {
     try {
         const categories = await Category.find().select('id name').exec();
-        const subcategories = await Subcategory.find().select('id name').exec();
-
-        const data = [...categories,...subcategories];
 
         // Sort by ID number
-        data.sort((x, y) => x.id - y.id);
+        const data = categories.sort((x, y) => x.id - y.id);
 
         res.status(200).json({
             status: 'success',
@@ -228,13 +248,19 @@ exports.getOne = async (req, res) => {
         
         const category  = await Category.find({id: categoryId});
 
-        if (!category) {
+        const subcategory = await Subcategory.find({id: categoryId});
+
+        if (category) {
+            
+        } else if (subcategory) {
+            res.status(200).json(category);
+
+        } else {
             res.status(404).send({
                 message: `Category with id ${req.params.id} not found.`
             });
             return;
         }
-        res.status(200).json(category);
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error get category."

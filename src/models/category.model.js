@@ -9,31 +9,6 @@ const SequenceSchema = new mongoose.Schema({
     }
 });
 
-const SubcategorySchema = new mongoose.Schema({
-    id: {
-        type: Number,
-        required: true, 
-        unique: true
-    },
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    attributes: [{
-        description: {
-            type: String,
-            required: true
-        }, 
-        type: {
-            type: String, 
-            required: true
-        }
-    }]   // Array of attribute documents
-}, {autoIndex: false});
-
-const Subcategory = mongoose.model('Subcategory', SubcategorySchema);
-
 const CategorySchema = new mongoose.Schema ({
     id: {
         type: Number,
@@ -45,7 +20,7 @@ const CategorySchema = new mongoose.Schema ({
         required: true,
         unique: true
     },
-    subcategories: [SubcategorySchema],
+    subcategories: [],
     attributes: [{
         description: {
             type: String,
@@ -58,11 +33,12 @@ const CategorySchema = new mongoose.Schema ({
     }]  
 }, {autoIndex: false});
 
+CategorySchema.add({subcategories: [CategorySchema]})
+
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
 
 // Category.collection.drop();
-// Subcategory.collection.drop();
 // Sequence.collection.drop();
 
-module.exports = {Category, Subcategory, Sequence};
+module.exports = {Category, Sequence};
