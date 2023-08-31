@@ -68,12 +68,11 @@ module.exports = app => {
 
     // category api for testing
     router.post("/category", categories.createCategory);
-    router.get("/category", categories.getAllCategories);
-    router.get("/category/customer", categories.getAllSameLevels);
+    router.get("/category", categories.findAll);
+    router.get("/category/customer", categories.findAllSameLevels);
     // router.get("/categories", categories.getCategoryId); // test get one category
-    router.get("/category/:id", categories.getOne);
+    router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.getAttributes);
-    router.get("/category/:id/subcategory", categories.getSubCategories); // get all subcategories
     router.put("/category/:id", categories.update);
 
     app.use('/api', router);

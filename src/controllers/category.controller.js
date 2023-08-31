@@ -1,6 +1,5 @@
 const {Category, Subcategory, Sequence} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
-const mongoose = require('mongoose');
 const Product = require('../models/product.model');
 
 // Generate ID for Category
@@ -170,6 +169,7 @@ const checkToInsert = async (req, res) => {
     }
 }
 
+// Generate dummy data
 checkToInsert();
 
 /*
@@ -209,9 +209,18 @@ exports.createCategory = async (req, res) => {
     }   
 }
 
-exports.getAllCategories = async (req, res) => {
+const findAll = async () => {
     try {
         const categories = await Category.find({});
+        return categories;  
+    } catch (error) {
+        throw new Error("Error finding categories.");
+    }
+};
+
+exports.findAll = async (req, res) => {
+    try {
+        const categories = await findAll();
 
         if ((await categories).length > 0) {
             res.status(200).json(categories);
@@ -231,18 +240,27 @@ exports.getAllCategories = async (req, res) => {
     }
 }
 
-// Get both categories and subcategories at same level
-exports.getAllSameLevels = async (req, res) => {
+const findAllCatAndSubCat = async () => {
     try {
         const categories = await Category.find().select('id name').exec();
+        const subcategories = await Subcategory.find().select('id name').exec();
 
-        // Sort by ID number
-        const data = categories.sort((x, y) => x.id - y.id);
+        const data = [...categories, ...subcategories];
+        
+        data.sort((x, y) => x.id - y.id);
 
-        res.status(200).json({
-            status: 'success',
-            data: data,
-        });
+        return data;
+    } catch (err) {
+        throw new Error("Error fetching id and name of categories and subcategories.");
+    }
+}
+
+// Get both categories and subcategories at same level
+exports.findAllSameLevels = async (req, res) => {
+    try {
+        const data = await findAllCatAndSubCat();
+
+        res.status(200).json(data);
 
     } catch (err) {
         res.status(500).send({
@@ -251,7 +269,58 @@ exports.getAllSameLevels = async (req, res) => {
     }
 }
 
-exports.getOne = async (req, res) => {
+const findOne = async (id) => {
+    try {
+        // Handle both subcat and cat
+        const cat = await Category.findOne({id: id});
+        console.log(cat);
+        const model = [
+            {
+                $facet: {
+                    category: [
+                        {$match: {id: id}}, 
+                        {$limit: 1}
+                    ], 
+                    subcategory: [
+                        {$unwind: "$subcategories"},
+                        {$match: {"subcategories.id": id}},
+                        {$limit: 1}
+                    ]
+                }
+            }, 
+            {
+                $project: {
+                    result: {
+                        $cond: {
+                            if: { $ne: [{ $size: "$category" }, 0] },
+                            then: { $arrayElemAt: ["$category", 0] },
+                            else: {
+                                $cond: {
+                                if: { $ne: [{ $size: "$subcategory" }, 0] },
+                                then: { $arrayElemAt: ["$subcategory", 0] },
+                                else: null
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ];
+
+        const result = await Subcategory.aggregate(model);
+
+        if (result.length > 0) {
+            const detectedItem = result[0].result;
+            return detectedItem || cat;
+        } else {
+            return cat;
+        }
+    } catch (err) {
+        throw new Error("Error getting category by id.");
+    }
+}
+
+exports.findOne = async (req, res) => {
     try {
         const categoryId = parseInt(req.params.id);
 
@@ -262,19 +331,16 @@ exports.getOne = async (req, res) => {
             return;
         }
         
-        const category  = await Category.find({id: categoryId});
+        const category  = await findOne(categoryId);
 
-        if (category) {
-            
-        } else if (subcategory) {
-            res.status(200).json(category);
-
-        } else {
+        if (!category) {
             res.status(404).send({
                 message: `Category with id ${req.params.id} not found.`
             });
             return;
-        }
+        } else {
+            res.status(200).json(category);
+        } 
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error get category."
@@ -282,32 +348,8 @@ exports.getOne = async (req, res) => {
     }
 }
 
-exports.getSubCategories = async (req, res) => {
-    try {
-        const category = parseInt(req.params.id);
+const getAttributes = async (id) => {
 
-        if (category == null) {
-            res.status(400).send({
-                message: "Invalid request."
-            });
-            return;
-        }
-
-        const subcategories = await Category.find({parent: category});
-
-        if (!subcategories) {
-            res.status(404).send({
-                message: `Category with id ${req.params.id} has no subcategory.`
-            });
-            return;
-        }
-        res.status(200).json(subcategories);
-
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error get subcategories."
-        });
-    }
 }
 
 exports.getAttributes = async (req, res) => {
