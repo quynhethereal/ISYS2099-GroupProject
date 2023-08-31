@@ -1,4 +1,4 @@
-const {Category, Sequence} = require('../models/category.model');
+const {Category, Subcategory, Sequence} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
 const mongoose = require('mongoose');
 const Product = require('../models/product.model');
@@ -55,12 +55,14 @@ const generateOne = async () => {
 
         const subcategoryCount = faker.number.int({ min: 0, max: 3 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcategory = await generateSubcategory();
+            const subcategory = await generateSubcategory(category.id);
 
-            const subcatObj = new Category({
+            console.log('subcategory', subcategory);
+            const subcatObj = new Subcategory({
                 id: subcategory.id,
+                parentId: subcategory.parentId,
                 name: subcategory.name,
-                subcategories: category.subcategories,
+                subcategories: subcategory.subcategories,
                 attributes: subcategory.attributes,
             });
             category.subcategories.push(subcatObj);
@@ -80,13 +82,15 @@ const generateOne = async () => {
     }
 };
 
-const generateSubcategory = async () => {
+const generateSubcategory = async (parentId) => {
     try {
         const nextId = await generateID('category');
     
         const subcategory = {
             id: nextId,
+            parentId: parentId,
             name: faker.commerce.department(),
+            subcategories: [],
             attributes: [],
         };
     
@@ -96,24 +100,28 @@ const generateSubcategory = async () => {
             subcategory.attributes.push(attribute);
         }
 
-        const subcategoryCount = faker.number.int({ min: 0, max: 1 });
+        const subcategoryCount = faker.number.int({ min: 0, max: 2 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcategory = await generateSubcategory();
+            const subcat = await generateSubcategory(subcategory.id);
 
-            const subcatObj = new Category({
-                id: subcategory.id,
-                name: subcategory.name,
-                subcategories: subcategory.subcategories,
-                attributes: subcategory.attributes,
+            const subcatObj = new Subcategory({
+                id: subcat.id,
+                parentId: subcat.parentId,
+                name: subcat.name,
+                subcategories: subcat.subcategories,
+                attributes: subcat.attributes,
             });
+
+            // console.log(subcatObj);
             subcategory.subcategories.push(subcatObj);
         }
     
-        const subcat = new Category({
+        const subcat = new Subcategory({
             id: subcategory.id,
+            parentId: subcategory.parentId,
             name: subcategory.name,
             subcategories: subcategory.subcategories,
-            attributes: subcategory.attributes,
+            attributes: subcategory.attributes
         });
     
         const savedCategory = await subcat.save();
@@ -169,21 +177,29 @@ body params
 {
     name: New Category
     attributes: [
-        descriptions: "abc"
+        descriptions: ["abc","xyz", 123]
+    ], 
+    subcategories: [
+        name: New Category
+        attributes: [
+            descriptions: ["a1b","txd", 234]
+        ], 
     ]
 }
 */
 exports.createCategory = async (req, res) => {
     try {
         const name = req.body.name;
-        const sameNameCategory = await Category.findOne({name: name});
-        if (sameNameCategory || sameIdCategory) {
+        const duplicateCategory = await Category.findOne({name: name});
+        if (duplicateCategory) {
             res.status(400).send({
                 message: "Invalid request. Category is existed."
             });
             return;
         } 
-        
+
+        // Handle generate ID
+
         const category = Category.create(req.body);
         res.status(200).json(category);
     } catch (err) {
@@ -247,8 +263,6 @@ exports.getOne = async (req, res) => {
         }
         
         const category  = await Category.find({id: categoryId});
-
-        const subcategory = await Subcategory.find({id: categoryId});
 
         if (category) {
             
