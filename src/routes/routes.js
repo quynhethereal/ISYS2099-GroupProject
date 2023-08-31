@@ -38,6 +38,7 @@ module.exports = app => {
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
+    router.delete("/product/:id", authMiddleware.verifyToken, products.delete);
 
 
     // order-related API

@@ -41,25 +41,51 @@ exports.findAllByCategory = async (req, res) => {
             return;
         }
 
-        const validSortTerms = ['created_at', 'price'];
-        const sortTerm = req.query.sortTerm;
+        const sortTerm1 = req.query.sortTerm1 || 'created_at';
+        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm2 = req.query.sortTerm2 || '';
+        const sortDirection2 = req.query.sortDirection2 || '';
 
-        if (!validSortTerms.includes(sortTerm)) {
+        const validSortTerms = ['created_at', 'price'];
+        const validSortDirections = ['ASC', 'DESC'];
+
+        if (!validSortTerms.includes(sortTerm1)) {
             throw new Error('Invalid sort term.');
         }
 
-        const validSortDirections = ['ASC', 'DESC'];
-        const sortDirection = req.query.sortDirection;
-
-        if (!validSortDirections.includes(sortDirection)) {
+        if (!validSortDirections.includes(sortDirection1)) {
             throw new Error('Invalid sorting order.');
         }
 
+        if (sortTerm2 && sortDirection2) {
+            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
+                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
+            }
+
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+
+            if (sortTerm1 === sortTerm2) {
+                throw new Error('Sort term 1 and sort term 2 cannot be the same.');
+            }
+
+            if (!validSortDirections.includes(sortDirection2)) {
+                throw new Error('Invalid sorting order 2.');
+            }
+        }
+        
+        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
+            throw new Error('Both sort term 2 and sorting order 2 are required.');
+        }
+
         const params = {
+            queryParams: req.query,
             categoryId,
-            sortTerm: sortTerm,
-            sortDirection: sortDirection,
-            queryParams: req.query
+            sortTerm1: sortTerm1,
+            sortDirection1: sortDirection1,
+            sortTerm2: sortTerm2,
+            sortDirection2: sortDirection2
         }
 
         const products = await Product.findByCategory(params);
@@ -74,10 +100,10 @@ exports.findAllByCategory = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const productId = parseInt(req.params.id);
-        const {title, description, price, categoryId} = req.body;
+        const {title, description, price, categoryId, image} = req.body;
 
         // validate presence of params
-        if (productId === null || title === null || description === null || price === null || categoryId === null) {
+        if (productId === null || title === null || description === null || price === null || categoryId === null || image === null) {
             res.status(400).send({
                 message: "Invalid request."
             });
@@ -187,27 +213,53 @@ exports.findAllByPriceRange = async (req, res) => {
             throw new Error('Invalid price range.');
         }
 
-        const validSortTerms = ['created_at', 'price'];
-        const sortTerm = req.query.sortTerm;
+        const sortTerm1 = req.query.sortTerm1 || 'created_at';
+        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm2 = req.query.sortTerm2 || '';
+        const sortDirection2 = req.query.sortDirection2 || '';
 
-        if (!validSortTerms.includes(sortTerm)) {
+        const validSortTerms = ['created_at', 'price'];
+        const validSortDirections = ['ASC', 'DESC'];
+
+        if (!validSortTerms.includes(sortTerm1)) {
             throw new Error('Invalid sort term.');
         }
 
-        const validSortDirections = ['ASC', 'DESC'];
-        const sortDirection = req.query.sortDirection;
-
-        if (!validSortDirections.includes(sortDirection)) {
+        if (!validSortDirections.includes(sortDirection1)) {
             throw new Error('Invalid sorting order.');
+        }
+
+        if (sortTerm2 && sortDirection2) {
+            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
+                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
+            }
+
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+
+            if (sortTerm1 === sortTerm2) {
+                throw new Error('Sort term 1 and sort term 2 cannot be the same.');
+            }
+
+            if (!validSortDirections.includes(sortDirection2)) {
+                throw new Error('Invalid sorting order 2.');
+            }
+        }
+        
+        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
+            throw new Error('Both sort term 2 and sorting order 2 are required.');
         }
 
         const params = {
             queryParams: req.query,
             minPrice: minPrice,
             maxPrice: maxPrice,
-            sortTerm: sortTerm,
-            sortDirection: sortDirection
-        };
+            sortTerm1: sortTerm1,
+            sortDirection1: sortDirection1,
+            sortTerm2: sortTerm2,
+            sortDirection2: sortDirection2
+        }
 
         const products = await Product.findByPriceRange(params);
 
@@ -227,25 +279,51 @@ exports.findAllByKey = async (req, res) => {
             throw new Error('Invalid search key.');
         }
 
-        const validSortTerms = ['created_at', 'price'];
-        const sortTerm = req.query.sortTerm;
+        const sortTerm1 = req.query.sortTerm1 || 'created_at';
+        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm2 = req.query.sortTerm2 || '';
+        const sortDirection2 = req.query.sortDirection2 || '';
 
-        if (!validSortTerms.includes(sortTerm)) {
+        const validSortTerms = ['created_at', 'price'];
+        const validSortDirections = ['ASC', 'DESC'];
+
+        if (!validSortTerms.includes(sortTerm1)) {
             throw new Error('Invalid sort term.');
         }
 
-        const validSortDirections = ['ASC', 'DESC'];
-        const sortDirection = req.query.sortDirection;
-
-        if (!validSortDirections.includes(sortDirection)) {
+        if (!validSortDirections.includes(sortDirection1)) {
             throw new Error('Invalid sorting order.');
+        }
+
+        if (sortTerm2 && sortDirection2) {
+            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
+                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
+            }
+
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+
+            if (sortTerm1 === sortTerm2) {
+                throw new Error('Sort term 1 and sort term 2 cannot be the same.');
+            }
+
+            if (!validSortDirections.includes(sortDirection2)) {
+                throw new Error('Invalid sorting order 2.');
+            }
+        }
+        
+        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
+            throw new Error('Both sort term 2 and sorting order 2 are required.');
         }
 
         const params = {
             queryParams: req.query,
             key: key,
-            sortTerm: sortTerm,
-            sortDirection: sortDirection
+            sortTerm1: sortTerm1,
+            sortDirection1: sortDirection1,
+            sortTerm2: sortTerm2,
+            sortDirection2: sortDirection2
         }
 
         const products = await Product.findByKey(params);
@@ -254,6 +332,33 @@ exports.findAllByKey = async (req, res) => {
     } catch (err) {
         res.status(500).json({
             message: err.message || "Error finding products by key."
+        });
+    }
+}
+
+exports.delete = async (req, res) => {
+    try {
+        const productId = parseInt(req.params.id);
+
+        if (productId === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+        // check if user is seller
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const deletedProduct = await Product.delete(productId, req.currentUser.id);
+        res.status(200).json({
+            message: `Product with id ${productId} deleted successfully.`
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error deleting product."
         });
     }
 }

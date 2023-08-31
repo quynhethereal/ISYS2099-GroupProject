@@ -168,21 +168,27 @@ BEGIN
             END IF;
 
             -- see if the product is already in the warehouse
-            SELECT id INTO inventory_row_id FROM inventory WHERE product_id = product_id AND warehouse_id = max_warehouse_id LIMIT 1;
+            SELECT id INTO inventory_row_id FROM inventory i WHERE i.product_id = product_id AND warehouse_id = max_warehouse_id LIMIT 1;
 
             -- if the product is already in the warehouse, update the quantity
             IF inventory_row_id IS NOT NULL THEN
-                UPDATE inventory SET quantity = quantity + items_to_stock WHERE product_id = product_id AND warehouse_id = max_warehouse_id;
+                UPDATE inventory i SET quantity = quantity + items_to_stock WHERE i.product_id = product_id AND warehouse_id = max_warehouse_id;
             -- else insert the product into the warehouse
             ELSE
                 INSERT INTO inventory (product_id, warehouse_id, quantity, reserved_quantity)
                 VALUES (product_id, max_warehouse_id, items_to_stock, 0);
             END IF;
 
-            UPDATE warehouses SET available_volume = available_volume - (items_to_stock * product_unit_size) WHERE id = max_warehouse_id;
+            UPDATE warehouses w SET available_volume = available_volume - (items_to_stock * product_unit_size) WHERE w.id = max_warehouse_id;
 
             SET remaining_quantity = remaining_quantity - items_to_stock;
             COMMIT;
+
+            -- reset variables
+            SET max_warehouse_id = NULL;
+            SET max_available_volume = NULL;
+            SET items_to_stock = NULL;
+            SET inventory_row_id = NULL;
     END WHILE;
 END;
 $$

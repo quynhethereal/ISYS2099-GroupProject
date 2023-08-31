@@ -120,7 +120,7 @@ ALTER TABLE inventory
 	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id);
 
 -- Add foreign keys
-ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
+ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE;
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
 -- Triggers to create ULID for inventory on insert
@@ -143,7 +143,7 @@ CREATE TABLE `pending_inventory` (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- Add foreign keys
-ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
+ALTER TABLE `pending_inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE;
 
 
 -- Create `orders` table
@@ -214,6 +214,7 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
 GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
 GRANT SELECT, UPDATE ON lazada_ecommerce.orders TO 'seller';
 GRANT SELECT ON lazada_ecommerce.inventory TO 'seller';
+GRANT SELECT ON lazada_ecommerce.order_items TO 'seller';
 
 -- Create users with roles
 CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';
