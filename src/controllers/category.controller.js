@@ -163,6 +163,7 @@ const checkToInsert = async (req, res) => {
         });
     }
 }
+// Category.collection.getIndexes().then(console.log);
 
 // Generate dummy data
 checkToInsert();

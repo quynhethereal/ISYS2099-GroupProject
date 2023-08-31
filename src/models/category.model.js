@@ -12,7 +12,8 @@ const CategorySchema = new mongoose.Schema({
     id: {
         type: Number,
         required: true, 
-        unique: true
+        unique: true,
+        index: 1
     },
     parentId: {
         type: Number
@@ -20,7 +21,8 @@ const CategorySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        index: true
     },
     subcategories: [],
     attributes: [{
@@ -33,9 +35,9 @@ const CategorySchema = new mongoose.Schema({
             required: true
         }
     }]   // Array of attribute documents
-}, {autoIndex: false});
+}, {autoIndex: true, _id: false});
 
-// CategorySchema.add({subcategories: [CategorySchema]});
+CategorySchema.index({id: 1, subcategories: 1}, {unique: true});
 
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
