@@ -5,14 +5,29 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 dotenv.config();
 
-const multer = require('multer');
+require('multer');
+require('./src/middlewares/auth.middleware');
+require('./src/db/db');
 
-const authMiddleware = require('./src/middlewares/auth.middleware');
-const dbConfig = require('./src/db/db');
+const {generateSeedData, dropCollection} = require('./src/db/mongo.seed');
+
+// ---- uncomment to drop categories collection ----
+// dropCollection().then(() => {
+//     console.log('Categories collection dropped');
+
+// }).catch((err) => {
+//     console.log('Error dropping categories collection:', err);
+// });
+
+generateSeedData().then(() => {
+    console.log('Seed data for mongoDB generated.');
+}).catch((err) => {
+    console.log('Error generating seed data:', err);
+});
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 

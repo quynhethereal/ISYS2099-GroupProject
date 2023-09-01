@@ -64,6 +64,10 @@ ALTER TABLE products
 ALTER TABLE `products` ADD FOREIGN KEY (`seller_id`) REFERENCES `users`(`id`);
 
 
+ALTER TABLE products
+    ADD INDEX idx_products_title(title),
+    ADD INDEX idx_products_description(description);
+
 -- Create `warehouses` table
 CREATE TABLE IF NOT EXISTS `warehouses` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -190,7 +194,6 @@ ALTER TABLE order_items
 ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
 ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
 
-
 -- Drop all roles and users if exists
 drop role if exists 'admin', 'customer', 'seller', 'wh_admin';
 drop user if exists 'admin'@'localhost', 'customer'@'localhost', 'seller'@'localhost', 'wh_admin'@'localhost';
@@ -203,11 +206,12 @@ create role 'admin', 'customer', 'seller', 'wh_admin';
 GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
 
 -- Customer: SELECT product, CRU users_info, orders, order_items and inventory
-GRANT SELECT ON lazada_ecommerce.products TO 'customer';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'customer';
-GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.orders TO 'customer';
-GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order_items TO 'customer';
-GRANT SELECT ON lazada_ecommerce.inventory TO 'customer';
+grant select on lazada_ecommerce.products to 'customer';
+grant insert, select, update on lazada_ecommerce.users_info to 'customer';
+grant insert, select, update on lazada_ecommerce.orders to 'customer';
+grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
+grant select on lazada_ecommerce.inventory to 'customer';
+-- grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'customer';
 
 -- Seller: CRUD product, CRU users_info, orders and inventory
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
@@ -241,8 +245,7 @@ GRANT 'customer' TO 'customer'@'localhost';
 GRANT 'seller' TO 'seller'@'localhost';
 GRANT 'wh_admin' TO 'wh_admin'@'localhost';
 
--- Flush privileges
-FLUSH PRIVILEGES;
+flush privileges;
 
 -- Insert dummy data for users and users_info
 INSERT INTO `users` (`username`, `hashed_password`, `salt_value`)

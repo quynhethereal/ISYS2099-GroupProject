@@ -1,6 +1,6 @@
 # ISYS2099 - Database Project
 
-## Setup instruction
+## Setup instructions
 
 - First, clone the repo:
 
@@ -14,20 +14,20 @@ git clone
 npm install
 ```
 
-- Setup **MySQL** database:
+### Setup **MySQL** database:
   - Login to the mysql shell and create a database called `lazada_ecommerce`
 ```SQL
 CREATE DATABASE lazada_ecommerce;
 ```
+- Populate seed data by **copying the SQL files** in `user_funcs.sql` and `seed.sql` in **script** folder (must be in exact order!).
 
-- Setup MongoDB database:
-  - Create a database called `lazada_ecommerce`
-- Populate the database with sample data:
+### Setup MongoDB database:
+  - Ensure that packages of MongoDB and Mongoose are installed
+  - Start the MongoDB services on your device
+  - (Optional) Uncomment line 15-22 in `index.js` to drop existing database
+  - Run the server and the database will be created automatically if it does not exist
 
-```bash
-// TODO
-```
-
+### Environment variables setup:
 - Create a `.env` file from the sample and fill in your own credentials:
 
 ```bash
@@ -38,8 +38,7 @@ cp .env.dev.sample .env
 (windows)
 copy .env.dev.sample .env
 ```
-- Populate seed data by **copying the SQL files** in `user_funcs.sql` and `seed.sql` in **script** folder (must be in exact order!).
-  
+### Start the server locally:
 - Run the server:
 
 ```bash
@@ -49,7 +48,7 @@ npm start
 **Debug Notes:**
 - If mySQL refuses connection on server startup, try changing MYSQL_HOST=127.0.0.1 in .env file. 
 
-
+### Start FE locally:
 - Navigate to the FE server:
 
 ```bash

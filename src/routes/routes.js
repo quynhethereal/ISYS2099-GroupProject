@@ -66,6 +66,5 @@ module.exports = app => {
     router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
 
-
     app.use('/api', router);
 }
