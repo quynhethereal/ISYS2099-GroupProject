@@ -101,8 +101,17 @@ const findAttributes = async (id) => {
         const categoryNode = new CategoryTree();
         categoryNode.buildTree(findCat);
         
-        const data = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
-        return data;
+        const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
+
+        const result = new Set();
+
+        for (const data of dataSet) {
+            if (!result.has(data)) {
+                result.add(data);
+            }
+        }
+
+        return Array.from(result);
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
