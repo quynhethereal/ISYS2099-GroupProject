@@ -88,6 +88,7 @@ const findNestedSubcategories = async (category) => {
             data.push(...subcategory);
         }
     }
+    console.log(data);
 
     return data;
 }
@@ -202,6 +203,8 @@ const findAttributes = async (id) => {
                 {subcategoriesArray: {$elemMatch: {$eq: id}}}
             ]
         });
+        console.log('sub', Category.findOne)
+        console.log(findCat)
 
         if (findCat == null) {
             throw new Error("Category is not existed.");
@@ -212,6 +215,7 @@ const findAttributes = async (id) => {
         
         const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
 
+        console.log(dataSet);
         const result = new Set();
 
         for (const data of dataSet) {
