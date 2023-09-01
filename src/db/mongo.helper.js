@@ -39,8 +39,8 @@ const generateAttribute = () => {
             type: faker.helpers.arrayElement(['string', 'number']),
         };
 
-        if (attribute.type == 'string') {
-            attribute.description = faker.lorem.words();
+        if (attribute.type === 'string') {
+            attribute.description = faker.commerce.productAdjective();
         } else {
             attribute.description = faker.number.int();
         }
@@ -56,7 +56,7 @@ const generateOne = async () => {
 
         const category = {
             id: nextId,
-            name: faker.commerce.department(),
+            name: faker.commerce.product() + " " + "Parent Category",
             subcategoriesArray: [],
             subcategories: [],
             attributes: [],
@@ -77,15 +77,13 @@ const generateOne = async () => {
             category.subcategories.push(subcategory);
         }
 
-        const cat = new Category({
+        return new Category({
             id: category.id,
             name: category.name,
             subcategoriesArray: category.subcategoriesArray,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
-
-        return cat;
     } catch (error) {
         console.error('Error saving category:', error);
     }
@@ -98,7 +96,7 @@ const generateSubcategory = async (parentId) => {
         const subcategory = {
             id: nextId,
             parentId: parentId,
-            name: faker.commerce.department(),
+            name: faker.commerce.department() + " " + Math.floor(Math.random() * 100),
             subcategoriesArray: [],
             subcategories: [],
             attributes: [],
@@ -127,7 +125,7 @@ const generateSubcategory = async (parentId) => {
             subcategory.subcategories.push(subcatObj);
         }
 
-        const subcat = ({
+        return ({
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
@@ -135,8 +133,6 @@ const generateSubcategory = async (parentId) => {
             subcategories: subcategory.subcategories,
             attributes: subcategory.attributes
         });
-
-        return subcat;
     } catch (error) {
         console.error('Error saving subcategory:', error);
     }
