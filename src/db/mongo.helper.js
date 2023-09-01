@@ -72,9 +72,17 @@ const generateOne = async () => {
         for (let i = 0; i < subcategoryCount; i++) {
             const subcategory = await generateSubcategory(category.id);
 
-            category.subcategoriesArray.push(subcategory.id,...subcategory.subcategoriesArray);   // For fast track cat
+            const subCatObj = ({
+                id: subcategory.id,
+                parentId: subcategory.parentId,
+                name: subcategory.name,
+                subcategories: subcategory.subcategories,
+                attributes: subcategory.attributes,
+            })
 
-            category.subcategories.push(subcategory);
+            category.subcategoriesArray.push(subcategory.id,...subcategory.subcatIds);   // For fast track cat
+
+            category.subcategories.push(subCatObj);
         }
 
         return new Category({
@@ -97,7 +105,6 @@ const generateSubcategory = async (parentId) => {
             id: nextId,
             parentId: parentId,
             name: faker.commerce.department() + " " + Math.floor(Math.random() * 100),
-            subcategoriesArray: [],
             subcategories: [],
             attributes: [],
         };
@@ -116,20 +123,20 @@ const generateSubcategory = async (parentId) => {
                 id: subcat.id,
                 parentId: subcat.parentId,
                 name: subcat.name,
-                subcategoriesArray: subcat.subcategoriesArray,
                 subcategories: subcat.subcategories,
                 attributes: subcat.attributes,
             });
 
-            subcategory.subcategoriesArray.push(subcatObj.id,...subcatObj.subcategoriesArray);  // Add to element in subcat and cat
             subcategory.subcategories.push(subcatObj);
         }
+
+        const subCatIds = subcategory.subcategories.map((subcategory) => subcategory.id);  // Add to element in subcat and cat
 
         return ({
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
-            subcategoriesArray: subcategory.subcategoriesArray,
+            subcatIds: subCatIds,
             subcategories: subcategory.subcategories,
             attributes: subcategory.attributes
         });

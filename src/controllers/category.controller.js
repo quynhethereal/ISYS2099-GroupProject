@@ -217,7 +217,7 @@ const findAttributes = async (id) => {
     }
 }
 
-exports.getAttributes = async (req, res) => {
+exports.findAttributes = async (req, res) => {
     try {
         // TODO: Get attributes of a category
         const id = parseInt(req.params.id);
