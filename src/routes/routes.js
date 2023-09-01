@@ -70,12 +70,9 @@ module.exports = app => {
 
 
     // category api for testing
-    router.post("/category", categories.createCategory);
     router.get("/category", categories.findAll);
     router.get("/category/customer", categories.findAllSameLevels);
-    router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);
-    router.put("/category/:id", categories.update);
 
     app.use('/api', router);
 }
