@@ -43,11 +43,12 @@ class CategoryTree {
     // Attributes of a category are the attributes of its parent category plus its own attributes.
     // We start the traversal from the found category and go up the tree until we reach the root.
     getNodeAttributes(node) {
-        const attributes = [];
+        const attributes = new Set();
 
         while (node !== null) {
-            const nodeAttributes = node.attributes.map((attribute) => attribute.description);
-            attributes.push(...nodeAttributes);
+            for (let i = 0; i < node.attributes.length; i++) {
+                attributes.add(node.attributes[i].description);
+            }
             node = node.parentNode;
         }
         return attributes;

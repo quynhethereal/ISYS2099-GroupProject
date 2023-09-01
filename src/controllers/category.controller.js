@@ -33,35 +33,23 @@ exports.findAll = async (req, res) => {
     }
 }
 
-const findAttributes = async (id) => {
+const findCatAttributes = async (id) => {
     try {
-        const findCat = await Category.findOne({
+        const cat = await Category.findOne({
             $or: [
                 {id: id},
                 {subcategoriesArray: {$elemMatch: {$eq: id}}}
             ]
         });
-        console.log('sub', Category.findOne)
-        console.log(findCat)
 
-        if (findCat == null) {
+        if (cat === null) {
             throw new Error("Category is not existed.");
         }
 
         const categoryNode = new CategoryTree();
-        categoryNode.buildTree(findCat);
-        
-        const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
+        categoryNode.buildTree(cat);
 
-        const result = new Set();
-
-        for (const data of dataSet) {
-            if (!result.has(data)) {
-                result.add(data);
-            }
-        }
-
-        return Array.from(result);
+        return Array.from(categoryNode.getNodeAttributes(categoryNode.searchNode(id)));
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
@@ -79,7 +67,7 @@ exports.findAttributes = async (req, res) => {
         }
 
         // Get the category
-        const data = await findAttributes(id);
+        const data = await findCatAttributes(id);
 
         if (!data) {
             res.status(404).send ({
@@ -87,7 +75,10 @@ exports.findAttributes = async (req, res) => {
             })
         }
 
-        res.status(200).json(data);
+        res.status(200).json({
+            categoryId: id,
+            attributes: data
+        });
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."
