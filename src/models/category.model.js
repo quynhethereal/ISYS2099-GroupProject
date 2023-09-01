@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {CategoryTree} = require('../helpers/CategoryTree');
+const {CategoryTree} = require('../helpers/category_tree.structure');
 const Product = require('../models/product.model');
 
 const SequenceSchema = new mongoose.Schema({

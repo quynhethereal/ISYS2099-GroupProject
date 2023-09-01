@@ -87,7 +87,7 @@ exports.findAttributesProduct = async (req, res) => {
 
         if (id == null) {
             res.status(400).send({
-                message: "Invalid request."
+                message: "Invalid product ID."
             })
         }
 
@@ -100,7 +100,10 @@ exports.findAttributesProduct = async (req, res) => {
             })
         }
 
-        res.status(200).json(data);
+        res.status(200).json({
+            productId: id,
+            attributes: data
+        });
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."
