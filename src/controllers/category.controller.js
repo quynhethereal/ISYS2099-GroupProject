@@ -183,7 +183,6 @@ exports.findOne = async (req, res) => {
             res.status(404).send({
                 message: `Category with id ${req.params.id} not found.`
             });
-            return;
         } else {
             res.status(200).json(category);
         } 
@@ -224,9 +223,7 @@ const findAttributes = async (id) => {
             throw new Error("Category is not existed.");
         }
 
-        const attributes = await findNestedAttributes(findCat, id);
-
-        return attributes;
+        return await findNestedAttributes(findCat, id);
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }

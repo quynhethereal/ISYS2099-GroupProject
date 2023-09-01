@@ -5,10 +5,9 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 dotenv.config();
 
-const multer = require('multer');
-
-const authMiddleware = require('./src/middlewares/auth.middleware');
-const dbConfig = require('./src/db/db');
+require('multer');
+require('./src/middlewares/auth.middleware');
+require('./src/db/db');
 
 const {generateSeedData, dropCollection} = require('./src/db/mongo.seed');
 
