@@ -16,6 +16,7 @@ const products = require("../controllers/product.controller.js");
 const orders = require("../controllers/order.controller.js");
 const warehouses = require("../controllers/warehouse.controller.js");
 const authMiddleware = require('../middlewares/auth.middleware');
+const categories = require('../controllers/category.controller');
 
 module.exports = app => {
     let router = require("express").Router();
@@ -65,6 +66,9 @@ module.exports = app => {
     router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
     router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
+
+    // category api for testing
+    router.get("/category", categories.findAll);
 
     app.use('/api', router);
 }
