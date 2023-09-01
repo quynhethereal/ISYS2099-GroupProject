@@ -18,6 +18,7 @@ const {generateSeedData, dropCollection} = require('./src/db/mongo.seed');
 // }).catch((err) => {
 //     console.log('Error dropping categories collection:', err);
 // });
+
 generateSeedData().then(() => {
     console.log('Seed data for mongoDB generated.');
 }).catch((err) => {
