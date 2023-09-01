@@ -230,9 +230,11 @@ grant all privileges on lazada_ecommerce.warehouses to 'wh_admin';
 grant select, update on lazada_ecommerce.products to 'wh_admin';
 grant insert, select, update, delete on lazada_ecommerce.pending_inventory to 'wh_admin';
 grant execute on procedure lazada_ecommerce.ASSIGN_INVENTORY_TO_WAREHOUSE to 'wh_admin';
+grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'wh_admin';
+grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_REJECT to 'wh_admin';
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.orders TO 'wh_admin';
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order_items TO 'wh_admin';
-
+-- UPDATE_INVENTORY_ON_ORDER_ACCEPT
 -- Assign roles to users
 GRANT 'admin' TO 'admin'@'localhost';
 GRANT 'customer' TO 'customer'@'localhost';
