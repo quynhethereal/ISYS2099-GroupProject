@@ -39,7 +39,6 @@ module.exports = app => {
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
-    router.get("/product/:id/attributes", categories.findAttributesProduct);
     router.delete("/product/:id", authMiddleware.verifyToken, products.delete);
 
 
@@ -67,7 +66,6 @@ module.exports = app => {
     router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
     router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
-
 
     // category api for testing
     router.get("/category", categories.findAll);

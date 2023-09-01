@@ -2,6 +2,7 @@ const {Category} = require('../models/category.model');
 const {CategoryTree} = require('../helpers/CategoryTree');
 const Product = require('../models/product.model');
 
+
 const findAll = async () => {
     try {
         const categories = await Category.find({});
