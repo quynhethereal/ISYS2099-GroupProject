@@ -28,7 +28,7 @@ const CategorySchema = new mongoose.Schema({
     subcategories: [],
     attributes: [{
         description: {
-            type: String,
+            type: mongoose.Schema.Types.Mixed,
             required: true
         }, 
         type: {
