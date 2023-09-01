@@ -16,7 +16,6 @@ const products = require("../controllers/product.controller.js");
 const orders = require("../controllers/order.controller.js");
 const warehouses = require("../controllers/warehouse.controller.js");
 const authMiddleware = require('../middlewares/auth.middleware');
-const categories = require('../controllers/category.controller');
 
 module.exports = app => {
     let router = require("express").Router();
@@ -39,7 +38,6 @@ module.exports = app => {
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
-    router.get("/product/:id/attributes", categories.findAttributesProduct);
     router.delete("/product/:id", authMiddleware.verifyToken, products.delete);
 
 
@@ -67,15 +65,6 @@ module.exports = app => {
     router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
     router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
-
-
-    // category api for testing
-    router.post("/category", categories.createCategory);
-    router.get("/category", categories.findAll);
-    router.get("/category/customer", categories.findAllSameLevels);
-    router.get("/category/:id", categories.findOne);
-    router.get("/category/:id/attributes", categories.findAttributes);
-    router.put("/category/:id", categories.update);
 
     app.use('/api', router);
 }
