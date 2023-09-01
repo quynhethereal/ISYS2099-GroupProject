@@ -2,7 +2,6 @@ const {Category} = require('../models/category.model');
 const {CategoryTree} = require('../helpers/category_tree.structure');
 const Product = require('../models/product.model');
 
-
 const findAll = async () => {
     try {
         const categories = await Category.find({});
@@ -42,6 +41,8 @@ const findAttributes = async (id) => {
                 {subcategoriesArray: {$elemMatch: {$eq: id}}}
             ]
         });
+        console.log('sub', Category.findOne)
+        console.log(findCat)
 
         if (findCat == null) {
             throw new Error("Category is not existed.");

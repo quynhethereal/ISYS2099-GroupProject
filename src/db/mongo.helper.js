@@ -62,6 +62,8 @@ const generateOne = async () => {
             attributes: [],
         };
 
+        const subCatIds = [];
+
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {
             const attribute = await generateAttribute();
@@ -70,7 +72,7 @@ const generateOne = async () => {
 
         const subcategoryCount = faker.number.int({ min: 0, max: 3 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcategory = await generateSubcategory(category.id);
+            const subcategory = await generateSubcategory(category.id, subCatIds);
 
             const subCatObj = ({
                 id: subcategory.id,
@@ -80,15 +82,27 @@ const generateOne = async () => {
                 attributes: subcategory.attributes,
             })
 
-            category.subcategoriesArray.push(subcategory.id,...subcategory.subcatIds);   // For fast track cat
+            category.subcategoriesArray.push(subcategory.id, ...subcategory.subcatIds);   // For fast track cat
 
             category.subcategories.push(subCatObj);
         }
 
+        const dataSet = category.subcategoriesArray;
+        const result = new Set();
+
+        for (const data of dataSet) {
+            if (!result.has(data)) {
+                result.add(data);
+            }
+        }
+
+        const returnData = Array.from(result);
+        returnData.sort((a,b) => a - b);
+        
         return new Category({
             id: category.id,
             name: category.name,
-            subcategoriesArray: category.subcategoriesArray,
+            subcategoriesArray: returnData,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
@@ -97,7 +111,7 @@ const generateOne = async () => {
     }
 };
 
-const generateSubcategory = async (parentId) => {
+const generateSubcategory = async (parentId, subCatIds) => {
     try {
         const nextId = await generateID('category');
 
@@ -117,7 +131,7 @@ const generateSubcategory = async (parentId) => {
 
         const subcategoryCount = faker.number.int({ min: 0, max: 1 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcat = await generateSubcategory(subcategory.id);
+            const subcat = await generateSubcategory(subcategory.id, subCatIds);
 
             const subcatObj = ({
                 id: subcat.id,
@@ -127,11 +141,14 @@ const generateSubcategory = async (parentId) => {
                 attributes: subcat.attributes,
             });
 
+            subCatIds.push(...subcat.subcategories.map((subcategory) => subcategory.id));
+
             subcategory.subcategories.push(subcatObj);
         }
 
-        const subCatIds = subcategory.subcategories.map((subcategory) => subcategory.id);  // Add to element in subcat and cat
+        subCatIds.push(...subcategory.subcategories.map((subcategory) => subcategory.id));  // Add to element in subcat and cat
 
+        console.log('subCatIds', subCatIds);
         return ({
             id: subcategory.id,
             parentId: subcategory.parentId,

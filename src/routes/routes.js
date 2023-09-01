@@ -71,5 +71,6 @@ module.exports = app => {
     router.get("/category", categories.findAll);
     router.get("/category/:id/attributes", categories.findAttributes);
 
+
     app.use('/api', router);
 }
