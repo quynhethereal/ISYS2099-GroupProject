@@ -60,9 +60,90 @@ export const updateProduct = async (token, id, formData) => {
   }
 };
 
-export const uploadImage = async (token, id, imgData) => {
+export const deleteProduct = async (token, id) => {
   try {
-    const { data } = await api.updateProduct(token, id, imgData);
+    const res = await api.deleteProduct(token, id);
+
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    } else {
+      return res;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const searchBySearchKey = async (
+  searchKey,
+  sortDirection1,
+  sortedTerm1,
+  sortedTerm2,
+  sortDirection2
+) => {
+  try {
+    const { data } = await api.searchBySearchKey(
+      searchKey,
+      sortDirection1,
+      sortedTerm1,
+      sortedTerm2,
+      sortDirection2
+    );
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const searchByPrice = async (
+  minPrice,
+  maxPrice,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
+  limit,
+  currentPage
+) => {
+  try {
+    const { data } = await api.searchByPrice(
+      minPrice,
+      maxPrice,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
+      limit,
+      currentPage
+    );
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const searchByCategory = async (
+  id,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
+  limit,
+  currentPage
+) => {
+  try {
+    const { data } = await api.searchByCategory(
+      id,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
+      limit,
+      currentPage
+    );
 
     return data;
   } catch (error) {

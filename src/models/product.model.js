@@ -5,12 +5,12 @@ const Helpers = require('../helpers/helpers');
 
 class Product {
     constructor(params = {}) {
-        this.name = params.name;
         this.description = params.description;
         this.price = params.price;
-        // this.image = params.image;
+        this.image = params.image;
         // TODO: add category
         this.category = params.category;
+        this.title = params.title;
     }
 }
 
@@ -149,13 +149,36 @@ Product.findByCategory = async (params) => {
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByCategory(categoryId);
         const totalPages = Math.ceil(productCount / limit);
-        
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
+
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
+
+        let queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        LIMIT ?,?`;
+
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}
+                        LIMIT ?,?`;
+        }
+
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
+            queryStr = `SELECT * FROM \`products\` WHERE category_id = ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\` WHERE category_id = ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
+                queryStr,
                 [categoryId + "", offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -419,6 +442,80 @@ Product.updateQuantity = (params) => {
     });
 }
 
+Product.findByIdAndSellerId = (productId, sellerId) => {
+    return new Promise((resolve, reject) => {
+        seller_pool.execute(
+            'SELECT * FROM `products` WHERE id = ? AND seller_id = ?',
+            [productId, sellerId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to find product.');
+                    reject(err);
+                    return;
+                }
+
+                if (results.length === 0) {
+                    console.log('No product with this id.');
+                    resolve(null);
+                    return;
+                }
+
+                const product = results[0];
+                console.log("Product found.");
+                resolve(product);
+            }
+        );
+    });
+}
+
+Product.delete = async (productId, sellerId) => {
+    // check if product under seller exists
+    const product = await Product.findByIdAndSellerId(productId, sellerId);
+
+    if (!product) {
+        console.log("Product not found.");
+        throw new Error("Product not found.");
+    }
+
+    // if there is still pending order for this product, do not delete
+    const pendingOrder = await new Promise((resolve, reject) => {
+        seller_pool.execute(
+            'SELECT distinct o.id, o.status FROM `orders` o JOIN order_items oi ON oi.order_id = o.id JOIN inventory i ON oi.inventory_id = i.id JOIN products p ON i.product_id = ?  WHERE o.status = "pending"',
+            [productId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to find pending orders.');
+                    reject(err);
+                    return;
+                }
+                resolve(results);
+            }
+        );
+    });
+
+    if (pendingOrder.length > 0) {
+        console.log("There is still pending order for this product.");
+        throw new Error("There is still pending order for this product. Delete cannot be performed.");
+    }
+
+    // delete product by setting the order status to 'deleted' and delete the project
+    await new Promise((resolve, reject) => {
+        seller_pool.execute(
+            'DELETE FROM `products` WHERE id = ?',
+            [productId],
+            (err, results) => {
+                if (err) {
+                    console.log('Unable to delete product.');
+                    reject(err);
+                    return;
+                }
+                console.log("Product deleted.");
+                resolve(results);
+            }
+        );
+    });
+}
+
 Product.updateImage = async (params) => {
     try {
         const product = await Product.findById(params.productId);
@@ -490,24 +587,26 @@ Product.update = async (params) => {
     try {
         // validate params
         productValidator.validateUpdateParams(params);
-        console.log(params);
         const title = params.title + "";
         const description = params.description + "";
         const price = parseFloat(params.price);
         const category = params.category + "";
         const id = params.productId;
+        const image = params.image;
 
-        console.log(price);
 
-        const product = await Product.findById(id);
+        const product = await Product.findByIdAndSellerId(id, params.sellerId);
+
+        // TODO: check if category is valid
 
         if (!product) {
             console.log("Product not found.");
+            throw new Error("Product not found or you are not the owner of this product.");
         } else {
             await new Promise((resolve, reject) => {
                 seller_pool.execute(
-                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ? WHERE id = ?',
-                    [title, description, price, category, id],
+                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?',
+                    [title, description, price, category, image, id],
                     (err, results) => {
                         if (err) {
                             console.log('Unable to update product.');
@@ -594,21 +693,43 @@ Product.findByPriceRange = async (params) => {
     try {
         const limit = parseInt(params.queryParams.limit) || 10;
         const currentPage = parseInt(params.queryParams.currentPage) || 1;
-        
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
 
         const minPrice = parseFloat(params.queryParams.minPrice) || 0;
         const maxPrice = parseFloat(params.queryParams.maxPrice) || Number.MAX_VALUE;
+
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
 
         const offset = (currentPage - 1) * limit;
         const productCount = await Product.countByPriceRange(minPrice, maxPrice);
         const totalPages = Math.ceil(productCount / limit);
 
-        const res = await new Promise((resolve, reject) => {
+        let queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        LIMIT ?,?`;
 
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}
+                        LIMIT ?,?`;
+        }
+
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
+            queryStr = `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ?
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}
+                        LIMIT ?,?`;
+        }
+
+        const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\` WHERE price BETWEEN ? AND ? ORDER BY ${sortTerm} ${sortDirection} LIMIT ?,?`,
+                queryStr,
                 [minPrice, maxPrice, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
@@ -637,15 +758,37 @@ Product.findByPriceRange = async (params) => {
 // Search keyword in title and description
 Product.findByKey = async (params) => {
     try {
-        const sortTerm = params.queryParams.sortTerm;
-        const sortDirection = params.queryParams.sortDirection;
+        const sortTerm1 = params.queryParams.sortTerm1 || '';
+        const sortDirection1 = params.queryParams.sortDirection1 || '';
+        const sortTerm2 = params.queryParams.sortTerm2 || '';
+        const sortDirection2 = params.queryParams.sortDirection2 || '';
+
         const key = params.queryParams.key;
+
+        let queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)`;
+
+        if (sortTerm1 && sortDirection1) {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm1} ${sortDirection1}`;
+        }
+
+        if (sortTerm2 && sortDirection2) {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm2} ${sortDirection2}`;
+        }
+
+        if ((sortTerm1 && sortDirection1) && (sortTerm2 && sortDirection2)) {
+            queryStr = `SELECT * FROM \`products\`
+                        WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
+                        ORDER BY ${sortTerm1} ${sortDirection1}, ${sortTerm2} ${sortDirection2}`;
+        }
 
         const res = await new Promise((resolve, reject) => {
             customer_pool.execute(
-                `SELECT * FROM \`products\`
-                WHERE MATCH(title, description) AGAINST(? IN NATURAL LANGUAGE MODE)
-                ORDER BY ${sortTerm} ${sortDirection}`,
+                queryStr,
                 [key],
                 (err, results) => {
                     if (err) {

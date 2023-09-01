@@ -31,11 +31,11 @@ ProductValidator.validateImage = (image) => {
 }
 
 ProductValidator.validateUpdateParams = (params) => {
-    const { name, description, price, quantity, image } = params;
+    const { title, description, price, image } = params;
 
     ProductValidator.validatePrice(price);
     ProductValidator.validateDescription(description);
-    ProductValidator.validateName(name);
+    ProductValidator.validateName(title);
     ProductValidator.validateImage(image);
 
 
