@@ -234,7 +234,7 @@ grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 
 grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_REJECT to 'wh_admin';
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.orders TO 'wh_admin';
 GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.order_items TO 'wh_admin';
--- UPDATE_INVENTORY_ON_ORDER_ACCEPT
+
 -- Assign roles to users
 GRANT 'admin' TO 'admin'@'localhost';
 GRANT 'customer' TO 'customer'@'localhost';
