@@ -74,6 +74,30 @@ const findAll = async () => {
     }
 };
 
+const findName = async (category, id) => {
+    try {
+        if (category.id == id) {
+            return ({
+                name: category.name,
+                parentId: category.parentId, 
+            })
+        }
+
+        if (category.subcategories) {
+            for (let i = 0; i < category.subcategories.length; i++) {
+                const subcategory = category.subcategories[i];
+                const result = await findName(subcategory, id);
+
+                if (result) {
+                    return result;
+                }
+            }
+        }
+    } catch (err) {
+        throw new Error("Error getting category by id.");
+    }
+}
+
 const findOne = async (id) => {
     try {
         const findCat = await Category.findOne({
