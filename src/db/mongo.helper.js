@@ -24,7 +24,6 @@ const generateMany = async (count) => {
             const category = await generateOne();
             categories.push(category);
         }
-        // console.log(categories);
 
         return categories;
     } catch (err) {
@@ -148,7 +147,6 @@ const generateSubcategory = async (parentId, subCatIds) => {
 
         subCatIds.push(...subcategory.subcategories.map((subcategory) => subcategory.id));  // Add to element in subcat and cat
 
-        console.log('subCatIds', subCatIds);
         return ({
             id: subcategory.id,
             parentId: subcategory.parentId,

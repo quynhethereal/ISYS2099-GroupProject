@@ -1,15 +1,4 @@
-const {Category} = require('../models/category.model');
-const {CategoryTree} = require('../helpers/CategoryTree');
-const Product = require('../models/product.model');
-
-const findAll = async () => {
-    try {
-        const categories = await Category.find({});
-        return categories;  
-    } catch (error) {
-        throw new Error("Error finding categories.");
-    }
-};
+const {findAll, findOne, findAttributes, findProductCatId} = require('../models/category.model');
 
 exports.findAll = async (req, res) => {
     try {
@@ -30,80 +19,6 @@ exports.findAll = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error finding products by key."
         });
-    }
-}
-
-const findName = async (category, id) => {
-    try {
-        if (category.id == id) {
-            return ({
-                name: category.name,
-                parentId: category.parentId, 
-            })
-        }
-
-        if (category.subcategories) {
-            for (let i = 0; i < category.subcategories.length; i++) {
-                const subcategory = category.subcategories[i];
-                const result = await findName(subcategory, id);
-
-                if (result) {
-                    return result;
-                }
-            }
-        }
-    } catch (err) {
-        throw new Error("Error getting category by id.");
-    }
-}
-
-const findOne = async (id) => {
-    try {
-        const findCat = await Category.findOne({
-            $or: [
-                {id: id},
-                {subcategoriesArray: {$elemMatch: {$eq: id}}}
-            ]
-        });
-
-        if (findCat == null) {
-            throw new Error("Category is not existed.");
-        }
-
-        const info = await findName(findCat, id);
-
-        console.log(info);
-
-        if (info === null) {
-            throw new Error('Invalid category info.');
-        }
-
-        // Get attributes
-        const categoryNode = new CategoryTree();
-        categoryNode.buildTree(findCat);
-
-        const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
-        const result = new Set();
-
-        for (const data of dataSet) {
-            if (!result.has(data)) {
-                result.add(data);
-            }
-        }
-
-        const attributes = Array.from(result);
-
-        const data = {
-            id: id,
-            name: info.name,
-            parentId: info.parentId,
-            attributes: attributes
-        }
-
-        return data;
-
-    } catch (err) {
-        throw new Error('Could not find category.');
     }
 }
 
@@ -134,38 +49,6 @@ exports.findOne = async (req, res) => {
     }
 }
 
-const findAttributes = async (id) => {
-    try {
-        const findCat = await Category.findOne({
-            $or: [
-                {id: id},
-                {subcategoriesArray: {$elemMatch: {$eq: id}}}
-            ]
-        });
-
-        if (findCat == null) {
-            throw new Error("Category is not existed.");
-        }
-
-        const categoryNode = new CategoryTree();
-        categoryNode.buildTree(findCat);
-        
-        const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
-
-        const result = new Set();
-
-        for (const data of dataSet) {
-            if (!result.has(data)) {
-                result.add(data);
-            }
-        }
-
-        return Array.from(result);
-    } catch (err) {
-        throw new Error("Error getting attributes by id.");
-    }
-}
-
 exports.findAttributes = async (req, res) => {
     try {
         // TODO: Get attributes of a category
@@ -191,28 +74,6 @@ exports.findAttributes = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."
         });
-    }
-}
-
-const findProductCatId = async (id) => {
-    try {
-        const product = await Product.findById(id);
-
-        if (!product) {
-            throw new Error('Product Id not found.')
-        }
-
-        const productCatId = parseInt(product.category_id);
-
-        if (!productCatId) {
-            throw new Error('Product Category Id not found.')
-        }
-
-        const data = await findAttributes(productCatId);
-
-        return data;
-    } catch (err) {
-        throw new Error("Error getting category id by  product id.");
     }
 }
 
