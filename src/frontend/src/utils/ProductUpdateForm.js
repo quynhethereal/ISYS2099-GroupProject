@@ -2,17 +2,65 @@ import React, { memo, useState } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-// import { updateProduct } from "../action/product/product.js";
-// import { useAuth } from "../hook/AuthHook.js";
-// import { useNavigate } from "react-router-dom";
+import { updateProduct } from "../action/product/product.js";
+import { useAuth } from "../hook/AuthHook.js";
+import { useNavigate } from "react-router-dom";
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
+var testData = [
+  {
+    _id: "64e234d2e360f233a9c99ad5",
+    id: 1,
+    name: "Clothing and Accessories",
+    attributes: ["Entertaining", "Music", "Electrical"],
+    parent: 2,
+    __v: 0,
+  },
+  {
+    _id: "64e234d2e360f233a9c99ad6",
+    id: 2,
+    name: "Electronics and Gadgets",
+    attributes: [],
+    __v: 0,
+  },
+  {
+    _id: "64e234d2e360f233a9c99ad7",
+    id: 3,
+    name: "Home and Kitchen Appliances",
+    attributes: [],
+    parent: 1,
+    __v: 0,
+  },
+  {
+    _id: "64e234d2e360f233a9c99ad8",
+    id: 4,
+    name: "Beauty and Personal Care",
+    attributes: [],
+    __v: 0,
+  },
+  {
+    _id: "64e234d2e360f233a9c99ad9",
+    id: 5,
+    name: "Books, Music, and Movies",
+    attributes: [],
+    __v: 0,
+  },
+  {
+    _id: "64e23ac7a11f741d717017e0",
+    id: 21,
+    name: "Instruments",
+    attributes: ["Entertaining", "Music"],
+    parent: 5,
+    __v: 0,
+  },
+];
+
 const ProductUpdateForm = ({ data, show, handleClose }) => {
-  // const { token } = useAuth();
-  // const navigate = useNavigate();
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
   const {
     register,
@@ -22,6 +70,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      category: data?.category_id,
       title: data?.title,
       description: data?.description,
       price: data?.price,
@@ -47,6 +96,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       }
     });
   };
+  // token, id, title, description, price, category, image;
 
   const handleUpdateProduct = async (value) => {
     if (imageSoure === "error") {
@@ -57,6 +107,10 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
+    console.log(value);
+    await updateProduct(token(), data?.id, value).then((res) => {
+      console.log(res);
+    });
   };
   return (
     <Modal show={show} onHide={handleClose}>
@@ -117,6 +171,29 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                   errors={errors}
                   step={"0.01"}
                 ></FormInput>
+                <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center mt-md-3">
+                  <div className="col-12">
+                    <select
+                      id="category"
+                      type="number"
+                      className="form-select form-select-lg"
+                      {...register("category", {
+                        valueAsNumber: true,
+                      })}
+                    >
+                      <option value={data?.category_id} disabled>
+                        {data?.category_name && "Going to get api"}
+                      </option>
+                      {testData?.map((category, index) => {
+                        return (
+                          <option value={category?.id} key={index}>
+                            {category?.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

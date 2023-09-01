@@ -6,7 +6,6 @@ import { useAuth } from "../../hook/AuthHook.js";
 
 import logo from "../../assets/image/icon.png";
 import logoutImage from "../../assets/image/logout.png";
-import warehouse from "../../assets/image/warehouse.png";
 import product from "../../assets/image/product.png";
 
 const ControlPanel = () => {
@@ -42,25 +41,6 @@ const ControlPanel = () => {
               />
             </span>
             Product
-          </a>
-        </li>
-        <li className="nav-item my-2">
-          <a
-            href="/seller/inventory"
-            className={`nav-link text-black d-flex justify-content-start align-items-center ${
-              location === "/seller/inventory" && "active"
-            }`}
-            aria-current="page"
-          >
-            <span>
-              <img
-                src={warehouse}
-                alt="warehouse logo"
-                className="img-fluid me-3"
-                style={{ width: "28px" }}
-              />
-            </span>
-            Inventory
           </a>
         </li>
       </ul>

@@ -60,11 +60,16 @@ export const updateProduct = async (token, id, formData) => {
   }
 };
 
-export const uploadImage = async (token, id, imgData) => {
+export const deleteProduct = async (token, id) => {
   try {
-    const { data } = await api.updateProduct(token, id, imgData);
+    const res = await api.deleteProduct(token, id);
 
-    return data;
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    } else {
+      return res;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -72,14 +77,18 @@ export const uploadImage = async (token, id, imgData) => {
 
 export const searchBySearchKey = async (
   searchKey,
-  sortDirection,
-  sortedTerm
+  sortDirection1,
+  sortedTerm1,
+  sortedTerm2,
+  sortDirection2
 ) => {
   try {
     const { data } = await api.searchBySearchKey(
       searchKey,
-      sortDirection,
-      sortedTerm
+      sortDirection1,
+      sortedTerm1,
+      sortedTerm2,
+      sortDirection2
     );
 
     return data;
@@ -91,8 +100,10 @@ export const searchBySearchKey = async (
 export const searchByPrice = async (
   minPrice,
   maxPrice,
-  sortDirection,
-  sortedTerm,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
   limit,
   currentPage
 ) => {
@@ -100,8 +111,10 @@ export const searchByPrice = async (
     const { data } = await api.searchByPrice(
       minPrice,
       maxPrice,
-      sortDirection,
-      sortedTerm,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
       limit,
       currentPage
     );
@@ -114,16 +127,20 @@ export const searchByPrice = async (
 
 export const searchByCategory = async (
   id,
-  sortDirection,
-  sortedTerm,
+  sortDirection1,
+  sortedTerm1,
+  sortDirection2,
+  sortedTerm2,
   limit,
   currentPage
 ) => {
   try {
     const { data } = await api.searchByCategory(
       id,
-      sortDirection,
-      sortedTerm,
+      sortDirection1,
+      sortedTerm1,
+      sortDirection2,
+      sortedTerm2,
       limit,
       currentPage
     );

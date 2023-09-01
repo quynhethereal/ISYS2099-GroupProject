@@ -41,43 +41,36 @@ exports.findAllByCategory = async (req, res) => {
             return;
         }
 
-        const sortTerm1 = req.query.sortTerm1 || 'created_at';
-        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm1 = req.query.sortTerm1 || '';
+        const sortDirection1 = req.query.sortDirection1 || '';
         const sortTerm2 = req.query.sortTerm2 || '';
         const sortDirection2 = req.query.sortDirection2 || '';
 
         const validSortTerms = ['created_at', 'price'];
         const validSortDirections = ['ASC', 'DESC'];
 
-        if (!validSortTerms.includes(sortTerm1)) {
-            throw new Error('Invalid sort term.');
-        }
-
-        if (!validSortDirections.includes(sortDirection1)) {
-            throw new Error('Invalid sorting order.');
-        }
-
-        if (sortTerm2 && sortDirection2) {
-            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
-                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
-            }
-
-            if (!validSortTerms.includes(sortTerm2)) {
-                throw new Error('Invalid sort term 2.');
-            }
-
+        if ((req.query.sortTerm1 && req.query.sortDirection1) && (req.query.sortTerm2 && req.query.sortDirection2)) {
             if (sortTerm1 === sortTerm2) {
                 throw new Error('Sort term 1 and sort term 2 cannot be the same.');
             }
 
+        } else if (req.query.sortTerm1 || req.query.sortDirection1) {
+            if (!validSortTerms.includes(sortTerm1)) {
+                throw new Error('Invalid sort term 1.');
+            }
+    
+            if (!validSortDirections.includes(sortDirection1)) {
+                throw new Error('Invalid sorting order 1.');
+            }
+        } else if (req.query.sortTerm2 || req.query.sortDirection2) {
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+    
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        }
-        
-        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
-            throw new Error('Both sort term 2 and sorting order 2 are required.');
-        }
+        } else {}
 
         const params = {
             queryParams: req.query,
@@ -217,44 +210,37 @@ exports.findAllByPriceRange = async (req, res) => {
             throw new Error('Invalid price range.');
         }
 
-        const sortTerm1 = req.query.sortTerm1 || 'created_at';
-        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm1 = req.query.sortTerm1 || '';
+        const sortDirection1 = req.query.sortDirection1 || '';
         const sortTerm2 = req.query.sortTerm2 || '';
         const sortDirection2 = req.query.sortDirection2 || '';
 
         const validSortTerms = ['created_at', 'price'];
         const validSortDirections = ['ASC', 'DESC'];
 
-        if (!validSortTerms.includes(sortTerm1)) {
-            throw new Error('Invalid sort term.');
-        }
-
-        if (!validSortDirections.includes(sortDirection1)) {
-            throw new Error('Invalid sorting order.');
-        }
-
-        if (sortTerm2 && sortDirection2) {
-            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
-                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
-            }
-
-            if (!validSortTerms.includes(sortTerm2)) {
-                throw new Error('Invalid sort term 2.');
-            }
-
+        if ((req.query.sortTerm1 && req.query.sortDirection1) && (req.query.sortTerm2 && req.query.sortDirection2)) {
             if (sortTerm1 === sortTerm2) {
                 throw new Error('Sort term 1 and sort term 2 cannot be the same.');
             }
 
+        } else if (req.query.sortTerm1 || req.query.sortDirection1) {
+            if (!validSortTerms.includes(sortTerm1)) {
+                throw new Error('Invalid sort term 1.');
+            }
+    
+            if (!validSortDirections.includes(sortDirection1)) {
+                throw new Error('Invalid sorting order 1.');
+            }
+        } else if (req.query.sortTerm2 || req.query.sortDirection2) {
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+    
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        }
+        } else {}
         
-        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
-            throw new Error('Both sort term 2 and sorting order 2 are required.');
-        }
-
         const params = {
             queryParams: req.query,
             minPrice: minPrice,
@@ -283,43 +269,36 @@ exports.findAllByKey = async (req, res) => {
             throw new Error('Invalid search key.');
         }
 
-        const sortTerm1 = req.query.sortTerm1 || 'created_at';
-        const sortDirection1 = req.query.sortDirection1 || 'DESC';
+        const sortTerm1 = req.query.sortTerm1 || '';
+        const sortDirection1 = req.query.sortDirection1 || '';
         const sortTerm2 = req.query.sortTerm2 || '';
         const sortDirection2 = req.query.sortDirection2 || '';
 
         const validSortTerms = ['created_at', 'price'];
         const validSortDirections = ['ASC', 'DESC'];
 
-        if (!validSortTerms.includes(sortTerm1)) {
-            throw new Error('Invalid sort term.');
-        }
-
-        if (!validSortDirections.includes(sortDirection1)) {
-            throw new Error('Invalid sorting order.');
-        }
-
-        if (sortTerm2 && sortDirection2) {
-            if (!req.query.sortTerm1 || !req.query.sortDirection1) {
-                throw new Error('Sort term 1 and sorting order 1 are required when using sort term 2 and sorting order 2.');
-            }
-
-            if (!validSortTerms.includes(sortTerm2)) {
-                throw new Error('Invalid sort term 2.');
-            }
-
+        if ((req.query.sortTerm1 && req.query.sortDirection1) && (req.query.sortTerm2 && req.query.sortDirection2)) {
             if (sortTerm1 === sortTerm2) {
                 throw new Error('Sort term 1 and sort term 2 cannot be the same.');
             }
 
+        } else if (req.query.sortTerm1 || req.query.sortDirection1) {
+            if (!validSortTerms.includes(sortTerm1)) {
+                throw new Error('Invalid sort term 1.');
+            }
+    
+            if (!validSortDirections.includes(sortDirection1)) {
+                throw new Error('Invalid sorting order 1.');
+            }
+        } else if (req.query.sortTerm2 || req.query.sortDirection2) {
+            if (!validSortTerms.includes(sortTerm2)) {
+                throw new Error('Invalid sort term 2.');
+            }
+    
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        }
-        
-        if ((!sortTerm2 && sortDirection2) || (sortTerm2 && !sortDirection2)) {
-            throw new Error('Both sort term 2 and sorting order 2 are required.');
-        }
+        } else {}
 
         const params = {
             queryParams: req.query,
