@@ -69,7 +69,10 @@ exports.findAttributes = async (req, res) => {
             })
         }
 
-        res.status(200).json(data);
+        res.status(200).json({
+            categoryId: id,
+            attributes: data
+        });
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error adding attributes to category."

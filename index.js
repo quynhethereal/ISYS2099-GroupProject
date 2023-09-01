@@ -14,7 +14,7 @@ const {generateSeedData, dropCollection} = require('./src/db/mongo.seed');
 // ---- uncomment to drop categories collection ----
 // dropCollection().then(() => {
 //     console.log('Categories collection dropped');
-
+//
 // }).catch((err) => {
 //     console.log('Error dropping categories collection:', err);
 // });

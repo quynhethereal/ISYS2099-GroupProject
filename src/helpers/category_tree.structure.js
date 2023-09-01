@@ -8,6 +8,8 @@ class Node {
     }
 }
 
+// This class represents a tree of categories. Each node in the tree is a category.
+// Each category has a list of subcategories, a list of attributes, and a reference to its parent category.
 class CategoryTree {
     constructor(attributes = []) {
         this.root = null;
@@ -41,11 +43,12 @@ class CategoryTree {
     // Attributes of a category are the attributes of its parent category plus its own attributes.
     // We start the traversal from the found category and go up the tree until we reach the root.
     getNodeAttributes(node) {
-        const attributes = [];
+        const attributes = new Set();
 
         while (node !== null) {
-            const nodeAttributes = node.attributes.map((attribute) => attribute.description);
-            attributes.push(...nodeAttributes);
+            for (let i = 0; i < node.attributes.length; i++) {
+                attributes.add(node.attributes[i].description);
+            }
             node = node.parentNode;
         }
         return attributes;
@@ -89,47 +92,47 @@ class CategoryTree {
 module.exports = { CategoryTree };
 
 // test code
-const tree = new CategoryTree();
-root = tree.add(1, 'Electronics', null, ["color", "size"]);
-laptop = tree.add(2, 'Laptops', root, ["processor", "hello"]);
-phones = tree.add(3, 'Smartphones', laptop, ["camera", "memory"]);
-dell = tree.add(4, 'Dell', root, ["processor", "memory"]);
-
-
-res = tree.getNodeAttributes(phones);
-// console.log(res);
-
-data =
-    {
-        "id": 1,
-        "name": "Electronics",
-        "subcategories": [
-            {
-                "id": 2,
-                "name": "Laptops",
-                "parentId": 1,
-                "attributes": ["processor", "hello"],
-                "subcategories": [
-                    {
-                        "id": 3,
-                        "name": "Smartphones",
-                        "parentId": 2,
-                        "attributes": ["camera", "memory"],
-                        "subcategories": []
-                    }
-                ]
-            },
-            {
-                "id": 4,
-                "name": "Dell",
-                "parentId": 1,
-                "attributes": ["don't show up", "memory"],
-                "subcategories": []
-            }
-        ],
-        "attributes": ["color", "size"]
-    }
-
-tree1 = new CategoryTree();
-tree1.buildTree(data);
+// const tree = new CategoryTree();
+// root = tree.add(1, 'Electronics', null, ["color", "size"]);
+// laptop = tree.add(2, 'Laptops', root, ["processor", "hello"]);
+// phones = tree.add(3, 'Smartphones', laptop, ["camera", "memory"]);
+// dell = tree.add(4, 'Dell', root, ["processor", "memory"]);
+//
+//
+// res = tree.getNodeAttributes(phones);
+// // console.log(res);
+//
+// data =
+//     {
+//         "id": 1,
+//         "name": "Electronics",
+//         "subcategories": [
+//             {
+//                 "id": 2,
+//                 "name": "Laptops",
+//                 "parentId": 1,
+//                 "attributes": ["processor", "hello"],
+//                 "subcategories": [
+//                     {
+//                         "id": 3,
+//                         "name": "Smartphones",
+//                         "parentId": 2,
+//                         "attributes": ["camera", "memory"],
+//                         "subcategories": []
+//                     }
+//                 ]
+//             },
+//             {
+//                 "id": 4,
+//                 "name": "Dell",
+//                 "parentId": 1,
+//                 "attributes": ["don't show up", "memory"],
+//                 "subcategories": []
+//             }
+//         ],
+//         "attributes": ["color", "size"]
+//     }
+//
+// tree1 = new CategoryTree();
+// tree1.buildTree(data);
 // console.log(tree1.getNodeAttributes(tree1.searchNode(1)));
