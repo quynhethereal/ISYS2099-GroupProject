@@ -1,5 +1,5 @@
 const {Category} = require('../models/category.model');
-const {CategoryTree} = require('../helpers/CategoryTree');
+const {CategoryTree} = require('../helpers/category_tree.structure');
 const Product = require('../models/product.model');
 
 const findAll = async () => {
@@ -53,7 +53,6 @@ const findAttributes = async (id) => {
         
         const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
 
-        console.log(dataSet);
         const result = new Set();
 
         for (const data of dataSet) {
