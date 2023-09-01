@@ -42,7 +42,7 @@ const generateAttribute = () => {
         if (attribute.type === 'string') {
             attribute.description = faker.commerce.productAdjective();
         } else {
-            attribute.description = faker.number.int();
+            attribute.description = parseInt(faker.number.int());
         }
 
         resolve(attribute);

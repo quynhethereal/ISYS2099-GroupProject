@@ -245,6 +245,56 @@ exports.findAttributes = async (req, res) => {
     }
 }
 
+const findProductCatId = async (id) => {
+    try {
+        const product = await Product.findById(id);
+
+        if (!product) {
+            throw new Error('Product Id not found.')
+        }
+
+        const productCatId = parseInt(product.category);
+
+        if (!productCatId) {
+            throw new Error('Product Category Id not found.')
+        }
+
+        const data = await findAttributes(productCatId);
+
+        return data;
+    } catch (err) {
+        throw new Error("Error getting category id by  product id.");
+    }
+}
+
+exports.findAttributesProduct = async (req, res) => {
+    try {
+        // TODO: Get attributes of a category
+        const id = parseInt(req.params.id);
+
+        if (id == null) {
+            res.status(400).send({
+                message: "Invalid request."
+            })
+        }
+
+        // Get the category
+        const data = await findAttributes(id);
+
+        if (!data) {
+            res.status(404).send ({
+                message: `Category with id ${req.params.id} not found.`
+            })
+        }
+
+        res.status(200).json(data);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error adding attributes to category."
+        });
+    }
+}
+
 exports.update = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
