@@ -1,5 +1,5 @@
 const {Category} = require('../models/category.model');
-const {CategoryTree} = require('../helpers/CategoryTree');
+const {CategoryTree} = require('../helpers/category_tree.structure');
 const Product = require('../models/product.model');
 
 
