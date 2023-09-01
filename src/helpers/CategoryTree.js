@@ -44,7 +44,8 @@ class CategoryTree {
         const attributes = [];
 
         while (node !== null) {
-            attributes.push(...node.attributes);
+            const nodeAttributes = node.attributes.map((attribute) => attribute.description);
+            attributes.push(...nodeAttributes);
             node = node.parentNode;
         }
         return attributes;
@@ -131,4 +132,4 @@ data =
 
 tree1 = new CategoryTree();
 tree1.buildTree(data);
-console.log(tree1.getNodeAttributes(tree1.searchNode(1)));
+// console.log(tree1.getNodeAttributes(tree1.searchNode(1)));

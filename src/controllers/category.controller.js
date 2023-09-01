@@ -1,4 +1,5 @@
 const {Category} = require('../models/category.model');
+const {CategoryTree} = require('../helpers/CategoryTree');
 const Product = require('../models/product.model');
 
 /*
@@ -193,23 +194,6 @@ exports.findOne = async (req, res) => {
     }
 }
 
-const findNestedAttributes = async (category, subcatId) => {
-    let attributes = category.attributes.map((attribute) => attribute.description);
-
-    if (category.subcategories && category.id != subcatId) {
-        
-        const subAttributes = await Promise.all(category.subcategories.map((subcategory) => (findNestedAttributes(subcategory, subcatId))));
-
-        for (const subAttribute of subAttributes) {
-            if (subAttribute != null) {
-                attributes = attributes.concat(subAttribute);
-            }
-        }
-    }
-
-    return attributes;
-}
-
 const findAttributes = async (id) => {
     try {
         const findCat = await Category.findOne({
@@ -223,7 +207,11 @@ const findAttributes = async (id) => {
             throw new Error("Category is not existed.");
         }
 
-        return await findNestedAttributes(findCat, id);
+        const categoryNode = new CategoryTree();
+        categoryNode.buildTree(findCat);
+        
+        const data = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
+        return data;
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
