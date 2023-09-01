@@ -253,7 +253,7 @@ const findProductCatId = async (id) => {
             throw new Error('Product Id not found.')
         }
 
-        const productCatId = parseInt(product.category);
+        const productCatId = parseInt(product.category_id);
 
         if (!productCatId) {
             throw new Error('Product Category Id not found.')
@@ -279,7 +279,7 @@ exports.findAttributesProduct = async (req, res) => {
         }
 
         // Get the category
-        const data = await findAttributes(id);
+        const data = await findProductCatId(id);
 
         if (!data) {
             res.status(404).send ({
