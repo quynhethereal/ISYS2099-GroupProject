@@ -91,13 +91,36 @@ CREATE TABLE IF NOT EXISTS `inventory` (
     `id` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Bandaid trigger to prevent duplicate inventory that has the same product_id and warehouse_id
+DELIMITER //
+
+CREATE TRIGGER prevent_duplicate_inventory
+BEFORE INSERT ON inventory
+FOR EACH ROW
+BEGIN
+    DECLARE duplicate_count INT;
+
+    SELECT COUNT(*) INTO duplicate_count
+    FROM inventory
+    WHERE product_id = NEW.product_id AND warehouse_id = NEW.warehouse_id;
+
+    IF duplicate_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Duplicate entry for product_id and warehouse_id';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
 -- Indexing
 ALTER TABLE inventory
 	ADD INDEX idx_inventory_product_id_quantity(product_id, quantity),
 	ADD INDEX idx_inventory_product_id_warehouse_id(product_id, warehouse_id);
 
 -- Add foreign keys
-ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
+ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE;
 ALTER TABLE `inventory` ADD FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses`(`id`);
 
 -- Triggers to create ULID for inventory on insert
@@ -120,7 +143,7 @@ CREATE TABLE `pending_inventory` (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- Add foreign keys
-ALTER TABLE `inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`);
+ALTER TABLE `pending_inventory` ADD FOREIGN KEY (`product_id`) REFERENCES `products`(`id`) ON DELETE CASCADE;
 
 
 -- Create `orders` table
@@ -191,6 +214,7 @@ GRANT INSERT, SELECT, UPDATE, DELETE ON lazada_ecommerce.products TO 'seller';
 GRANT INSERT, SELECT, UPDATE ON lazada_ecommerce.users_info TO 'seller';
 GRANT SELECT, UPDATE ON lazada_ecommerce.orders TO 'seller';
 GRANT SELECT ON lazada_ecommerce.inventory TO 'seller';
+GRANT SELECT ON lazada_ecommerce.order_items TO 'seller';
 
 -- Create users with roles
 CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED BY 'Ladmin';

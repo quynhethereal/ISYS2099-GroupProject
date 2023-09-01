@@ -69,3 +69,17 @@ export const moveTheIventoryToWarehouse = async (token, data) => {
     return error?.response?.data?.message;
   }
 };
+
+export const getPendingInventory = async (token, limit, currentPage) => {
+  try {
+    const res = await api.getPendingInventory(token, limit, currentPage);
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    } else {
+      return;
+    }
+  } catch (error) {
+    return error?.response?.data?.message;
+  }
+};

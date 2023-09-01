@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hook/AuthHook.js";
-
 import { rejectOrder, acceptOrder } from "../../../action/order/order.js";
+
+import OrderPreview from "../../../utils/OrderPreview.js";
 
 const Order = ({ data }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
+  const [show, setShow] = useState(false);
   function stateProgressBar() {
     switch (data?.status) {
       case "pending":
@@ -21,6 +23,24 @@ const Order = ({ data }) => {
         return;
     }
   }
+
+  function stateMessage() {
+    switch (data?.status) {
+      case "pending":
+        return "Please handle it in order to change to accepted state";
+      case "accepted":
+        return "Please wait for the order to be processed before shipping";
+      case "rejected":
+        return "You can just view this rejected order";
+      default:
+        return;
+    }
+  }
+
+  const handleViewOrder = () => {
+    setShow((prev) => !prev);
+  };
+
   const handleRejctOrder = async (id) => {
     await rejectOrder(token(), id).then((res) => {
       if (res?.data?.order?.status === "rejected") {
@@ -82,7 +102,7 @@ const Order = ({ data }) => {
         </div>
         <div className="mt-3 col-12 d-flex flex-row text-center">
           <div className="col-3 text-muted">Ordered</div>
-          <div className="col-6 text-muted">Accepted</div>
+          <div className="col-6 text-muted">Accepted/Rejected</div>
           <div className="col-3 text-muted">Shipping</div>
         </div>
       </div>
@@ -92,22 +112,46 @@ const Order = ({ data }) => {
           <b className="text-danger">{data?.status}</b> state
         </h5>
         <p className="card-text">
-          Your order is now in pending state. Please wait the sellers to handle
+          Your order is now in {data?.status} state. {stateMessage()}
         </p>
-        <div className="col-12 d-flex flex">
-          <button
-            className="btn btn-danger"
-            onClick={() => handleRejctOrder(data?.id)}
-          >
-            Reject Order
-          </button>
-          <button
-            className="btn ms-auto btn-success"
-            onClick={() => handleAcceptOrder(data?.id)}
-          >
-            Accept Order
-          </button>
-        </div>
+        {data?.status === "pending" ? (
+          <div className="col-12 d-flex flex justify-content-between">
+            <button
+              className="btn btn-danger"
+              onClick={() => handleRejctOrder(data?.id)}
+            >
+              Reject Order
+            </button>
+            <button
+              className="btn btn-warning"
+              onClick={() => handleViewOrder()}
+            >
+              View Order
+            </button>
+            <button
+              className="btn btn-success"
+              onClick={() => handleAcceptOrder(data?.id)}
+            >
+              Accept Order
+            </button>
+          </div>
+        ) : (
+          <div className="col-12 d-flex flex justify-content-between">
+            <button
+              className="btn btn-warning"
+              onClick={() => handleViewOrder()}
+            >
+              View Order
+            </button>
+          </div>
+        )}
+        {show && (
+          <OrderPreview
+            show={show}
+            handleClose={setShow}
+            data={data}
+          ></OrderPreview>
+        )}
       </div>
     </div>
   );

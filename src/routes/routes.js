@@ -38,6 +38,7 @@ module.exports = app => {
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
+    router.delete("/product/:id", authMiddleware.verifyToken, products.delete);
 
 
     // order-related API
@@ -63,6 +64,7 @@ module.exports = app => {
     router.post("/inventories/move", authMiddleware.verifyToken, inventories.moveInventory);
     router.put("/product/:id/quantity", authMiddleware.verifyToken, inventories.updateInventory);
     router.get("/inventories/pending", authMiddleware.verifyToken, inventories.getPendingInventory);
+    router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
 
 
     app.use('/api', router);

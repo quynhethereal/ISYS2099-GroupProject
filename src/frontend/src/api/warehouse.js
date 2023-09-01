@@ -31,3 +31,10 @@ export const moveTheIventoryToWarehouse = (token, data) =>
   axios.post(`${backend_url}/api/inventories/move`, data, {
     headers: { "x-access-token": token },
   });
+export const getPendingInventory = (token, limit, currentPage) =>
+  axios.get(
+    `${backend_url}/api/inventories/pending?limit=${limit}&currentPage=${currentPage}`,
+    {
+      headers: { "x-access-token": token },
+    }
+  );

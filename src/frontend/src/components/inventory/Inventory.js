@@ -22,7 +22,7 @@ const Inventory = () => {
     defaultValues: {
       fromWarehouse: "",
       toWarehouse: "",
-      productId: null,
+      productId: "",
       quantity: null,
     },
   });
@@ -38,7 +38,11 @@ const Inventory = () => {
     fromWarehouseData: null,
     toWarehouseData: null,
   });
-  const { user, token } = useAuth();
+  const [fromWarehouseInventoryData, setFromWarehouseInventoryData] = useState(
+    []
+  );
+  const [choosenProductQuantity, setChoosenProductQuantity] = useState();
+  const { token } = useAuth();
 
   const handleForm = async (data) => {
     await moveTheIventoryToWarehouse(token(), data).then((res) => {
@@ -75,6 +79,14 @@ const Inventory = () => {
     });
   };
 
+  const handleGetTotalQuantity = (e) => {
+    setChoosenProductQuantity(
+      fromWarehouseInventoryData?.inventory?.find(
+        (product) => parseInt(product?.id) === parseInt(e.target.value)
+      )?.quantity
+    );
+  };
+
   useEffect(() => {
     //change when the warehouse data is not available in useState
     async function getTheWarehouse() {
@@ -97,6 +109,17 @@ const Inventory = () => {
       ).length === 0
     ) {
       getTheWarehouse();
+    } else {
+      var existedData = context.filter(
+        (warehouse) => parseInt(warehouse?.id) === parseInt(warehouseId?.id)
+      );
+      if (warehouseId?.id && existedData?.length === 1) {
+        if (warehouseId?.data === "toWarehouse") {
+          setData({ ...data, toWarehouseData: existedData[0] });
+        } else if (warehouseId?.data === "fromWarehouse") {
+          setData({ ...data, fromWarehouseData: existedData[0] });
+        }
+      }
     }
     // eslint-disable-next-line
   }, [warehouseId]);
@@ -158,6 +181,7 @@ const Inventory = () => {
               data={data?.fromWarehouseData}
               token={token}
               size={"col-12"}
+              setWareHouseInventoryData={setFromWarehouseInventoryData}
             ></WarehouseItem>
           )}
           {errors?.fromWarehouse && (
@@ -166,26 +190,37 @@ const Inventory = () => {
             </p>
           )}
         </div>
-        <div className="d-flex flex-column justify-content-center align-items-center my-3">
+
+        <div className="d-flex col-lg-3 flex-column justify-content-center align-items-center my-3">
           <div className="col-12 d-flex flex-column justify-content-start mb-3">
+            {/* working */}
             <label htmlFor="productId">ProductID</label>
-            <input
+            <select
               id="productId"
-              className="form-control"
-              type="number"
+              className="form-select form-select-lg mb-3"
               {...register("productId", {
-                required: "ProductID is required",
-                valueAsNumber: "This must be a number",
+                required: "To warehouse is required",
+                valueAsNumber: true,
+                onChange: (e) => handleGetTotalQuantity(e),
               })}
-            />
-            {errors?.productId && (
-              <p className="text-danger fw-bold">
-                {errors?.productId?.message}
-              </p>
-            )}
+            >
+              <option value="" disabled>
+                Product ID...
+              </option>
+              {fromWarehouseInventoryData?.inventory?.map((product) => {
+                return (
+                  <option value={parseInt(product?.id)} key={product?.id}>
+                    Product #{product?.id}: {product?.title}
+                  </option>
+                );
+              })}
+            </select>
           </div>
           <div className="col-12 d-flex flex-column justify-content-start mb-3">
-            <label htmlFor="quantity">Quantity</label>
+            <label htmlFor="quantity">
+              Quantity{" "}
+              {choosenProductQuantity && `Max: ${choosenProductQuantity}`}
+            </label>
             <input
               id="quantity"
               className="form-control"
@@ -199,12 +234,13 @@ const Inventory = () => {
               <p className="text-danger fw-bold">{errors?.quantity?.message}</p>
             )}
           </div>
-          <div className="col-12 d-flex flex-row justify-content-center align-items-center">
+          <div className="col-12 d-flex flex-row justify-content-center align-items-center mb-3">
             <button type="submit" className="btn btn-primary">
-              Large button
+              Move product
             </button>
           </div>
         </div>
+
         <div className="col-12 col-lg-4 d-flex flex-column align-items-start justify-content-center justify-content-lg-start5">
           <label htmlFor="toWarehouse">To warehouse</label>
           <select

@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (user && location.pathname === "/" && user.role === "admin") {
       navigate("/admin");
-    } else if (user && location.pathname === "/" && user.role === "sellers") {
+    } else if (user && location.pathname === "/" && user.role === "seller") {
       navigate("seller");
     } else if (user && location.pathname === "/" && user.role === "customer") {
       navigate("/customer");

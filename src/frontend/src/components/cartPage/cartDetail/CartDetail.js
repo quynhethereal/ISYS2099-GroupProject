@@ -16,7 +16,7 @@ const CartDetail = () => {
 
   const handleCreateOrder = async () => {
     setIsOrdering(true);
-    if (!cart) {
+    if (!cart || cart.length === 0) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -31,25 +31,75 @@ const CartDetail = () => {
         quantity: item?.quantity,
       })),
     };
+    console.log(payload);
     await createOrder(token(), payload).then((result) => {
       if (result && result?.status === 200) {
-        resetItem();
-        Swal.fire({
-          icon: "success",
-          title: "Order sucess",
-          text: "Your order now in pending state for delivery. Reloading in 3 secs...",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        }).then(() => {
-          navigate(0);
-        });
+        var unFullFilledId = result?.data?.unfulfilledProducts;
+        var unFullFilledName = [];
+        var i = 0;
+        var j = 0;
+        while (++i <= cart?.length) {
+          console.log("run");
+          while (++j <= unFullFilledId.length) {
+            if (parseInt(unFullFilledId[j - 1]) === parseInt(cart[i - 1]?.id)) {
+              unFullFilledName.push(cart[i - 1]?.title);
+              break;
+            }
+          }
+        }
+        if (
+          result?.data?.orderId &&
+          result?.data?.unfulfilledProducts.length === 0
+        ) {
+          resetItem();
+          Swal.fire({
+            icon: "success",
+            title: "Order sucess",
+            text: `Your order ${result?.data?.orderId} now in pending state for delivery. Reloading in 3 secs...`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          }).then(() => {
+            navigate(0);
+          });
+        } else if (
+          result?.data?.orderId &&
+          result?.data?.unfulfilledProducts.length > 0
+        ) {
+          resetItem();
+          Swal.fire({
+            icon: "success",
+            title: "Order sucess with some product only",
+            text: `Your order ${
+              result?.data?.orderId
+            } now in pending state for delivery. But some products is not associated with it: ${unFullFilledName.join()} (out of stock. Reloading in 3 secs...)`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          }).then(() => {
+            navigate(0);
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed to created the order",
+            text: `The following products is out of stock: ${unFullFilledName.join()}`,
+          });
+        }
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Maximum 30 items are allowed per order",
-        });
+        if (result?.status === 400) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Maximum 30 items are allowed per order",
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: result?.response?.data?.message,
+          });
+        }
       }
     });
     setIsOrdering(false);
