@@ -1,4 +1,4 @@
-const { CategoryTree } = require('../../helpers/categoryTree');
+const { CategoryTree } = require('../../helpers/category_tree.structure');
 describe('CategoryTree', () => {
     let tree;
 
