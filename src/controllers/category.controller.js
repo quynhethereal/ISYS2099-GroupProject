@@ -123,48 +123,77 @@ exports.findAllSameLevels = async (req, res) => {
     }
 }
 
-const findOne = async (id) => {
+const findName = async (category, id) => {
     try {
-        const model = [
-            {
-                $facet: {
-                    category: [
-                        {$match: {id: id}}, 
-                        {$limit: 1}
-                    ], 
-                    subcategory: [
-                        {$unwind: "$subcategories"},
-                        {$match: {"subcategories.id": id}},
-                        {$limit: 1}
-                    ]
-                }
-            }, 
-            {
-                $project: {
-                    result: {
-                        $cond: {
-                            if: { $ne: [{ $size: "$category" }, 0] },
-                            then: { $arrayElemAt: ["$category", 0] },
-                            else: {
-                                $cond: {
-                                if: { $ne: [{ $size: "$subcategory" }, 0] },
-                                then: { $arrayElemAt: ["$subcategory", 0] },
-                                else: null
-                                }
-                            }
-                        }
-                    }
+        if (category.id == id) {
+            return ({
+                name: category.name,
+                parentId: category.parentId, 
+            })
+        }
+
+        if (category.subcategories) {
+            for (let i = 0; i < category.subcategories.length; i++) {
+                const subcategory = category.subcategories[i];
+                const result = await findName(subcategory, id);
+
+                if (result) {
+                    return result;
                 }
             }
-        ];
-
-        const result = await Category.aggregate(model);
-
-        if (result.length > 0) {
-            return result[0].result;
-        } 
+        }
     } catch (err) {
         throw new Error("Error getting category by id.");
+    }
+}
+
+const findOne = async (id) => {
+    try {
+        const findCat = await Category.findOne({
+            $or: [
+                {id: id},
+                {subcategoriesArray: {$elemMatch: {$eq: id}}}
+            ]
+        });
+
+        if (findCat == null) {
+            throw new Error("Category is not existed.");
+        }
+
+        const info = await findName(findCat, id);
+
+        console.log(info);
+
+        if (info === null) {
+            throw new Error('Invalid category info.');
+        }
+
+        // Get attributes
+        const categoryNode = new CategoryTree();
+        categoryNode.buildTree(findCat);
+
+        const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
+        const result = new Set();
+
+        for (const data of dataSet) {
+            if (!result.has(data)) {
+                result.add(data);
+            }
+        }
+
+        const attributes = Array.from(result);
+
+        const data = {
+            id: id,
+            name: info.name,
+            parentId: info.parentId,
+            attributes: attributes
+        }
+
+        return data;
+
+    } catch (err) {
+        throw new Error('Could not find category.');
     }
 }
 
@@ -203,8 +232,6 @@ const findAttributes = async (id) => {
                 {subcategoriesArray: {$elemMatch: {$eq: id}}}
             ]
         });
-        console.log('sub', Category.findOne)
-        console.log(findCat)
 
         if (findCat == null) {
             throw new Error("Category is not existed.");
@@ -215,7 +242,6 @@ const findAttributes = async (id) => {
         
         const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
 
-        console.log(dataSet);
         const result = new Set();
 
         for (const data of dataSet) {
@@ -373,8 +399,6 @@ exports.update = async (req, res) => {
     }
 }
 
-// Only availble when list cat's products is empty
-// NOT WORK
 exports.delete = async (req, res) => {
     try {
         //TODO: Delete category
