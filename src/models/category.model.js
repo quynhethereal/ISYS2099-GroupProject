@@ -46,6 +46,20 @@ const CategorySchema = new mongoose.Schema({
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
 
+const generateID = async (model) => {
+    try {
+        const doc = await Sequence.findOneAndUpdate (
+            {_id: model},      // Define the model that need to adjust ID value
+            {$inc: {sequence : 1}}, // Increase ID by 1
+            {new: true, upsert: true}
+        )
+        return doc.sequence;
+    } catch (err) {
+        console.error('Error generate id for category:', err);
+    }
+
+};
+
 const isExistedCat = async (id) => {
     try {
         const findCat = await Category.findOne({
@@ -201,4 +215,4 @@ const findProductCatId = async (id) => {
     }
 }
 
-module.exports = {Category, Sequence, isExistedCat, findAll, findOne, findAttributes, findProductCatId};
+module.exports = {Category, generateID, isExistedCat, findAll, findOne, findAttributes, findProductCatId};

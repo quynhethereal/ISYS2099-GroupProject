@@ -1,20 +1,5 @@
-const {Category, Sequence} = require('../models/category.model');
+const {Category, generateID} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
-
-
-const generateID = async (model) => {
-    try {
-        const doc = await Sequence.findOneAndUpdate (
-            {_id: model},      // Define the model that need to adjust ID value
-            {$inc: {sequence : 1}}, // Increase ID by 1
-            {new: true, upsert: true}
-        )
-        return doc.sequence;
-    } catch (err) {
-        console.error('Error generate id for category:', err);
-    }
-
-};
 
 const generateMany = async (count) => {
     try {
