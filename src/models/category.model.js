@@ -157,10 +157,8 @@ const createSubcategory = async (catObj) => {
             }
         }
 
-        // Handle generate ID
         const nextId = await generateID('category'); 
 
-        // Find node parent to add new child
         const parentId = catObj.parentId;
 
         const findCat = await Category.findOne({
@@ -174,9 +172,42 @@ const createSubcategory = async (catObj) => {
             throw new Error("Category parent ID is not existed.");
         }
 
-        
+        const request = {
+            id: nextId, 
+            parentId: parentId,
+            name: catObj.name,
+            attributes: catObj.attributes
+        }
+
+        findParentAndUpdate(findCat, request);
+
+        findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
+
+        findCat.subcategoriesArray.push(nextId);
+
+        await findCat.save();
+
+        return ({
+            newCategory: request,
+            category: findCat
+        });
     } catch (err) {
         throw new Error ('Could not create new subcategory');
+    }
+}
+
+const findParentAndUpdate = async (category, request) => {
+    try {
+        if (category.id === request.parentId) {
+            category.subcategories.push(request);
+            return;
+        }
+
+        for (const subcategory of category.subcategories) {
+            findParentAndUpdate(subcategory, request);
+        }
+    } catch (err) {
+        throw new Error('Could not create new subcategory by update category');
     }
 }
 

@@ -1,10 +1,37 @@
 const {createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, Category} = require('../models/category.model');
-const {generateMany} = require('../db/mongo.seed');
 
-// check if elemt (name) empty in controller, if true, return error
-// check if req contain parentId, update cat, add new subcat
-// else create new cat
 exports.createCategory = async (req, res) => {
+    try {
+        const name = req.body.name;
+
+        if (!name) {
+            res.status(400).send({
+                message: "Invalid request. Category name is empty."
+            });
+            return;
+        }
+        
+        const data = {
+            name: name, 
+            attributes: req.body.attributes
+        }
+
+        const newCategory = await createCategory(data);
+
+        if (!newCategory) {
+            res.status(400).send({
+                message: "Unable to create new category."
+            })
+        }
+        res.status(200).json(newCategory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error creating category."
+        });
+    }   
+}
+
+exports.createSubcategory = async (req, res) => {
     try {
         const name = req.body.name;
 
@@ -18,33 +45,29 @@ exports.createCategory = async (req, res) => {
         const parentId = req.body.parentId;
 
         if(!parentId) {
-            const data = {
-                name: name, 
-                attributes: req.body.attributes
-            }
+            res.status(400).send({
+                message: "Invalid request. Empty parent Id."
+            })
+        } 
 
-            const newCategory = await createCategory(data);
-
-            if (!newCategory) {
-                res.status(400).send({
-                    message: "Unable to create new category."
-                })
-            }
-            res.status(200).json(newCategory);
-        } else {
-            const data = {
-                parentId: req.body.parentId,
-                name: name, 
-                attributes: req.body.attributes
-            }
-
-            const newSubcategory = await createSubcategory(data);
-
-            // function to update existed cat, create new subcat
+        const data = {
+            parentId: req.body.parentId,
+            name: name, 
+            attributes: req.body.attributes
         }
+
+        const newSubcategory = await createSubcategory(data);
+
+        if(!newSubcategory) {
+            res.status(400).send({
+                message: "Unable to create new subcategory."
+            })
+        }
+
+        res.status(200).json(newSubcategory);
     } catch (err) {
         res.status(500).send({
-            message: err.message || "Error creating category."
+            message: err.message || "Error creating subcategory."
         });
     }   
 }
