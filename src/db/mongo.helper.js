@@ -40,7 +40,7 @@ const generateOne = async () => {
 
         const category = {
             id: nextId,
-            name: faker.commerce.product() + " " + "Parent Category",
+            name: faker.commerce.product() + " " + "Parent Category" + " " + Math.floor(Math.random() * 100),
             subcategoriesArray: [],
             subcategories: [],
             attributes: [],
