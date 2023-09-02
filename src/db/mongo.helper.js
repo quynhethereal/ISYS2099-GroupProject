@@ -1,20 +1,5 @@
-const {Category, Sequence} = require('../models/category.model');
+const {Category, generateID} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
-
-
-const generateID = async (model) => {
-    try {
-        const doc = await Sequence.findOneAndUpdate (
-            {_id: model},      // Define the model that need to adjust ID value
-            {$inc: {sequence : 1}}, // Increase ID by 1
-            {new: true, upsert: true}
-        )
-        return doc.sequence;
-    } catch (err) {
-        console.error('Error generate id for category:', err);
-    }
-
-};
 
 const generateMany = async (count) => {
     try {
@@ -24,7 +9,6 @@ const generateMany = async (count) => {
             const category = await generateOne();
             categories.push(category);
         }
-        // console.log(categories);
 
         return categories;
     } catch (err) {
@@ -56,7 +40,7 @@ const generateOne = async () => {
 
         const category = {
             id: nextId,
-            name: faker.commerce.product() + " " + "Parent Category",
+            name: faker.commerce.product() + " " + "Parent Category" + " " + Math.floor(Math.random() * 100),
             subcategoriesArray: [],
             subcategories: [],
             attributes: [],
@@ -148,7 +132,6 @@ const generateSubcategory = async (parentId, subCatIds) => {
 
         subCatIds.push(...subcategory.subcategories.map((subcategory) => subcategory.id));  // Add to element in subcat and cat
 
-        console.log('subCatIds', subCatIds);
         return ({
             id: subcategory.id,
             parentId: subcategory.parentId,
