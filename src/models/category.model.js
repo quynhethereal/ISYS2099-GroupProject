@@ -122,6 +122,8 @@ const createCategory = async (catObj) => {
                 type = 'string';
             } else if (typeof description === 'number') {
                 type = 'number';
+            } else {
+                throw new Error('Invalid attributes.');
             }
 
             return {
@@ -172,11 +174,27 @@ const createSubcategory = async (catObj) => {
             throw new Error("Category parent ID is not existed.");
         }
 
+        const attributes = catObj.attributes.map((description) => {
+            let type;
+            if (typeof description === 'string') {
+                type = 'string';
+            } else if (typeof description === 'number') {
+                type = 'number';
+            } else {
+                throw new Error('Invalid attributes.');
+            }
+
+            return {
+                description: description,
+                type: type
+            }
+        })
+
         const request = {
             id: nextId, 
             parentId: parentId,
             name: catObj.name,
-            attributes: catObj.attributes
+            attributes: attributes
         }
 
         findParentAndUpdate(findCat, request);
@@ -339,4 +357,83 @@ const findProductCatId = async (id) => {
     }
 }
 
-module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId};
+const updateCategoryData = async (catObj) => {
+    try {
+        const categories = await Category.find();
+
+        for (const category of categories) {
+            const duplicate = await findDuplicateName(category, catObj.name);
+
+            if (duplicate) {
+                throw new Error('Subcategory is existed');
+            }
+        }
+
+        const id = catObj.id;
+
+        const findCat = await Category.findOne({
+            $or: [
+                {id: id},
+                {subcategoriesArray: {$elemMatch: {$eq: id}}}
+            ]
+        });
+
+        if (findCat == null) {
+            throw new Error("Category parent ID is not existed.");
+        }
+
+        const attributes = catObj.attributes.map((description) => {
+            let type;
+            if (typeof description === 'string') {
+                type = 'string';
+            } else if (typeof description === 'number') {
+                type = 'number';
+            } else {
+                throw new Error('Invalid attributes.');
+            }
+
+            return {
+                description: description,
+                type: type
+            }
+        })
+
+        const request = {
+            id: id, 
+            parentId: catObj.parentId,
+            name: catObj.name,
+            attributes: attributes
+        }
+
+        findIDAndUpdate(findCat, request);
+
+        findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
+
+        await findCat.save();
+
+        return ({
+            updateCategory: request,
+            category: findCat
+        });
+    } catch (err) {
+        throw new Error ('Could not update subcategory');
+    }
+}
+
+const findIDAndUpdate = async (category, request) => {
+    try {
+        if (category.id === request.id) {
+            category.name = request.name,
+            category.attributes = request.attributes;
+            return;
+        }
+
+        for (const subcategory of category.subcategories) {
+            findIDAndUpdate(subcategory, request);
+        }
+    } catch (err) {
+        throw new Error('Could not create new subcategory by update category');
+    }
+}
+
+module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};

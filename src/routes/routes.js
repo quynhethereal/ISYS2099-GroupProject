@@ -71,6 +71,7 @@ module.exports = app => {
     // category api for testing
     router.post("/category", categories.createCategory);
     router.put("/category/subcategory", categories.createSubcategory);
+    router.put("/category/:id", categories.updateCategory);
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);
