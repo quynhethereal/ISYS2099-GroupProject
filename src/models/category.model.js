@@ -340,3 +340,4 @@ const findProductCatId = async (id) => {
 }
 
 module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId};
+

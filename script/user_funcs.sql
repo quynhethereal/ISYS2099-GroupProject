@@ -38,14 +38,6 @@ BEGIN
     DECLARE cur CURSOR FOR SELECT o.inventory_id, o.quantity FROM order_items o WHERE o.order_id = order_id;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_last_row_fetched=1;
 
-         -- rollback transaction and bubble up errors if something bad happens
-      DECLARE exit handler FOR SQLEXCEPTION, SQLWARNING
-      BEGIN
-        ROLLBACK;
-        RESIGNAL;
-      END;
-
-  START TRANSACTION;
 
     OPEN cur;
         read_loop: LOOP
@@ -64,11 +56,7 @@ BEGIN
         CLOSE cur;
 
         SET  v_last_row_fetched=0;
-
-        UPDATE orders SET status = 'accepted' WHERE id = order_id;
-
-        COMMIT;
-    END;
+END;
 //
 DELIMITER ;
 
@@ -87,13 +75,6 @@ BEGIN
     DECLARE cur CURSOR FOR SELECT o.inventory_id, o.quantity FROM order_items o WHERE o.order_id = order_id;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_last_row_fetched=1;
 
-      DECLARE exit handler FOR SQLEXCEPTION, SQLWARNING
-      BEGIN
-        ROLLBACK;
-        RESIGNAL;
-      END;
-
-  START TRANSACTION;
 
     OPEN cur;
         read_loop: LOOP
@@ -110,11 +91,7 @@ BEGIN
         CLOSE cur;
 
         SET  v_last_row_fetched=0;
-
-        UPDATE orders SET status = 'rejected' WHERE id = order_id;
-
-        COMMIT;
-    END;
+END;
 //
 DELIMITER ;
 
