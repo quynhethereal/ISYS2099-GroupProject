@@ -69,6 +69,7 @@ module.exports = app => {
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
 
     // category api for testing
+    router.post("/category", categories.createCategory);
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);

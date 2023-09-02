@@ -17,7 +17,7 @@ exports.generateSeedData  = async (count) => {
         const count = await Category.countDocuments();
 
         if (count === 0) {
-            Category.insertMany(await generateMany(10))
+            Category.insertMany(await generateMany(3))
                 .then((result) => {
                     console.log(`Categories saved to MongoDB`);
                 })

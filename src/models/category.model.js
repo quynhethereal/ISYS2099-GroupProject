@@ -41,10 +41,24 @@ const CategorySchema = new mongoose.Schema({
             required: true
         }
     }]   // Array of attribute documents
-}, {autoIndex: true, _id: false});
+}, {autoIndex: true});
 
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
+
+const generateID = async (model) => {
+    try {
+        const doc = await Sequence.findOneAndUpdate (
+            {_id: model},      // Define the model that need to adjust ID value
+            {$inc: {sequence : 1}}, // Increase ID by 1
+            {new: true, upsert: true}
+        )
+        return doc.sequence;
+    } catch (err) {
+        console.error('Error generate id for category:', err);
+    }
+
+};
 
 const isExistedCat = async (id) => {
     try {
@@ -65,6 +79,107 @@ const isExistedCat = async (id) => {
     }
 }
 
+const findDuplicateName = async (category, name) => {
+    try {
+        if (category.name == name) {
+            return true;
+        }
+
+        if (category.subcategories) {
+            for (const subcategory of category.subcategories) {
+                const duplicate = await findDuplicateName(subcategory, name);
+
+                if (duplicate) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    } catch (err) {
+        throw new Error('Could not find category name.');
+    }
+}
+
+// handle cat
+const createCategory = async (catObj) => {
+    try {
+        const categories = await Category.find();
+
+        for (const category of categories) {
+            const duplicate = await findDuplicateName(category, catObj.name);
+
+            if (duplicate) {
+                throw new Error('Category is existed');
+            }
+        }
+
+        // Handle generate ID
+        const nextId = await generateID('category'); 
+
+        const attributes = catObj.attributes.map((description) => {
+            let type;
+            if (typeof description === 'string') {
+                type = 'string';
+            } else if (typeof description === 'number') {
+                type = 'number';
+            }
+
+            return {
+                description: description,
+                type: type
+            }
+        })
+
+        const data = new Category ({
+            id: nextId,
+            name: catObj.name,
+            attributes: attributes
+        });
+
+        await data.save();
+
+        return data;
+    } catch (err) {
+        console.log('err',err);
+        throw new Error('Could not create new category');
+    }
+}
+
+const createSubcategory = async (catObj) => {
+    try {
+        const categories = await Category.find();
+
+        for (const category of categories) {
+            const duplicate = await findDuplicateName(category, catObj.name);
+
+            if (duplicate) {
+                throw new Error('Subcategory is existed');
+            }
+        }
+
+        // Handle generate ID
+        const nextId = await generateID('category'); 
+
+        // Find node parent to add new child
+        const parentId = catObj.parentId;
+
+        const findCat = await Category.findOne({
+            $or: [
+                {id: parentId},
+                {subcategoriesArray: {$elemMatch: {$eq: parentId}}}
+            ]
+        });
+
+        if (findCat == null) {
+            throw new Error("Category parent ID is not existed.");
+        }
+
+        
+    } catch (err) {
+        throw new Error ('Could not create new subcategory');
+    }
+}
+
 const findAll = async () => {
     try {
         const categories = await Category.find({});
@@ -73,6 +188,30 @@ const findAll = async () => {
         throw new Error("Error finding categories.");
     }
 };
+
+const findName = async (category, id) => {
+    try {
+        if (category.id == id) {
+            return ({
+                name: category.name,
+                parentId: category.parentId, 
+            })
+        }
+
+        if (category.subcategories) {
+            for (let i = 0; i < category.subcategories.length; i++) {
+                const subcategory = category.subcategories[i];
+                const result = await findName(subcategory, id);
+
+                if (result) {
+                    return result;
+                }
+            }
+        }
+    } catch (err) {
+        throw new Error("Error getting category by id.");
+    }
+}
 
 const findOne = async (id) => {
     try {
@@ -141,15 +280,7 @@ const findAttributes = async (id) => {
         
         const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
 
-        const result = new Set();
-
-        for (const data of dataSet) {
-            if (!result.has(data)) {
-                result.add(data);
-            }
-        }
-
-        return Array.from(result);
+        return Array.from(dataSet);
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
@@ -177,4 +308,4 @@ const findProductCatId = async (id) => {
     }
 }
 
-module.exports = {Category, Sequence, isExistedCat, findAll, findOne, findAttributes, findProductCatId};
+module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId};
