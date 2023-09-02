@@ -41,7 +41,7 @@ const CategorySchema = new mongoose.Schema({
             required: true
         }
     }]   // Array of attribute documents
-}, {autoIndex: true, _id: false});
+}, {autoIndex: true});
 
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
@@ -179,15 +179,7 @@ const findAttributes = async (id) => {
         
         const dataSet = categoryNode.getNodeAttributes(categoryNode.searchNode(id));
 
-        const result = new Set();
-
-        for (const data of dataSet) {
-            if (!result.has(data)) {
-                result.add(data);
-            }
-        }
-
-        return Array.from(result);
+        return Array.from(dataSet);
     } catch (err) {
         throw new Error("Error getting attributes by id.");
     }
@@ -215,4 +207,4 @@ const findProductCatId = async (id) => {
     }
 }
 
-module.exports = {Category, generateID, isExistedCat, findAll, findOne, findAttributes, findProductCatId};
+module.exports = {Category, Sequence, generateID, isExistedCat, findAll, findOne, findAttributes, findProductCatId};
