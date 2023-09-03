@@ -154,7 +154,6 @@ exports.findAttributes = async (req, res) => {
 
 exports.findAttributesProduct = async (req, res) => {
     try {
-        // TODO: Get attributes of a category
         const id = parseInt(req.params.id);
 
         if (id == null) {
@@ -163,7 +162,6 @@ exports.findAttributesProduct = async (req, res) => {
             })
         }
 
-        // Get the category
         const data = await findProductCatId(id);
 
         if (!data) {
@@ -204,7 +202,6 @@ exports.updateCategory = async (req, res) => {
 
         const data = {
             id: id,
-            parentId: req.body.parentId,
             name: name, 
             attributes: req.body.attributes
         }
