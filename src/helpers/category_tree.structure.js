@@ -47,7 +47,7 @@ class CategoryTree {
 
         while (node !== null) {
             for (let i = 0; i < node.attributes.length; i++) {
-                attributes.add(node.attributes[i].description);
+                attributes.add(node.attributes[i]);
             }
             node = node.parentNode;
         }
