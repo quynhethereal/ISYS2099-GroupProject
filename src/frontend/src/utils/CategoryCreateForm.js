@@ -79,8 +79,8 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       if (res) {
         Swal.fire({
           icon: "success",
-          title: "Accepted the order",
-          text: "The order is now moved to the inventory warehouse for shipping...",
+          title: "Category crated",
+          text: "Reloading in 1 second...",
           showConfirmButton: false,
           timer: 1000,
           timerProgressBar: true,
