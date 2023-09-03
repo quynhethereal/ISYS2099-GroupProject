@@ -193,6 +193,11 @@ exports.findAttributesProduct = async (req, res) => {
 
 exports.updateCategory = async (req, res) => {
     try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        
         const id = parseInt(req.params.id);
 
         if (!id) {
