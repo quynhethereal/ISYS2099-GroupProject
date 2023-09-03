@@ -70,8 +70,8 @@ module.exports = app => {
     router.get("/product/:id/inventory", authMiddleware.verifyToken, inventories.getInventoryByProductId);
 
     // category api
-    router.post("/category", categories.createCategory);
-    router.put("/category/:id", categories.updateCategory);
+    router.post("/category", authMiddleware.verifyToken, categories.createCategory);
+    router.put("/category/:id/subcategory", authMiddleware.verifyToken, categories.createSubcategory);
     router.put("/category/:id/subcategory", categories.createSubcategory);
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
