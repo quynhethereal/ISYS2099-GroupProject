@@ -5,7 +5,7 @@ const CategorySubMenu = ({ data, handleChoose }) => {
   return (
     <ul className="dropdown-menu dropdown-submenu">
       <li>
-        <Dropdown.Item onClick={() => handleChoose(data?.id)}>
+        <Dropdown.Item onClick={() => handleChoose(data)}>
           {data?.name}
         </Dropdown.Item>
         {data?.subcategories?.map((child) => {

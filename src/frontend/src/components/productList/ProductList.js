@@ -54,7 +54,7 @@ const ProductList = () => {
           limit: data?.limit,
         });
         setIsLoading(false);
-        if (data?.totalProductCount === data?.nextId) {
+        if (data?.totalProductCount === product?.length) {
           setIsFechtedEverything(true);
         }
       }
@@ -102,16 +102,16 @@ const ProductList = () => {
       setFocus(true);
     } else {
       navigate(
-        `/customer/price?minPrice=${getValues("minPrice")}&maxPrice=${getValues(
-          "maxPrice"
-        )}`
+        `/customer/price?minPriceP=${getValues(
+          "minPrice"
+        )}&maxPriceP=${getValues("maxPrice")}`
       );
     }
   };
 
-  const handleFilterByCategory = (id) => {
-    if (id) {
-      navigate(`/customer/browse?categoryP=${id}`);
+  const handleFilterByCategory = (category) => {
+    if (category?.id) {
+      navigate(`/customer/browse?categoryP=${category?.id}`);
     }
   };
 
@@ -189,7 +189,7 @@ const ProductList = () => {
                     return (
                       <li key={index}>
                         <Dropdown.Item
-                          onClick={() => handleFilterByCategory(parent?.id)}
+                          onClick={() => handleFilterByCategory(parent)}
                         >
                           {parent?.name}
                         </Dropdown.Item>

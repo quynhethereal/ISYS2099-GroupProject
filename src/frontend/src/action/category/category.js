@@ -9,3 +9,13 @@ export const getAllCategory = async () => {
     return;
   }
 };
+
+export const getCategoryByID = async (id) => {
+  try {
+    const { data } = await api.getCategoryByID(id);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
