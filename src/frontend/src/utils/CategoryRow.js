@@ -7,14 +7,9 @@ import CategoryAttributeForm from "./CategoryAttributeForm";
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [showViewAttribute, setShowViewAttribute] = useState(false);
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
-  };
-
-  const handleShowViewAttributeForm = () => {
-    setShowViewAttribute((prev) => !prev);
   };
 
   const handleShowUpdateForm = () => {
@@ -59,29 +54,11 @@ const CategoryRow = ({ data, child }) => {
               handleClose={handleShowUpdateForm}
             />
           )}
-          {showViewAttribute && (
-            <CategoryAttributeForm
-              data={data}
-              show={showViewAttribute}
-              handleClose={handleShowViewAttributeForm}
-            />
-          )}
         </div>
       </div>
       <div className="col-12 d-flex flex-row flex-wrap my-2 gap-1">
         {data?.attributes?.map((atr, index) => {
-          return (
-            <button
-              type="button"
-              className="btn btn-info p-0"
-              key={index}
-              onClick={() => handleShowViewAttributeForm()}
-            >
-              <span className="badge bg-info d-flex align-items-center justify-content-center">
-                {atr?.name}
-              </span>
-            </button>
-          );
+          return <CategoryAttributeForm key={index} data={atr} />;
         })}
       </div>
 

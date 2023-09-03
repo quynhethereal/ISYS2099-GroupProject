@@ -44,7 +44,9 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
           {
             name: getValues("required"),
             required: getValues("isOptional") === "true" ? true : false,
-            value: getValues("hasValue"),
+            value: parseInt(getValues("hasValue"))
+              ? parseInt(getValues("hasValue"))
+              : getValues("hasValue"),
           },
         ]);
       } else {
@@ -56,9 +58,11 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
           },
         ]);
       }
-      reset({ required: [] });
+      reset({ hasValue: "", required: "" });
     }
   };
+
+  console.log(require);
 
   const handleRemoveAtr = (value) => {
     if (require.filter((item) => item.name === value.name).length > 0) {
@@ -162,18 +166,40 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
               })}
             </div>
           </div>
+          <div className="col-12">
+            {require?.map((item, index) => {
+              return (
+                <div className="my-2" key={index}>
+                  <b>Name</b>: {item?.name}, <b>Require</b>:{" "}
+                  {item?.required ? "True" : "False"},
+                  {item?.value && (
+                    <span>
+                      <b>Value</b>: {item?.value?.description || item?.value},{" "}
+                      <b>Type</b>: {item?.value?.type || typeof item?.value}
+                    </span>
+                  )}
+                  {!item?.value && (
+                    <span>
+                      <b>Value</b>: {item?.value?.description || "None"},{" "}
+                      <b>Type</b>: {item?.value?.type || "None"}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => handleClose()}>
-          Ok
+          Cancel
         </Button>
         <Button
           type="submit"
           variant="primary"
           onClick={handleSubmit(handleSubmitData)}
         >
-          Create
+          Update
         </Button>
       </Modal.Footer>
     </Modal>

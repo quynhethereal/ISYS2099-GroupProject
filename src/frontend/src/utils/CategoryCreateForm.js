@@ -31,6 +31,13 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   const [require, setRequire] = useState([]);
 
   const handleAddAtr = () => {
+    if (getValues("required") === "" || getValues("required").length === 0) {
+      Swal.fire({
+        title: "The name field is required for creating new attribute!",
+        icon: "error",
+      });
+      return;
+    }
     if (
       require.filter((item) => item.name === getValues("required")).length === 0
     ) {
@@ -40,7 +47,9 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           {
             name: getValues("required"),
             required: getValues("isOptional") === "true" ? true : false,
-            value: getValues("hasValue"),
+            value: parseInt(getValues("hasValue"))
+              ? parseInt(getValues("hasValue"))
+              : getValues("hasValue"),
           },
         ]);
       } else {
@@ -52,7 +61,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           },
         ]);
       }
-      reset({ required: [] });
+      reset({ hasValue: "", required: "" });
     }
   };
 
@@ -65,7 +74,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   const handleSubmitData = async (e) => {
     if (require?.length === 0) {
       Swal.fire({
-        title: "The require field must be at least one attribute name!",
+        title: "The attribute field must be at least one attribute!",
         icon: "error",
       });
       return;
@@ -135,11 +144,11 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           ></FormInput>
           <div>
             <Form.Group className="mb-3">
-              <Form.Label>Required</Form.Label>
+              <Form.Label>Attribute</Form.Label>
               <div className="d-flex flex-row gap-2">
                 <Form.Control
                   type="text"
-                  placeholder="Required attribute"
+                  placeholder="Name"
                   {...register("required", {})}
                 />
                 <select
@@ -152,7 +161,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                 </select>
                 <Form.Control
                   type="text"
-                  placeholder="Optional value"
+                  placeholder="Value"
                   {...register("hasValue", {})}
                 />
                 <Button variant="primary" onClick={() => handleAddAtr()}>
@@ -179,11 +188,33 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
               })}
             </div>
           </div>
+          <div className="col-12">
+            {require?.map((item, index) => {
+              return (
+                <div className="my-2" key={index}>
+                  <b>Name</b>: {item?.name}, <b>Require</b>:{" "}
+                  {item?.required ? "True" : "False"},
+                  {item?.value && (
+                    <span>
+                      <b>Value</b>: {item?.value?.description || item?.value},{" "}
+                      <b>Type</b>: {item?.value?.type || typeof item?.value}
+                    </span>
+                  )}
+                  {!item?.value && (
+                    <span>
+                      <b>Value</b>: {item?.value?.description || "None"},{" "}
+                      <b>Type</b>: {item?.value?.type || "None"}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => handleClose()}>
-          Ok
+          Cancel
         </Button>
         <Button
           type="submit"
