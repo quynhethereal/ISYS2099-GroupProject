@@ -400,7 +400,6 @@ const updateCategoryData = async (catObj) => {
 
         const request = {
             id: id, 
-            parentId: catObj.parentId,
             name: catObj.name,
             attributes: attributes
         }
