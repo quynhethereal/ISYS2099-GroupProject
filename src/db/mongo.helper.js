@@ -1,4 +1,4 @@
-const {Category, generateID} = require('../models/category.model');
+const {Category, generateID, generateMeta} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
 
 const generateMany = async (count) => {
@@ -19,20 +19,26 @@ const generateMany = async (count) => {
 const generateAttribute = () => {
     return new Promise((resolve, reject) => {
         const attribute = {
-            description: '',
-            type: faker.helpers.arrayElement(['string', 'number']),
+            name: faker.lorem.word(),
+            required: faker.datatype.boolean()
         };
 
-        if (attribute.type === 'string') {
-            attribute.description = faker.commerce.productAdjective();
-        } else {
-            attribute.description = faker.number.int(5000);
+        if (attribute.required) {
+            attribute.value = {
+                type: faker.helpers.arrayElement(['string', 'number']),
+                description: ''
+            };
+
+            if (attribute.value.type === 'string') {
+                attribute.value.description = faker.commerce.productAdjective();
+            } else if (attribute.value.type === 'number') {
+                attribute.value.description = faker.number.int(5000);
+            }
         }
 
         resolve(attribute);
     });
 }
-
 
 const generateOne = async () => {
     try {
@@ -45,7 +51,7 @@ const generateOne = async () => {
             subcategories: [],
             attributes: [],
         };
-
+        
         const subCatIds = [];
 
         const attributeCount = faker.number.int({ min: 1, max: 3 });
@@ -83,13 +89,20 @@ const generateOne = async () => {
         const returnData = Array.from(result);
         returnData.sort((a,b) => a - b);
         
-        return new Category({
+        const newCategory = new Category({
             id: category.id,
             name: category.name,
             subcategoriesArray: returnData,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
+
+        await newCategory.save();
+
+        if (newCategory) {
+            await generateMeta(nextId, category.name);
+            return newCategory;
+        } 
     } catch (error) {
         console.error('Error saving category:', error);
     }
@@ -106,6 +119,8 @@ const generateSubcategory = async (parentId, subCatIds) => {
             subcategories: [],
             attributes: [],
         };
+
+        await generateMeta(nextId, subcategory.name);
 
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {

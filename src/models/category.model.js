@@ -32,19 +32,41 @@ const CategorySchema = new mongoose.Schema({
     },
     subcategories: [],
     attributes: [{
-        description: {
-            type: mongoose.Schema.Types.Mixed,
-            required: true
-        }, 
-        type: {
-            type: String, 
+        name: String, 
+        value: {
+            description: {
+                type: mongoose.Schema.Types.Mixed,
+            }, 
+            type: {
+                type: String, 
+                enum:['string','number'],
+            }
+        },
+        required: {
+            type: Boolean,
             required: true
         }
     }]   // Array of attribute documents
 }, {autoIndex: true});
 
+const MetaSchema = new mongoose.Schema ({
+    id: {
+        type: Number,
+        required: true, 
+        unique: true,
+        index: 1
+    },
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    }
+}, {autoIndex: true});
+
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
+const CategoryMeta = mongoose.model('CategoryMeta', MetaSchema);
 
 const generateID = async (model) => {
     try {
@@ -59,6 +81,23 @@ const generateID = async (model) => {
     }
 
 };
+
+const generateMeta = async (id, name) => {
+    try {
+        if (!id || !name) {
+            throw new Error('Id or Name of metadata is empty.');
+        }
+
+        const data = new CategoryMeta ({
+            id: id, 
+            name: name
+        });
+
+        await data.save();
+    } catch (err) {
+        console.log('Error generating metadata for Category:', err);
+    }
+}
 
 const isExistedCat = async (id) => {
     try {
@@ -309,7 +348,44 @@ const findOne = async (id) => {
         throw new Error('Could not find category.');
     }
 }
+const findNestedSubcategories = async (category) => {
+    const catObj = {
+        id: category.id,
+        parentId: category.parentId,
+        name: category.name
+    };
 
+    const data = [];
+    data.push(catObj);
+
+    if (category.subcategories && category.subcategories.length > 0) {
+        
+        const subcategories = await Promise.all(category.subcategories.map((subcategory) => (findNestedSubcategories(subcategory))));
+
+        for (const subcategory of subcategories) {
+            data.push(...subcategory);
+        }
+    }
+    console.log(data);
+
+    return data;
+}
+
+const findAllFlatten = async () => {
+    try {
+        const categories = await Category.find({});
+        const data = [];
+
+        for (const category of categories) {
+            const catObj = await findNestedSubcategories(category);
+            data.push(...catObj);
+        }
+
+        return data;
+    } catch (err) {
+        throw new Error("Error fetching id and name of categories and subcategories.", err);
+    }
+}
 
 const findAttributes = async (id) => {
     try {
@@ -446,4 +522,5 @@ const findIDAndUpdate = async (category, request) => {
     }
 }
 
-module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};
+module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData};
+
