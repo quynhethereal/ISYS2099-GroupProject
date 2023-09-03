@@ -61,6 +61,7 @@ module.exports = app => {
     router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
     router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
     router.delete("/warehouses/:id", authMiddleware.verifyToken, warehouses.delete);
+    router.put("/warehouses/:id", authMiddleware.verifyToken, warehouses.update);
 
     // inventory-related API
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);

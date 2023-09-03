@@ -99,3 +99,20 @@ exports.delete = async (req, res) => {
         });
     }
 }
+
+exports.update = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const warehouseId = parseInt(req.params.id);
+        const warehouse = await Warehouse.update(warehouseId, req.body);
+        res.status(200).json(warehouse);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error updating warehouse."
+        });
+    }
+}
