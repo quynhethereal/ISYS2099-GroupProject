@@ -73,6 +73,10 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
     // eslint-disable-next-line
   }, [page, data]);
 
+  const handleDeleteWarehouse = async (data) => {
+    console.log(data?.id);
+  };
+
   return (
     <div
       className={`col-12 ${
@@ -84,6 +88,12 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
           <div className="card-title d-flex flex-row">
             <div className="fs-4 fw-bolder">#{data?.id}</div>
             <div className="mx-auto fs-4 fw-bolder">{data?.name}</div>
+            <button
+              className="btn btn-danger"
+              onClick={() => handleDeleteWarehouse(data)}
+            >
+              Delete
+            </button>
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
