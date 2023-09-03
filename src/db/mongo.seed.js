@@ -7,6 +7,7 @@ exports.dropCollection = async () => {
         await CategoryMeta.collection.drop()
         await Sequence.collection.drop();
         console.log('Categories collection dropped');
+
     } catch (err) {
         console.error('Error dropping categories collection:', err);
         throw err;

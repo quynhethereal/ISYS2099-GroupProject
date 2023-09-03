@@ -171,6 +171,30 @@ ALTER TABLE orders
 ALTER TABLE `orders` ALTER `status` SET DEFAULT 'pending';
 ALTER TABLE `orders` ALTER `total_price` SET DEFAULT 0.0;
 
+DELIMITER //
+CREATE TRIGGER tr_order_status_accepted
+AFTER UPDATE ON orders FOR EACH ROW
+BEGIN
+    IF NEW.status = 'accepted' AND OLD.status <> 'accepted' THEN
+        CALL update_inventory_on_order_accept(NEW.id);
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER tr_order_status_rejected
+AFTER UPDATE ON orders FOR EACH ROW
+BEGIN
+    IF NEW.status = 'rejected' AND OLD.status <> 'rejected' THEN
+        CALL update_inventory_on_order_reject(NEW.id);
+    END IF;
+END;
+//
+DELIMITER ;
+
+
+
 -- Add foreign key
 ALTER TABLE `orders` ADD FOREIGN KEY (`user_id`) REFERENCES `users`(`id`);
 
@@ -209,8 +233,8 @@ GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 grant insert, select, update on lazada_ecommerce.orders to 'customer';
-grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
-grant select on lazada_ecommerce.inventory to 'customer';
+-- grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
+-- grant select on lazada_ecommerce.inventory to 'customer';
 -- grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'customer';
 
 -- Seller: CRUD product, CRU users_info, orders and inventory

@@ -10,15 +10,15 @@ const acceptOrder = async (orderId, userId) => {
             throw new Error('Order not found.');
         }
 
-        await connection.query('call update_inventory_on_order_accept(?)', [orderId]);
+        // await connection.query('call update_inventory_on_order_accept(?)', [orderId]);
 
         // query again to get the updated order
-        const [res] = await connection.execute("SELECT * FROM `orders` WHERE id = ? AND user_id = ?", [orderId, userId]);
+        const res = await connection.execute("UPDATE orders SET status = 'accepted' WHERE id = ? AND user_id = ?", [orderId, userId]);
 
-        if (res[0].status === 'accepted') {
+
+        if (res[0].changedRows === 1) {
             return {
                 message: 'Order accepted.',
-                order: new Order(res[0])
             }
         } else {
             throw new Error('Cannot accept order.....')

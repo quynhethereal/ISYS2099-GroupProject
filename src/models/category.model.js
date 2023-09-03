@@ -354,7 +354,8 @@ const findAttributes = async (id) => {
         });
 
         if (findCat == null) {
-            throw new Error("Category is not existed.");
+            console.log('Category not found!');
+            throw new Error("Category not found!");
         }
 
         const categoryNode = new CategoryTree();
@@ -373,12 +374,14 @@ const findProductCatId = async (id) => {
         const product = await Product.findById(id);
 
         if (!product) {
+            console.log('Product Id not found!');
             throw new Error('Product Id not found.')
         }
 
         const productCatId = parseInt(product.category_id);
 
         if (!productCatId) {
+            console.log('Product Category Id not found!');
             throw new Error('Product Category Id not found.')
         }
 
@@ -398,7 +401,8 @@ const updateCategoryData = async (catObj) => {
             const duplicate = await findDuplicateName(category, catObj.name);
 
             if (duplicate) {
-                throw new Error('Subcategory is existed');
+                console.log('Category name is existed!');
+                throw new Error('Category name is existed');
             }
         }
 
@@ -413,6 +417,13 @@ const updateCategoryData = async (catObj) => {
 
         if (findCat == null) {
             throw new Error("Category parent ID is not existed.");
+        }
+
+        const count = await Product.countByCategory(id);
+
+        if (count > 0) {
+            console.log('Products remain in category!');
+            throw new Error('Products remain in category!');
         }
 
         const attributes = catObj.attributes.map((description) => {
@@ -469,3 +480,4 @@ const findIDAndUpdate = async (category, request) => {
 }
 
 module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};
+
