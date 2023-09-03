@@ -43,8 +43,24 @@ const CategorySchema = new mongoose.Schema({
     }]   // Array of attribute documents
 }, {autoIndex: true});
 
+const MetaSchema = new mongoose.Schema ({
+    id: {
+        type: Number,
+        required: true, 
+        unique: true,
+        index: 1
+    },
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    }
+}, {autoIndex: true});
+
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
+const CategoryMeta = mongoose.model('CategoryMeta', MetaSchema);
 
 const generateID = async (model) => {
     try {
@@ -59,6 +75,23 @@ const generateID = async (model) => {
     }
 
 };
+
+const generateMeta = async (id, name) => {
+    try {
+        if (!id || !name) {
+            throw new Error('Id or Name of metadata is empty.');
+        }
+
+        const data = new CategoryMeta ({
+            id: id, 
+            name: name
+        });
+
+        await data.save();
+    } catch (err) {
+        console.log('Error generating metadata for Category:', err);
+    }
+}
 
 const isExistedCat = async (id) => {
     try {
@@ -435,4 +468,4 @@ const findIDAndUpdate = async (category, request) => {
     }
 }
 
-module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};
+module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};

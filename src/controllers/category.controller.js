@@ -1,4 +1,4 @@
-const {createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, Category, updateCategoryData} = require('../models/category.model');
+const {createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData} = require('../models/category.model');
 
 exports.createCategory = async (req, res) => {
     try {

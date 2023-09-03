@@ -1,4 +1,4 @@
-const {Category, Sequence, generateID} = require('../models/category.model');
+const {Category, generateID, generateMeta} = require('../models/category.model');
 const {faker} = require('@faker-js/faker');
 
 const generateMany = async (count) => {
@@ -33,7 +33,6 @@ const generateAttribute = () => {
     });
 }
 
-
 const generateOne = async () => {
     try {
         const nextId = await generateID('category');
@@ -45,7 +44,7 @@ const generateOne = async () => {
             subcategories: [],
             attributes: [],
         };
-
+        
         const subCatIds = [];
 
         const attributeCount = faker.number.int({ min: 1, max: 3 });
@@ -83,13 +82,20 @@ const generateOne = async () => {
         const returnData = Array.from(result);
         returnData.sort((a,b) => a - b);
         
-        return new Category({
+        const newCategory = new Category({
             id: category.id,
             name: category.name,
             subcategoriesArray: returnData,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
+
+        await newCategory.save();
+
+        if (newCategory) {
+            await generateMeta(nextId, category.name);
+            return newCategory;
+        } 
     } catch (error) {
         console.error('Error saving category:', error);
     }
@@ -106,6 +112,8 @@ const generateSubcategory = async (parentId, subCatIds) => {
             subcategories: [],
             attributes: [],
         };
+
+        await generateMeta(nextId, subcategory.name);
 
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {
