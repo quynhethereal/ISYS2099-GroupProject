@@ -62,7 +62,6 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     });
   };
   // token, id, title, description, price, category, image;
-  console.log(imageSoure);
 
   const handleUpdateProduct = async (value) => {
     if (imageSoure === "error" && imageSoure) {
