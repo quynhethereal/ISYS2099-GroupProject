@@ -157,5 +157,31 @@ Warehouse.delete = async (warehouseId) => {
     }
 }
 
+Warehouse.update = async (warehouseId, params) => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        const {name, province, city, district, street, number, total_volume, available_volume} = params;
+
+        const warehouse = new Warehouse({name, province, city, district, street, number, total_volume, available_volume});
+
+        const [res] = await connection.execute("UPDATE `warehouses` SET name = ?, province = ?, city = ?, district = ?, street = ?, number = ?, total_volume = ?, available_volume = ? WHERE id = ?", [warehouse.name, warehouse.province, warehouse.city, warehouse.district, warehouse.street, warehouse.number, warehouse.total_volume, warehouse.available_volume, warehouseId]);
+
+        if (res.affectedRows === 0) {
+            throw new Error('No warehouse found.');
+        }
+
+        return {
+            message: 'Warehouse updated.',
+            warehouse: warehouse
+        }
+    } catch (err) {
+        console.log('Unable to update warehouse.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
 
 module.exports = Warehouse;
