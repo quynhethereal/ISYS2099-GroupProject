@@ -1,4 +1,86 @@
-const {findAll, findOne, findAttributes, findProductCatId} = require('../models/category.model');
+const {createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, Category} = require('../models/category.model');
+
+exports.createCategory = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const name = req.body.name;
+
+        if (!name) {
+            res.status(400).send({
+                message: "Invalid request. Category name is empty."
+            });
+            return;
+        }
+        
+        const data = {
+            name: name, 
+            attributes: req.body.attributes
+        }
+
+        const newCategory = await createCategory(data);
+
+        if (!newCategory) {
+            res.status(400).send({
+                message: "Unable to create new category."
+            })
+        }
+        res.status(200).json(newCategory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error creating category."
+        });
+    }   
+}
+
+exports.createSubcategory = async (req, res) => {
+    try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const parentId = parseInt(req.params.id);
+
+        if(!parentId) {
+            res.status(400).send({
+                message: "Invalid request. Empty parent Id."
+            })
+        } 
+
+        const name = req.body.name;
+
+        if (!name) {
+            res.status(400).send({
+                message: "Invalid request. Category name is empty."
+            });
+            return;
+        }
+        
+        const data = {
+            parentId: parentId,
+            name: name, 
+            attributes: req.body.attributes
+        }
+
+        const newSubcategory = await createSubcategory(data);
+
+        if(!newSubcategory) {
+            res.status(400).send({
+                message: "Unable to create new subcategory."
+            })
+        }
+
+        res.status(200).json(newSubcategory);
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error creating subcategory."
+        });
+    }   
+}
 
 exports.findAll = async (req, res) => {
     try {
