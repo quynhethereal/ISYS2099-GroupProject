@@ -36,7 +36,7 @@ const CategoryRow = ({ data, child }) => {
             className="btn btn-info"
             onClick={() => handleShowCreateForm()}
           >
-            Create
+            Create subcategory
           </button>
           <button className="btn btn-warning ms-2">Update</button>
           <button className="btn btn-danger ms-2">Delete</button>

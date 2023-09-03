@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ import { useAuth } from "../hook/AuthHook";
 import { Modal, Button, Form } from "react-bootstrap";
 import FormInput from "./FormInput.js";
 
-const CategoryCreateForm = ({ data, show, handleClose }) => {
+const CategoryUpdateForm = ({ data, show, handleClose }) => {
   const {
     register,
     handleSubmit,
@@ -85,7 +85,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
             timer: 1000,
             timerProgressBar: true,
           }).then(() => {
-            navigate(0);
+            // navigate(0);
           });
         } else {
           Swal.fire({
@@ -197,4 +197,4 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   );
 };
 
-export default CategoryCreateForm;
+export default CategoryUpdateForm;
