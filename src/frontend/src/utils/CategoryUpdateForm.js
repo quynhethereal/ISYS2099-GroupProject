@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { createCategory, createSubCategory } from "../action/category/category";
+import { updateCategory } from "../action/category/category";
 import { useAuth } from "../hook/AuthHook";
 
 import { Modal, Button, Form } from "react-bootstrap";
 import FormInput from "./FormInput.js";
 
-const CategoryCreateForm = ({ data, show, handleClose }) => {
+const CategoryUpdateForm = ({ data, show, handleClose }) => {
   const {
     register,
     handleSubmit,
@@ -19,7 +19,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
+      name: data?.name,
       required: "",
       isOptional: false,
       hasValue: "",
@@ -30,14 +30,11 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
 
   const [require, setRequire] = useState([]);
 
+  useEffect(() => {
+    setRequire(data?.attributes);
+  }, [data]);
+
   const handleAddAtr = () => {
-    if (getValues("required") === "" || getValues("required").length === 0) {
-      Swal.fire({
-        title: "The name field is required for creating new attribute!",
-        icon: "error",
-      });
-      return;
-    }
     if (
       require.filter((item) => item.name === getValues("required")).length === 0
     ) {
@@ -57,13 +54,15 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           ...require,
           {
             name: getValues("required"),
-            required: getValues("isOptional") === "true" ? true : false,
+            required: getValues("isOptional"),
           },
         ]);
       }
       reset({ hasValue: "", required: "" });
     }
   };
+
+  console.log(require);
 
   const handleRemoveAtr = (value) => {
     if (require.filter((item) => item.name === value.name).length > 0) {
@@ -74,7 +73,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   const handleSubmitData = async (e) => {
     if (require?.length === 0) {
       Swal.fire({
-        title: "The attribute field must be at least one attribute!",
+        title: "The require field must be at least one attribute name!",
         icon: "error",
       });
       return;
@@ -84,11 +83,11 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       attributes: require,
     };
     if (data) {
-      await createSubCategory(token(), data?.id, payload).then((res) => {
+      await updateCategory(token(), data?.id, payload).then((res) => {
         if (res) {
           Swal.fire({
             icon: "success",
-            title: "Category create",
+            title: "Category updated",
             text: "Reloading in 1 second...",
             showConfirmButton: false,
             timer: 1000,
@@ -100,28 +99,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           Swal.fire({
             icon: "error",
             title: "Oops!",
-            text: "Could not create new category",
-          });
-        }
-      });
-    } else {
-      await createCategory(token(), payload).then((res) => {
-        if (res) {
-          Swal.fire({
-            icon: "success",
-            title: "Category crated",
-            text: "Reloading in 1 second...",
-            showConfirmButton: false,
-            timer: 1000,
-            timerProgressBar: true,
-          }).then(() => {
-            navigate(0);
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Oops!",
-            text: "Could not create new category",
+            text: "Could not update category! The category contains products",
           });
         }
       });
@@ -130,7 +108,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title className="ms-auto">Create Category </Modal.Title>
+        <Modal.Title className="ms-auto">Update Category</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -144,11 +122,11 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           ></FormInput>
           <div>
             <Form.Group className="mb-3">
-              <Form.Label>Attribute</Form.Label>
+              <Form.Label>Required</Form.Label>
               <div className="d-flex flex-row gap-2">
                 <Form.Control
                   type="text"
-                  placeholder="Name"
+                  placeholder="Required attribute"
                   {...register("required", {})}
                 />
                 <select
@@ -161,7 +139,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                 </select>
                 <Form.Control
                   type="text"
-                  placeholder="Value"
+                  placeholder="Optional value"
                   {...register("hasValue", {})}
                 />
                 <Button variant="primary" onClick={() => handleAddAtr()}>
@@ -176,7 +154,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                     className="badge bg-info text-center pe-0 py-0"
                     key={index}
                   >
-                    {item?.name} {item?.value}
+                    {item?.name} {item?.value?.description}
                     <Button
                       className="btn btn-sm btn-info text-white"
                       onClick={() => handleRemoveAtr(item)}
@@ -221,11 +199,11 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           variant="primary"
           onClick={handleSubmit(handleSubmitData)}
         >
-          Create
+          Update
         </Button>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default CategoryCreateForm;
+export default CategoryUpdateForm;

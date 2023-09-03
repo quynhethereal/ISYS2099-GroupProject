@@ -194,7 +194,10 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                   </div>
                   <div className="col-12 d-flex flex-column">
                     <label htmlFor="atr">Attributes</label>
-                    <div className="col-12 d-flex flex-row flex-wrap" id="atr">
+                    <div
+                      className="col-12 d-flex flex-row flex-wrap gap-2"
+                      id="atr"
+                    >
                       {currentCategoryData &&
                         currentCategoryData?.attributes?.map((item, index) => {
                           return (

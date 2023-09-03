@@ -39,3 +39,32 @@ export const getAllFlatternCategory = async () => {
     return;
   }
 };
+
+export const createCategory = async (token, formData) => {
+  try {
+    const { data } = await api.createCategory(token, formData);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+
+export const updateCategory = async (token, id, formData) => {
+  try {
+    const { data } = await api.updateCategory(token, id, formData);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+export const createSubCategory = async (token, id, formData) => {
+  try {
+    const { data } = await api.createSubCategory(token, id, formData);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};

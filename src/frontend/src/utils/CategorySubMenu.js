@@ -17,11 +17,6 @@ const CategorySubMenu = ({ data, handleChoose }) => {
             />
           );
         })}
-        {/* <ul className="dropdown-menu dropdown-submenu">
-          <li>
-            <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-          </li>
-        </ul> */}
       </li>
     </ul>
   );

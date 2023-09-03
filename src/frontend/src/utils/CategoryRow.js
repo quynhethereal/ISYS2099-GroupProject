@@ -1,18 +1,51 @@
 import React, { useState } from "react";
 
 import CategoryCreateForm from "./CategoryCreateForm";
+import CategoryUpdateForm from "./CategoryUpdateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
-  const [showAddAttribute, setShowAddAttribute] = useState(false);
+  const [showUpdate, setShowUpdate] = useState(false);
+  const navigate = useNavigate();
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
   };
 
-  const handleShowAddAttributeForm = () => {
-    setShowAddAttribute((prev) => !prev);
+  const handleShowUpdateForm = () => {
+    setShowUpdate((prev) => !prev);
+  };
+
+  const handleDeleteCategory = () => {
+    Swal.fire({
+      title: "Do you want to delete this product? This can't be reverted",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Cancel`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log("Awaiting for deleting api");
+        // await deleteProduct(token(), info?.id).then((res) => {
+        //   if (res?.message) {
+        //     Swal.fire({
+        //       icon: "success",
+        //       title: res?.message,
+        //       text: "Reloading in 2 secs for changes...",
+        //       showConfirmButton: false,
+        //       timer: 2000,
+        //       timerProgressBar: true,
+        //     }).then(() => {
+        //       navigate(0);
+        //     });
+        //   }
+        // });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
   };
   return (
     <div className="col-12 my-3">
@@ -30,40 +63,40 @@ const CategoryRow = ({ data, child }) => {
             className="btn btn-info"
             onClick={() => handleShowCreateForm()}
           >
-            Create
+            Create subcategory
           </button>
-          <button className="btn btn-warning ms-2">Update</button>
-          <button className="btn btn-danger ms-2">Delete</button>
-          <CategoryCreateForm
-            data={data}
-            show={showCreate}
-            handleClose={handleShowCreateForm}
-          />
-          <CategoryAttributeForm
-            data={data}
-            show={showAddAttribute}
-            handleClose={handleShowAddAttributeForm}
-          />
+          <button
+            className="btn btn-warning ms-2"
+            onClick={() => handleShowUpdateForm()}
+          >
+            Update
+          </button>
+          <button
+            className="btn btn-danger ms-2"
+            onClick={() => handleDeleteCategory()}
+          >
+            Delete
+          </button>
+          {showCreate && (
+            <CategoryCreateForm
+              data={data}
+              show={showCreate}
+              handleClose={handleShowCreateForm}
+            />
+          )}
+          {showUpdate && (
+            <CategoryUpdateForm
+              data={data}
+              show={showUpdate}
+              handleClose={handleShowUpdateForm}
+            />
+          )}
         </div>
       </div>
       <div className="col-12 d-flex flex-row flex-wrap my-2 gap-1">
         {data?.attributes?.map((atr, index) => {
-          return (
-            <span
-              className="badge bg-info d-flex align-items-center justify-content-center"
-              key={index}
-            >
-              {atr?.description}{" "}
-            </span>
-          );
+          return <CategoryAttributeForm key={index} data={atr} />;
         })}
-        <button
-          type="button"
-          className="btn btn-info p-0"
-          onClick={() => handleShowAddAttributeForm()}
-        >
-          <span className="badge bg-info"> + New Attribute </span>
-        </button>
       </div>
 
       <div className="col-12">
