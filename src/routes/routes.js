@@ -72,7 +72,7 @@ module.exports = app => {
     // category api
     router.post("/category", authMiddleware.verifyToken, categories.createCategory);
     router.put("/category/:id/subcategory", authMiddleware.verifyToken, categories.createSubcategory);
-    router.put("/category/:id/subcategory", categories.createSubcategory);
+    router.put("/category/:id", authMiddleware.verifyToken, categories.updateCategory);
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);
