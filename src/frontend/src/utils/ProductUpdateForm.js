@@ -3,7 +3,10 @@ import React, { memo, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { updateProduct } from "../action/product/product.js";
-import { getAllCategory } from "../action/category/category.js";
+import {
+  getAllFlatternCategory,
+  getCategoryByID,
+} from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +19,8 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
   const [allCategory, setAllCategory] = useState([]);
+  const [currentChoice, setCurrentChoice] = useState();
+  const [currentCategoryData, setCurrentCategoryData] = useState([]);
   const {
     register,
     handleSubmit,
@@ -34,14 +39,25 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
 
   useEffect(() => {
     async function getAllCategoryData() {
-      await getAllCategory().then((res) => {
-        console.log(res);
+      await getAllFlatternCategory().then((res) => {
         setAllCategory(res);
       });
     }
     getAllCategoryData();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    async function getCurrentCategory() {
+      await getCategoryByID(currentChoice || data?.id).then((res) => {
+        if (res) {
+          setCurrentCategoryData(res);
+        }
+      });
+    }
+    getCurrentCategory();
+    // eslint-disable-next-line
+  }, [currentChoice]);
 
   const handleFetchImageSoure = async (imgUrl) => {
     const checkImage = (path) =>
@@ -72,10 +88,28 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    // await updateProduct(token(), data?.id, value).then((res) => {
-    //   console.log(res);
-    // });
+    await updateProduct(token(), data?.id, value).then((res) => {
+      if (res) {
+        Swal.fire({
+          icon: "success",
+          title: res?.message,
+          text: "The product has been updated. Reloading in 2 secs...",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Some error happened",
+        });
+      }
+    });
   };
+
   return (
     <Modal show={show} onHide={handleClose}>
       <form onSubmit={handleSubmit(handleUpdateProduct)}>
@@ -135,19 +169,20 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                   errors={errors}
                   step={"0.01"}
                 ></FormInput>
-                <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center mt-md-3">
+                <div className="col-12 d-flex flex-column justtify-content-center align-items-center mt-md-3 gap-3">
                   <div className="col-12">
+                    <label htmlFor="category">Category</label>
                     <select
                       id="category"
                       type="number"
-                      className="form-select form-select-lg"
+                      className="form-select form-select-lg w-100"
                       {...register("category", {
                         valueAsNumber: true,
                       })}
+                      onChange={(e) =>
+                        setCurrentChoice((prev) => e.target.value)
+                      }
                     >
-                      <option value={data?.category_id} disabled>
-                        {data?.category_name && "Going to get api"}
-                      </option>
                       {allCategory?.map((category, index) => {
                         return (
                           <option value={category?.id} key={index}>
@@ -156,6 +191,22 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                         );
                       })}
                     </select>
+                  </div>
+                  <div className="col-12 d-flex flex-column">
+                    <label htmlFor="atr">Attributes</label>
+                    <div className="col-12 d-flex flex-row flex-wrap" id="atr">
+                      {currentCategoryData &&
+                        currentCategoryData?.attributes?.map((item, index) => {
+                          return (
+                            <span
+                              className="badge bg-info d-flex align-items-center justify-content-center"
+                              key={index}
+                            >
+                              {item?.description}
+                            </span>
+                          );
+                        })}
+                    </div>
                   </div>
                 </div>
               </div>

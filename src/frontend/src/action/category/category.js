@@ -29,3 +29,13 @@ export const getAllAttribute = async (id) => {
     return;
   }
 };
+
+export const getAllFlatternCategory = async () => {
+  try {
+    const { data } = await api.getAllFlatternCategory();
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
