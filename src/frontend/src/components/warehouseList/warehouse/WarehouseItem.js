@@ -1,10 +1,16 @@
 import React, { useState, useEffect, memo } from "react";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-import { getInventoryByWarehouseId } from "../../../action/warehouse/warehouse.js";
+import {
+  getInventoryByWarehouseId,
+  deleteWarehouse,
+} from "../../../action/warehouse/warehouse.js";
 
 import WarehouseInventory from "./WarehouseInventory.js";
 
 const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
+  const navigate = useNavigate();
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
 
@@ -74,7 +80,35 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
   }, [page, data]);
 
   const handleDeleteWarehouse = async (data) => {
-    console.log(data?.id);
+    Swal.fire({
+      title: "Do you want to delete this warehouse? This can't be reverted",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Cancel`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteWarehouse(token(), data?.id).then((res) => {
+          if (res?.message) {
+            Swal.fire({
+              icon: "success",
+              title: res?.message,
+              text: "Reloading in 2 secs for changes...",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            }).then(() => {
+              navigate(0);
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Can not delete the warehouse!",
+              text: res,
+            });
+          }
+        });
+      }
+    });
   };
 
   return (
