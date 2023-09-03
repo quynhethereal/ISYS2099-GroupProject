@@ -1,12 +1,20 @@
 import React, { useState, useEffect, memo } from "react";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-import { getInventoryByWarehouseId } from "../../../action/warehouse/warehouse.js";
+import {
+  getInventoryByWarehouseId,
+  deleteWarehouse,
+} from "../../../action/warehouse/warehouse.js";
 
 import WarehouseInventory from "./WarehouseInventory.js";
+import WarehouseUpdateForm from "./WarehouseUpdateForm.js";
 
 const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
+  const navigate = useNavigate();
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
 
   const handleNextPage = () => {
     if (page < inventory?.totalPages) {
@@ -73,10 +81,46 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
     // eslint-disable-next-line
   }, [page, data]);
 
+  const handleDeleteWarehouse = async (data) => {
+    Swal.fire({
+      title: "Do you want to delete this warehouse? This can't be reverted",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Cancel`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteWarehouse(token(), data?.id).then((res) => {
+          if (res?.message) {
+            Swal.fire({
+              icon: "success",
+              title: res?.message,
+              text: "Reloading in 2 secs for changes...",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+            }).then(() => {
+              navigate(0);
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Can not delete the warehouse!",
+              text: res,
+            });
+          }
+        });
+      }
+    });
+  };
+
+  const handleShowUpdateWarehouse = () => {
+    setShowUpdateForm((prev) => !prev);
+  };
+
   return (
     <div
       className={`col-12 ${
-        size ? size : "col-md-5"
+        size ? size : "col-md-6"
       } my-3 my-md-0 d-flex flex-column justify-content-center align-items-center`}
     >
       <div className="card w-100">
@@ -87,6 +131,27 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
+            <div className="col-12 d-flex flex-row justify-content-end gap-2">
+              <button
+                className="btn btn-warning"
+                onClick={() => handleShowUpdateWarehouse(data)}
+              >
+                Update
+              </button>
+              {showUpdateForm && (
+                <WarehouseUpdateForm
+                  show={showUpdateForm}
+                  handleClose={handleShowUpdateWarehouse}
+                  data={data}
+                />
+              )}
+              <button
+                className="btn btn-danger"
+                onClick={() => handleDeleteWarehouse(data)}
+              >
+                Delete
+              </button>
+            </div>
             <div className="col-12">
               <label htmlFor="city" className="text-muted">
                 City:

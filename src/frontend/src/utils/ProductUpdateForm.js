@@ -1,8 +1,12 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { updateProduct } from "../action/product/product.js";
+import {
+  getAllFlatternCategory,
+  getCategoryByID,
+} from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
 
@@ -10,58 +14,13 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
-var testData = [
-  {
-    _id: "64e234d2e360f233a9c99ad5",
-    id: 1,
-    name: "Clothing and Accessories",
-    attributes: ["Entertaining", "Music", "Electrical"],
-    parent: 2,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad6",
-    id: 2,
-    name: "Electronics and Gadgets",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad7",
-    id: 3,
-    name: "Home and Kitchen Appliances",
-    attributes: [],
-    parent: 1,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad8",
-    id: 4,
-    name: "Beauty and Personal Care",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad9",
-    id: 5,
-    name: "Books, Music, and Movies",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e23ac7a11f741d717017e0",
-    id: 21,
-    name: "Instruments",
-    attributes: ["Entertaining", "Music"],
-    parent: 5,
-    __v: 0,
-  },
-];
-
 const ProductUpdateForm = ({ data, show, handleClose }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
+  const [allCategory, setAllCategory] = useState([]);
+  const [currentChoice, setCurrentChoice] = useState();
+  const [currentCategoryData, setCurrentCategoryData] = useState([]);
   const {
     register,
     handleSubmit,
@@ -77,6 +36,28 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       image: data?.image,
     },
   });
+
+  useEffect(() => {
+    async function getAllCategoryData() {
+      await getAllFlatternCategory().then((res) => {
+        setAllCategory(res);
+      });
+    }
+    getAllCategoryData();
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    async function getCurrentCategory() {
+      await getCategoryByID(currentChoice || data?.id).then((res) => {
+        if (res) {
+          setCurrentCategoryData(res);
+        }
+      });
+    }
+    getCurrentCategory();
+    // eslint-disable-next-line
+  }, [currentChoice]);
 
   const handleFetchImageSoure = async (imgUrl) => {
     const checkImage = (path) =>
@@ -99,7 +80,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   // token, id, title, description, price, category, image;
 
   const handleUpdateProduct = async (value) => {
-    if (imageSoure === "error") {
+    if (imageSoure === "error" && imageSoure) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -107,11 +88,28 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    console.log(value);
     await updateProduct(token(), data?.id, value).then((res) => {
-      console.log(res);
+      if (res) {
+        Swal.fire({
+          icon: "success",
+          title: res?.message,
+          text: "The product has been updated. Reloading in 2 secs...",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        }).then(() => {
+          navigate(0);
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Some error happened",
+        });
+      }
     });
   };
+
   return (
     <Modal show={show} onHide={handleClose}>
       <form onSubmit={handleSubmit(handleUpdateProduct)}>
@@ -171,20 +169,21 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                   errors={errors}
                   step={"0.01"}
                 ></FormInput>
-                <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center mt-md-3">
+                <div className="col-12 d-flex flex-column justtify-content-center align-items-center mt-md-3 gap-3">
                   <div className="col-12">
+                    <label htmlFor="category">Category</label>
                     <select
                       id="category"
                       type="number"
-                      className="form-select form-select-lg"
+                      className="form-select form-select-lg w-100"
                       {...register("category", {
                         valueAsNumber: true,
                       })}
+                      onChange={(e) =>
+                        setCurrentChoice((prev) => e.target.value)
+                      }
                     >
-                      <option value={data?.category_id} disabled>
-                        {data?.category_name && "Going to get api"}
-                      </option>
-                      {testData?.map((category, index) => {
+                      {allCategory?.map((category, index) => {
                         return (
                           <option value={category?.id} key={index}>
                             {category?.name}
@@ -192,6 +191,23 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                         );
                       })}
                     </select>
+                  </div>
+                  <div className="col-12 d-flex flex-column">
+                    <label htmlFor="atr">Attributes</label>
+                    <div className="col-12 d-flex flex-row flex-wrap" id="atr">
+                      {currentCategoryData &&
+                        currentCategoryData?.attributes?.map((item, index) => {
+                          return (
+                            <span
+                              className="badge bg-info d-flex align-items-center justify-content-center"
+                              key={index}
+                            >
+                              {item?.name}
+                              {item?.value?.description}
+                            </span>
+                          );
+                        })}
+                    </div>
                   </div>
                 </div>
               </div>

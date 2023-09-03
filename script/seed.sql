@@ -216,7 +216,7 @@ ALTER TABLE order_items
 
 -- Add foreign keys
 ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
+ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON DELETE CASCADE;
 
 -- Drop all roles and users if exists
 drop role if exists 'admin', 'customer', 'seller', 'wh_admin';
@@ -233,8 +233,8 @@ GRANT ALL PRIVILEGES ON lazada_ecommerce.* TO 'admin';
 grant select on lazada_ecommerce.products to 'customer';
 grant insert, select, update on lazada_ecommerce.users_info to 'customer';
 grant insert, select, update on lazada_ecommerce.orders to 'customer';
--- grant insert, select, update, delete on lazada_ecommerce.order_items to 'customer';
--- grant select on lazada_ecommerce.inventory to 'customer';
+grant select on lazada_ecommerce.order_items to 'customer';
+grant select on lazada_ecommerce.inventory to 'customer';
 -- grant execute on procedure lazada_ecommerce.UPDATE_INVENTORY_ON_ORDER_ACCEPT to 'customer';
 
 -- Seller: CRUD product, CRU users_info, orders and inventory

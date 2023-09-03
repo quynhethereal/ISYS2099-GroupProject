@@ -1,0 +1,27 @@
+.dropdown-menu li {
+    position: relative !important;
+}
+
+.dropdown-menu .dropdown-submenu {
+    display: none !important;
+    position: absolute !important;
+    left: 100% !important;
+    top: -7px !important;
+}
+
+/* .dropdown-menu .dropdown-submenu-left {
+    right: 100% !important;
+    left: auto !important;
+} */
+
+.dropdown-menu>li:hover>.dropdown-submenu {
+    display: block !important;
+}
+
+/* .dropdown-hover:hover>.dropdown-menu {
+    display: inline-block !important;
+}
+
+.dropdown-hover>.dropdown-toggle:active {
+    pointer-events: none !important;
+} */

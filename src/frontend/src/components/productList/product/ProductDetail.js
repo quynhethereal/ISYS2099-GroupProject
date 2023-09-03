@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hook/AuthHook.js";
 import { useCart } from "../../../hook/CartHook.js";
 import { getProductById } from "../../../action/product/product.js";
+import { getAllAttribute } from "../../../action/category/category";
 
 import Header from "../../header/Header.js";
 import NotFoundProductPage from "./NotFoundProductPage.js";
@@ -20,6 +21,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [amount, setAmount] = useState(1);
   const [randomComments, setRandomCommemts] = useState();
+  const [attribute, setAttribute] = useState([]);
 
   useEffect(() => {
     async function findProduct() {
@@ -31,6 +33,19 @@ const ProductDetail = () => {
     }
     findProduct();
     setRandomCommemts(Math.ceil(500 + Math.random() * (10000 - 500)));
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    async function getAllAtr() {
+      await getAllAttribute(productId).then((res) => {
+        if (res) {
+          setAttribute(res);
+        }
+      });
+    }
+
+    getAllAtr();
     // eslint-disable-next-line
   }, []);
 
@@ -89,6 +104,19 @@ const ProductDetail = () => {
             </div>
             <div className="text-warp text-muted mb-4">
               <p>{product?.description}</p>
+            </div>
+            <div className="d-flex flex-row flex-wrap mb-3 gap-1">
+              {attribute?.attributes?.map((item, index) => {
+                return (
+                  <span
+                    className="badge bg-info d-flex align-items-center justify-content-center"
+                    key={index}
+                  >
+                    {item?.name}
+                    {item?.value?.description}
+                  </span>
+                );
+              })}
             </div>
             <div className="d-flex flex-row align-items-center">
               {[1, 2, 3, 4, 5].map((item) => {

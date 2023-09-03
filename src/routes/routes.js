@@ -60,6 +60,8 @@ module.exports = app => {
     router.post("/warehouses", authMiddleware.verifyToken, warehouses.create);
     router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
     router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
+    router.delete("/warehouses/:id", authMiddleware.verifyToken, warehouses.delete);
+    router.put("/warehouses/:id", authMiddleware.verifyToken, warehouses.update);
 
     // inventory-related API
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
@@ -73,6 +75,7 @@ module.exports = app => {
     router.post("/category", authMiddleware.verifyToken, categories.createCategory);
     router.put("/category/:id/subcategory", authMiddleware.verifyToken, categories.createSubcategory);
     router.put("/category/:id", authMiddleware.verifyToken, categories.updateCategory);
+    router.get("/category/seller", categories.findFlattenCategory);
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);

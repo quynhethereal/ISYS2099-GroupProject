@@ -1,4 +1,4 @@
-const {createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData} = require('../models/category.model');
+const {createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData} = require('../models/category.model');
 
 exports.createCategory = async (req, res) => {
     try {
@@ -128,6 +128,20 @@ exports.findOne = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error get category."
         })
+    }
+}
+
+// Get both categories and subcategories at same level
+exports.findFlattenCategory = async (req, res) => {
+    try {
+        const data = await findAllFlatten();
+
+        res.status(200).json(data);
+
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error getting categories and subcategories as list for user."
+        });
     }
 }
 

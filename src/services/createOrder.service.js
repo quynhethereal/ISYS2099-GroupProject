@@ -58,7 +58,7 @@ CreateOrderService.createOrder = async (params) => {
                 transactionResult.unfulfilledProducts.push(parseInt(productId));
                 continue;
             }
-            // create order item record
+
             for (const inventory of inventoryMapping[productId]) {
                 const updateInventoryQuery = await connection.execute('UPDATE inventory SET reserved_quantity = reserved_quantity + ? WHERE product_id = ? AND warehouse_id = ?', [inventory.quantity, productId, inventory.warehouseId]);
 

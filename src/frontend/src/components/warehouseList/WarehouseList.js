@@ -153,7 +153,7 @@ const WarehouseList = () => {
       <div className="row mb-md-4">
         <WarehouseCreateForm />
       </div>
-      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-start p-0 mb-md-4">
+      <div className="container d-flex flex-column flex-md-row justify-content-evenly align-items-start p-0 mb-md-4 gap-md-3">
         {warehouses?.warehouses?.map((item, index) => {
           return <WarehouseItem key={index} data={item} token={token} />;
         })}
@@ -161,7 +161,10 @@ const WarehouseList = () => {
       <div className="row">
         <div className="col-12 mb-4">
           <h3 className="text-primary text-center">Pending Inventory</h3>
-          <p className="text-primary text-center">This section logs the item that have not been assigned to any warehouses due to storage limitation. </p>
+          <p className="text-primary text-center">
+            This section logs the item that have not been assigned to any
+            warehouses due to storage limitation.{" "}
+          </p>
         </div>
         <div className="col-12 d-flex flex-column justify-content-center align-items-center">
           <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
@@ -184,7 +187,8 @@ const WarehouseList = () => {
                       <p className="fw-bolder overflow-hidden text-wrap">
                         Quantity : {item?.quantity}
                       </p>
-                      <p className="text-wrap fw-bolder">Timestamp: {formatDate(item?.inventory_created_date)}
+                      <p className="text-wrap fw-bolder">
+                        Timestamp: {formatDate(item?.inventory_created_date)}
                       </p>
                     </div>
                   </div>
