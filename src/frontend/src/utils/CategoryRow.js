@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 
 import CategoryCreateForm from "./CategoryCreateForm";
+import CategoryUpdateForm from "./CategoryUpdateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
 import CategoryUpdateAttributeForm from "./CategoryUpdateAttributeForm";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
+  const [showUpdate, setShowUpdate] = useState(false);
   const [showAddAttribute, setShowAddAttribute] = useState(false);
   const [showUpdateAttribute, setShowUpdateAttribute] = useState(false);
 
@@ -19,6 +21,10 @@ const CategoryRow = ({ data, child }) => {
 
   const handleShowUpdateAttributeForm = () => {
     setShowUpdateAttribute((prev) => !prev);
+  };
+
+  const handleShowUpdateForm = () => {
+    setShowUpdate((prev) => !prev);
   };
   return (
     <div className="col-12 my-3">
@@ -38,23 +44,41 @@ const CategoryRow = ({ data, child }) => {
           >
             Create subcategory
           </button>
-          <button className="btn btn-warning ms-2">Update</button>
+          <button
+            className="btn btn-warning ms-2"
+            onClick={() => handleShowUpdateForm()}
+          >
+            Update
+          </button>
           <button className="btn btn-danger ms-2">Delete</button>
-          <CategoryCreateForm
-            data={data}
-            show={showCreate}
-            handleClose={handleShowCreateForm}
-          />
-          <CategoryAttributeForm
-            data={data}
-            show={showAddAttribute}
-            handleClose={handleShowAddAttributeForm}
-          />
-          <CategoryUpdateAttributeForm
-            data={data}
-            show={showUpdateAttribute}
-            handleClose={handleShowUpdateAttributeForm}
-          />
+          {showCreate && (
+            <CategoryCreateForm
+              data={data}
+              show={showCreate}
+              handleClose={handleShowCreateForm}
+            />
+          )}
+          {showUpdate && (
+            <CategoryUpdateForm
+              data={data}
+              show={showUpdate}
+              handleClose={handleShowUpdateForm}
+            />
+          )}
+          {showAddAttribute && (
+            <CategoryAttributeForm
+              data={data}
+              show={showAddAttribute}
+              handleClose={handleShowAddAttributeForm}
+            />
+          )}
+          {showUpdateAttribute && (
+            <CategoryUpdateAttributeForm
+              data={data}
+              show={showUpdateAttribute}
+              handleClose={handleShowUpdateAttributeForm}
+            />
+          )}
         </div>
       </div>
       <div className="col-12 d-flex flex-row flex-wrap my-2 gap-1">

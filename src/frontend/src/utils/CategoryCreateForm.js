@@ -79,7 +79,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
         if (res) {
           Swal.fire({
             icon: "success",
-            title: "Category crated",
+            title: "Category create",
             text: "Reloading in 1 second...",
             showConfirmButton: false,
             timer: 1000,

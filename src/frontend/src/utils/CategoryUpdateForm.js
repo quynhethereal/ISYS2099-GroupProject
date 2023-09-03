@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-import { createCategory, createSubCategory } from "../action/category/category";
+import { updateCategory } from "../action/category/category";
 import { useAuth } from "../hook/AuthHook";
 
 import { Modal, Button, Form } from "react-bootstrap";
@@ -19,7 +19,7 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
+      name: data?.name,
       required: "",
       isOptional: false,
       hasValue: "",
@@ -29,6 +29,10 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
   const { token } = useAuth();
 
   const [require, setRequire] = useState([]);
+
+  useEffect(() => {
+    setRequire(data?.attributes);
+  }, [data]);
 
   const handleAddAtr = () => {
     if (
@@ -75,32 +79,11 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
       attributes: require,
     };
     if (data) {
-      await createSubCategory(token(), data?.id, payload).then((res) => {
+      await updateCategory(token(), data?.id, payload).then((res) => {
         if (res) {
           Swal.fire({
             icon: "success",
-            title: "Category crated",
-            text: "Reloading in 1 second...",
-            showConfirmButton: false,
-            timer: 1000,
-            timerProgressBar: true,
-          }).then(() => {
-            // navigate(0);
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Oops!",
-            text: "Could not create new category",
-          });
-        }
-      });
-    } else {
-      await createCategory(token(), payload).then((res) => {
-        if (res) {
-          Swal.fire({
-            icon: "success",
-            title: "Category crated",
+            title: "Category updated",
             text: "Reloading in 1 second...",
             showConfirmButton: false,
             timer: 1000,
@@ -112,7 +95,7 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
           Swal.fire({
             icon: "error",
             title: "Oops!",
-            text: "Could not create new category",
+            text: "Could not update category! The category contains products",
           });
         }
       });
@@ -121,7 +104,7 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title className="ms-auto">Create Category </Modal.Title>
+        <Modal.Title className="ms-auto">Update Category</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -167,7 +150,7 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
                     className="badge bg-info text-center pe-0 py-0"
                     key={index}
                   >
-                    {item?.name} {item?.value}
+                    {item?.name} {item?.value?.description}
                     <Button
                       className="btn btn-sm btn-info text-white"
                       onClick={() => handleRemoveAtr(item)}
