@@ -78,7 +78,7 @@ const Order = ({ data }) => {
           timer: 1000,
           timerProgressBar: true,
         }).then(() => {
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({

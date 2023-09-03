@@ -131,18 +131,20 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
-            <div className="col-12 d-flex flex-row justify-content-end">
+            <div className="col-12 d-flex flex-row justify-content-end gap-2">
               <button
-                className="btn btn-warningr"
-                onClick={() => handleShowUpdateWarehouse()}
+                className="btn btn-warning"
+                onClick={() => handleShowUpdateWarehouse(data)}
               >
                 Update
               </button>
-              <WarehouseUpdateForm
-                show={showUpdateForm}
-                handleClose={handleShowUpdateWarehouse}
-                data={data}
-              />
+              {showUpdateForm && (
+                <WarehouseUpdateForm
+                  show={showUpdateForm}
+                  handleClose={handleShowUpdateWarehouse}
+                  data={data}
+                />
+              )}
               <button
                 className="btn btn-danger"
                 onClick={() => handleDeleteWarehouse(data)}

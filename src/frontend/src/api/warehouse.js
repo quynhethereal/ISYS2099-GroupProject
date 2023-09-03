@@ -28,6 +28,11 @@ export const deleteWarehouse = (token, id) =>
     headers: { "x-access-token": token },
   });
 
+export const updateWarehouse = (token, id, data) =>
+  axios.put(`${backend_url}/api/warehouses/${id}`, data, {
+    headers: { "x-access-token": token },
+  });
+
 export const getWarehouseById = (token, id) =>
   axios.get(`${backend_url}/api/warehouses/${id}`, {
     headers: { "x-access-token": token },

@@ -71,6 +71,20 @@ export const deleteWarehouse = async (token, id) => {
   }
 };
 
+export const updateWarehouse = async (token, id, data) => {
+  try {
+    const res = await api.updateWarehouse(token, id, data);
+
+    if (res.status === 200) {
+      const { data } = res;
+      return data;
+    }
+  } catch (error) {
+    const { response } = error;
+    return response?.data?.message;
+  }
+};
+
 export const moveTheIventoryToWarehouse = async (token, data) => {
   try {
     const res = await api.moveTheIventoryToWarehouse(token, data);
