@@ -2,6 +2,11 @@ const {createCategory, createSubcategory, findAll, findOne, findAttributes, find
 
 exports.createCategory = async (req, res) => {
     try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
         const name = req.body.name;
 
         if (!name) {
@@ -33,6 +38,19 @@ exports.createCategory = async (req, res) => {
 
 exports.createSubcategory = async (req, res) => {
     try {
+        // check if user is admin
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const parentId = parseInt(req.params.id);
+
+        if(!parentId) {
+            res.status(400).send({
+                message: "Invalid request. Empty parent Id."
+            })
+        } 
+
         const name = req.body.name;
 
         if (!name) {
@@ -42,16 +60,8 @@ exports.createSubcategory = async (req, res) => {
             return;
         }
         
-        const parentId = req.body.parentId;
-
-        if(!parentId) {
-            res.status(400).send({
-                message: "Invalid request. Empty parent Id."
-            })
-        } 
-
         const data = {
-            parentId: req.body.parentId,
+            parentId: parentId,
             name: name, 
             attributes: req.body.attributes
         }
