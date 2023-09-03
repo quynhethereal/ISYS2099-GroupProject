@@ -147,7 +147,6 @@ const ProductList = () => {
     navigate(`/customer/browse?categoryP=${e.target.value}`);
   };
 
-  console.log(errors);
   return (
     <>
       <div className="container">

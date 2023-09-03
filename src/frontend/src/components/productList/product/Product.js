@@ -119,7 +119,7 @@ const Product = ({ info, update }) => {
                 className="btn btn-danger mt-3"
                 onClick={() => handleDeleteProduct(info)}
               >
-                Update Product
+                Remove Product
               </button>
             </div>
           ) : (
