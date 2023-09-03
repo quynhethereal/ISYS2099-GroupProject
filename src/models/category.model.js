@@ -32,12 +32,18 @@ const CategorySchema = new mongoose.Schema({
     },
     subcategories: [],
     attributes: [{
-        description: {
-            type: mongoose.Schema.Types.Mixed,
-            required: true
-        }, 
-        type: {
-            type: String, 
+        name: String, 
+        value: {
+            description: {
+                type: mongoose.Schema.Types.Mixed,
+            }, 
+            type: {
+                type: String, 
+                enum:['string','number'],
+            }
+        },
+        required: {
+            type: Boolean,
             required: true
         }
     }]   // Array of attribute documents

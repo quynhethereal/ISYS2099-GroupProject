@@ -19,14 +19,21 @@ const generateMany = async (count) => {
 const generateAttribute = () => {
     return new Promise((resolve, reject) => {
         const attribute = {
-            description: '',
-            type: faker.helpers.arrayElement(['string', 'number']),
+            name: faker.lorem.word(),
+            required: faker.datatype.boolean()
         };
 
-        if (attribute.type === 'string') {
-            attribute.description = faker.commerce.productAdjective();
-        } else {
-            attribute.description = faker.number.int(5000);
+        if (attribute.required) {
+            attribute.value = {
+                type: faker.helpers.arrayElement(['string', 'number']),
+                description: ''
+            };
+
+            if (attribute.value.type === 'string') {
+                attribute.value.description = faker.commerce.productAdjective();
+            } else if (attribute.value.type === 'number') {
+                attribute.value.description = faker.number.int(5000);
+            }
         }
 
         resolve(attribute);
