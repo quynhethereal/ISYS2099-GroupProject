@@ -5,54 +5,9 @@ import { searchByCategory } from "../../action/product/product.js";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Product from "./product/Product.js";
-
-var testData = [
-  {
-    _id: "64e234d2e360f233a9c99ad5",
-    id: 1,
-    name: "Clothing and Accessories",
-    attributes: [],
-    parent: 2,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad6",
-    id: 2,
-    name: "Electronics and Gadgets",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad7",
-    id: 3,
-    name: "Home and Kitchen Appliances",
-    attributes: [],
-    parent: 1,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad8",
-    id: 4,
-    name: "Beauty and Personal Care",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad9",
-    id: 5,
-    name: "Books, Music, and Movies",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e23ac7a11f741d717017e0",
-    id: 21,
-    name: "Instruments",
-    attributes: ["Entertaining", "Music"],
-    parent: 5,
-    __v: 0,
-  },
-];
+import Dropdown from "react-bootstrap/Dropdown";
+import CategorySubMenu from "../../utils/CategorySubMenu.js";
+import "./ProductList.css";
 
 const ProductListBrowse = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -166,15 +121,16 @@ const ProductListBrowse = () => {
         >
           <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center mt-md-3">
             <div className="col-12">
-              <select
+              {/* <select
                 id="categoryID"
                 type="number"
                 className="form-select form-select-lg"
                 {...register("categoryID", {
                   valueAsNumber: true,
                 })}
-              >
-                <option value="" disabled>
+              > */}
+
+              {/* <option value="" disabled>
                   Select category
                 </option>
                 {testData?.map((category, index) => {
@@ -184,7 +140,7 @@ const ProductListBrowse = () => {
                     </option>
                   );
                 })}
-              </select>
+              </select> */}
             </div>
           </div>
           <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center">

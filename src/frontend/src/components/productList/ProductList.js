@@ -5,8 +5,11 @@ import { getAllProduct } from "../../action/product/product.js";
 import { getAllCategory } from "../../action/category/category.js";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import Product from "./product/Product.js";
+import Dropdown from "react-bootstrap/Dropdown";
+import CategorySubMenu from "../../utils/CategorySubMenu.js";
+import "./ProductList.css";
 
+import Product from "./product/Product.js";
 import searchIcon from "../../assets/image/searchIcon.png";
 
 const ProductList = () => {
@@ -39,6 +42,7 @@ const ProductList = () => {
     totalPages: 0,
   });
   const [focus, setFocus] = useState(false);
+  const [categoryList, setCategoryList] = useState([]);
 
   const handleAddMoreProduct = async () => {
     setIsLoading(true);
@@ -80,7 +84,9 @@ const ProductList = () => {
   useEffect(() => {
     async function getAllCategoryData() {
       await getAllCategory().then((res) => {
-        console.log(res);
+        if (res) {
+          setCategoryList(res);
+        }
       });
     }
 
@@ -103,8 +109,10 @@ const ProductList = () => {
     }
   };
 
-  const handleFilterByCategory = (e) => {
-    navigate(`/customer/browse?categoryP=${e.target.value}`);
+  const handleFilterByCategory = (id) => {
+    if (id) {
+      navigate(`/customer/browse?categoryP=${id}`);
+    }
   };
 
   return (
@@ -172,28 +180,33 @@ const ProductList = () => {
           </div>
           <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center mt-md-3">
             <div className="col-12">
-              {/* <select
-                id="fromWarehouse"
-                type="number"
-                className="form-select form-select-lg"
-                {...register("categoryID", {
-                  valueAsNumber: true,
-                })}
-                onChange={(e) => {
-                  handleFilterByCategory(e);
-                }}
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {testData?.map((category, index) => {
-                  return (
-                    <option value={category?.id} key={index}>
-                      {category?.name}
-                    </option>
-                  );
-                })}
-              </select> */}
+              <Dropdown>
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                  Category Selection
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {categoryList?.map((parent, index) => {
+                    return (
+                      <li key={index}>
+                        <Dropdown.Item
+                          onClick={() => handleFilterByCategory(parent?.id)}
+                        >
+                          {parent?.name}
+                        </Dropdown.Item>
+                        {parent?.subcategories?.map((child) => {
+                          return (
+                            <CategorySubMenu
+                              data={child}
+                              handleChoose={handleFilterByCategory}
+                              key={child?.id}
+                            />
+                          );
+                        })}
+                      </li>
+                    );
+                  })}
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </form>
