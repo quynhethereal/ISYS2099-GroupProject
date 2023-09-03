@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import CategoryCreateForm from "./CategoryCreateForm";
 import CategoryUpdateForm from "./CategoryUpdateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
+  const navigate = useNavigate();
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
@@ -14,6 +17,35 @@ const CategoryRow = ({ data, child }) => {
 
   const handleShowUpdateForm = () => {
     setShowUpdate((prev) => !prev);
+  };
+
+  const handleDeleteCategory = () => {
+    Swal.fire({
+      title: "Do you want to delete this product? This can't be reverted",
+      showDenyButton: true,
+      confirmButtonText: "Delete",
+      denyButtonText: `Cancel`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        console.log("Awaiting for deleting api");
+        // await deleteProduct(token(), info?.id).then((res) => {
+        //   if (res?.message) {
+        //     Swal.fire({
+        //       icon: "success",
+        //       title: res?.message,
+        //       text: "Reloading in 2 secs for changes...",
+        //       showConfirmButton: false,
+        //       timer: 2000,
+        //       timerProgressBar: true,
+        //     }).then(() => {
+        //       navigate(0);
+        //     });
+        //   }
+        // });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
   };
   return (
     <div className="col-12 my-3">
@@ -39,7 +71,12 @@ const CategoryRow = ({ data, child }) => {
           >
             Update
           </button>
-          <button className="btn btn-danger ms-2">Delete</button>
+          <button
+            className="btn btn-danger ms-2"
+            onClick={() => handleDeleteCategory()}
+          >
+            Delete
+          </button>
           {showCreate && (
             <CategoryCreateForm
               data={data}
