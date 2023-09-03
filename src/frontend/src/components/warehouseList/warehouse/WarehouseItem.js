@@ -8,11 +8,13 @@ import {
 } from "../../../action/warehouse/warehouse.js";
 
 import WarehouseInventory from "./WarehouseInventory.js";
+import WarehouseUpdateForm from "./WarehouseUpdateForm.js";
 
 const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
   const navigate = useNavigate();
   const [inventory, setInventory] = useState();
   const [page, setPage] = useState(1);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
 
   const handleNextPage = () => {
     if (page < inventory?.totalPages) {
@@ -111,10 +113,14 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
     });
   };
 
+  const handleShowUpdateWarehouse = () => {
+    setShowUpdateForm((prev) => !prev);
+  };
+
   return (
     <div
       className={`col-12 ${
-        size ? size : "col-md-5"
+        size ? size : "col-md-6"
       } my-3 my-md-0 d-flex flex-column justify-content-center align-items-center`}
     >
       <div className="card w-100">
@@ -122,15 +128,28 @@ const WarehouseItem = ({ data, token, size, setWareHouseInventoryData }) => {
           <div className="card-title d-flex flex-row">
             <div className="fs-4 fw-bolder">#{data?.id}</div>
             <div className="mx-auto fs-4 fw-bolder">{data?.name}</div>
-            <button
-              className="btn btn-danger"
-              onClick={() => handleDeleteWarehouse(data)}
-            >
-              Delete
-            </button>
           </div>
           <hr />
           <div className="card-text d-flex- flex-column">
+            <div className="col-12 d-flex flex-row justify-content-end">
+              <button
+                className="btn btn-warningr"
+                onClick={() => handleShowUpdateWarehouse()}
+              >
+                Update
+              </button>
+              <WarehouseUpdateForm
+                show={showUpdateForm}
+                handleClose={handleShowUpdateWarehouse}
+                data={data}
+              />
+              <button
+                className="btn btn-danger"
+                onClick={() => handleDeleteWarehouse(data)}
+              >
+                Delete
+              </button>
+            </div>
             <div className="col-12">
               <label htmlFor="city" className="text-muted">
                 City:
