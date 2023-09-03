@@ -48,9 +48,11 @@ Warehouse.create = async (params) => {
         const warehouse = new Warehouse({name, province, city, district, street, number, total_volume, available_volume});
 
         const insertWarehouseQuery = await connection.execute(
-            'INSERT INTO `warehouses` (name, province, city, district, street, number, total_volume, available_volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO `warehouses`(name, province, city, district, street, number, total_volume, available_volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [warehouse.name, warehouse.province, warehouse.city, warehouse.district, warehouse.street, warehouse.number, warehouse.total_volume, warehouse.available_volume]
         );
+
+        console.log(insertWarehouseQuery[0]);
 
         if (insertWarehouseQuery[0].affectedRows === 0) {
             throw new Error('Unable to create warehouse.');
@@ -116,6 +118,38 @@ Warehouse.findAll = async (params) => {
         }
     } catch (err) {
         console.log('Unable to find warehouses.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
+    }
+}
+
+Warehouse.delete = async (warehouseId) => {
+    const connection = await admin_pool.promise().getConnection();
+
+    try {
+        await connection.beginTransaction();
+        // check if warehouse has products
+        const [rows] = await connection.execute("SELECT * FROM `inventory` WHERE warehouse_id = ? FOR SHARE", [warehouseId]);
+
+        if (rows.length > 0) {
+            throw new Error(`Warehouse ${warehouseId} still has products. Cannot delete warehouse.`);
+        }
+
+        const [res] = await connection.execute("DELETE FROM `warehouses` WHERE id = ?", [warehouseId]);
+
+        if (res.affectedRows === 0) {
+            throw new Error('No warehouse found.');
+        }
+
+        await connection.commit();
+
+        return {
+            message: 'Warehouse deleted.'
+        }
+    } catch (err) {
+        console.log('Unable to delete warehouse.');
         // rethrow error
         throw err;
     } finally {

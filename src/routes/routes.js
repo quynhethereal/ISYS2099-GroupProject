@@ -60,6 +60,7 @@ module.exports = app => {
     router.post("/warehouses", authMiddleware.verifyToken, warehouses.create);
     router.get("/warehouses", authMiddleware.verifyToken, warehouses.findAll);
     router.get("/warehouses/:id", authMiddleware.verifyToken, warehouses.findById);
+    router.delete("/warehouses/:id", authMiddleware.verifyToken, warehouses.delete);
 
     // inventory-related API
     router.get("/warehouses/:id/inventory", authMiddleware.verifyToken, warehouses.getInventoryByWarehouseId);
