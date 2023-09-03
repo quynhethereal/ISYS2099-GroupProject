@@ -3,24 +3,18 @@ import React, { useState } from "react";
 import CategoryCreateForm from "./CategoryCreateForm";
 import CategoryUpdateForm from "./CategoryUpdateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
-import CategoryUpdateAttributeForm from "./CategoryUpdateAttributeForm";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [showAddAttribute, setShowAddAttribute] = useState(false);
-  const [showUpdateAttribute, setShowUpdateAttribute] = useState(false);
+  const [showViewAttribute, setShowViewAttribute] = useState(false);
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
   };
 
-  const handleShowAddAttributeForm = () => {
-    setShowAddAttribute((prev) => !prev);
-  };
-
-  const handleShowUpdateAttributeForm = () => {
-    setShowUpdateAttribute((prev) => !prev);
+  const handleShowViewAttributeForm = () => {
+    setShowViewAttribute((prev) => !prev);
   };
 
   const handleShowUpdateForm = () => {
@@ -65,18 +59,11 @@ const CategoryRow = ({ data, child }) => {
               handleClose={handleShowUpdateForm}
             />
           )}
-          {showAddAttribute && (
+          {showViewAttribute && (
             <CategoryAttributeForm
               data={data}
-              show={showAddAttribute}
-              handleClose={handleShowAddAttributeForm}
-            />
-          )}
-          {showUpdateAttribute && (
-            <CategoryUpdateAttributeForm
-              data={data}
-              show={showUpdateAttribute}
-              handleClose={handleShowUpdateAttributeForm}
+              show={showViewAttribute}
+              handleClose={handleShowViewAttributeForm}
             />
           )}
         </div>
@@ -88,7 +75,7 @@ const CategoryRow = ({ data, child }) => {
               type="button"
               className="btn btn-info p-0"
               key={index}
-              onClick={() => handleShowUpdateAttributeForm()}
+              onClick={() => handleShowViewAttributeForm()}
             >
               <span className="badge bg-info d-flex align-items-center justify-content-center">
                 {atr?.name}
@@ -96,13 +83,6 @@ const CategoryRow = ({ data, child }) => {
             </button>
           );
         })}
-        <button
-          type="button"
-          className="btn btn-info p-0"
-          onClick={() => handleShowAddAttributeForm()}
-        >
-          <span className="badge bg-info"> + New Attribute </span>
-        </button>
       </div>
 
       <div className="col-12">

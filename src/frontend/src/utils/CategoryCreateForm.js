@@ -48,7 +48,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           ...require,
           {
             name: getValues("required"),
-            required: getValues("isOptional"),
+            required: getValues("isOptional") === "true" ? true : false,
           },
         ]);
       }
