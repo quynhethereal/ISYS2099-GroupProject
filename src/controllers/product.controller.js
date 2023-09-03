@@ -90,24 +90,6 @@ exports.findAllByCategory = async (req, res) => {
     }
 }
 
-exports.findByKey = async (req, res) => {
-    try {
-        const params = {
-            key: req.query.key,
-            queryParams: req.query,
-            sortDirection: req.query.sortDirection || 'asc' // Default to ascending if not provided
-        };
-
-        const products = await Product.findByKey(params);
-
-        res.status(200).json(products);
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error finding products by key."
-        });
-    }
-}
-
 exports.update = async (req, res) => {
     try {
         const productId = parseInt(req.params.id);
