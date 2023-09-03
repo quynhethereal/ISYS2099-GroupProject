@@ -20,7 +20,7 @@ const FormInput = ({
           placeholder={inputPlaceHolder}
           autoFocus={inputFocus ? true : false}
           {...register(inputName, {
-            required: `The ${inputPlaceHolder} is required`,
+            required: `The ${inputName} is required`,
             valueAsNumber: inputType ? true : false,
           })}
           min="1"

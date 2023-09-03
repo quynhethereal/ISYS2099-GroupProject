@@ -1,8 +1,9 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { updateProduct } from "../action/product/product.js";
+import { getAllCategory } from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
 
@@ -10,58 +11,11 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
-var testData = [
-  {
-    _id: "64e234d2e360f233a9c99ad5",
-    id: 1,
-    name: "Clothing and Accessories",
-    attributes: ["Entertaining", "Music", "Electrical"],
-    parent: 2,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad6",
-    id: 2,
-    name: "Electronics and Gadgets",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad7",
-    id: 3,
-    name: "Home and Kitchen Appliances",
-    attributes: [],
-    parent: 1,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad8",
-    id: 4,
-    name: "Beauty and Personal Care",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad9",
-    id: 5,
-    name: "Books, Music, and Movies",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e23ac7a11f741d717017e0",
-    id: 21,
-    name: "Instruments",
-    attributes: ["Entertaining", "Music"],
-    parent: 5,
-    __v: 0,
-  },
-];
-
 const ProductUpdateForm = ({ data, show, handleClose }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
+  const [allCategory, setAllCategory] = useState([]);
   const {
     register,
     handleSubmit,
@@ -77,6 +31,17 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       image: data?.image,
     },
   });
+
+  useEffect(() => {
+    async function getAllCategoryData() {
+      await getAllCategory().then((res) => {
+        console.log(res);
+        setAllCategory(res);
+      });
+    }
+    getAllCategoryData();
+    // eslint-disable-next-line
+  }, []);
 
   const handleFetchImageSoure = async (imgUrl) => {
     const checkImage = (path) =>
@@ -97,9 +62,10 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     });
   };
   // token, id, title, description, price, category, image;
+  console.log(imageSoure);
 
   const handleUpdateProduct = async (value) => {
-    if (imageSoure === "error") {
+    if (imageSoure === "error" && imageSoure) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -107,10 +73,9 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    console.log(value);
-    await updateProduct(token(), data?.id, value).then((res) => {
-      console.log(res);
-    });
+    // await updateProduct(token(), data?.id, value).then((res) => {
+    //   console.log(res);
+    // });
   };
   return (
     <Modal show={show} onHide={handleClose}>
@@ -184,7 +149,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                       <option value={data?.category_id} disabled>
                         {data?.category_name && "Going to get api"}
                       </option>
-                      {testData?.map((category, index) => {
+                      {allCategory?.map((category, index) => {
                         return (
                           <option value={category?.id} key={index}>
                             {category?.name}

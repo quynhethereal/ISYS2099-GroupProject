@@ -2,57 +2,16 @@ import React, { useState, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import { searchByCategory } from "../../action/product/product.js";
+import {
+  getCategoryByID,
+  getAllCategory,
+} from "../../action/category/category.js";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Product from "./product/Product.js";
-
-var testData = [
-  {
-    _id: "64e234d2e360f233a9c99ad5",
-    id: 1,
-    name: "Clothing and Accessories",
-    attributes: [],
-    parent: 2,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad6",
-    id: 2,
-    name: "Electronics and Gadgets",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad7",
-    id: 3,
-    name: "Home and Kitchen Appliances",
-    attributes: [],
-    parent: 1,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad8",
-    id: 4,
-    name: "Beauty and Personal Care",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad9",
-    id: 5,
-    name: "Books, Music, and Movies",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e23ac7a11f741d717017e0",
-    id: 21,
-    name: "Instruments",
-    attributes: ["Entertaining", "Music"],
-    parent: 5,
-    __v: 0,
-  },
-];
+import Dropdown from "react-bootstrap/Dropdown";
+import CategorySubMenu from "../../utils/CategorySubMenu.js";
+import "./ProductList.css";
 
 const ProductListBrowse = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,6 +42,10 @@ const ProductListBrowse = () => {
     check1: getValues("sortedDirection1") === "DESC" ? false : true,
     check2: getValues("sortedDirection2") === "DESC" ? false : true,
   });
+  const [currentData, setCurrentData] = useState();
+  const [categoryList, setCategoryList] = useState([]);
+  const [newSelection, setNewSelection] = useState();
+
   const handleSetMoreSearch = () => {
     setMoreSearch((prev) => !prev);
   };
@@ -101,6 +64,11 @@ const ProductListBrowse = () => {
       setValue("sortedDirection2", "DESC");
     }
     setChange({ ...change, check2: !change?.check2 });
+  };
+
+  const handleSetCategoryId = (category) => {
+    setValue("categoryID", category?.id);
+    setNewSelection(category);
   };
 
   //working for category
@@ -134,6 +102,9 @@ const ProductListBrowse = () => {
             currentPage: res?.currentPage,
             totalPages: res?.totalPages,
           });
+          if (res?.currentPage >= res?.totalPages) {
+            setIsFechtedEverything(true);
+          }
         }
       });
     }
@@ -149,14 +120,37 @@ const ProductListBrowse = () => {
     // eslint-disable-next-line
   }, [moreSearch]);
 
+  useEffect(() => {
+    async function getSpecificCategory() {
+      await getCategoryByID(categoryP).then((res) => {
+        setCurrentData((prev) => res);
+      });
+    }
+
+    if (categoryP && categoryP !== "" && parseInt(categoryP)) {
+      getSpecificCategory();
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    async function getAllCategoryData() {
+      await getAllCategory().then((res) => {
+        if (res) {
+          setCategoryList(res);
+        }
+      });
+    }
+
+    getAllCategoryData();
+  }, []);
+
   const handleSearchProduct = (e) => {
-    console.log(e);
     setSearchParams(
       `?categoryP=${e.categoryID}&sortedDirectionP1=${e.sortedDirection1}&sortedTermP1=${e.sortedTerm1}&sortedDirectionP2=${e.sortedDirection2}&sortedTermP2=${e.sortedTerm2}`
     );
     navigate(0);
   };
-
   return (
     <>
       <div className="container">
@@ -165,26 +159,37 @@ const ProductListBrowse = () => {
           className="my-4 d-flex flex-wrap flex-row justify-content-between align-items-center"
         >
           <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center mt-md-3">
-            <div className="col-12">
-              <select
-                id="categoryID"
-                type="number"
-                className="form-select form-select-lg"
-                {...register("categoryID", {
-                  valueAsNumber: true,
-                })}
-              >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {testData?.map((category, index) => {
-                  return (
-                    <option value={category?.id} key={index}>
-                      {category?.name}
-                    </option>
-                  );
-                })}
-              </select>
+            <div className="col-12 d-flex flex-row gap-1 gap-md-4">
+              <Dropdown>
+                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                  Category Selection
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {categoryList?.map((parent, index) => {
+                    return (
+                      <li key={index}>
+                        <Dropdown.Item
+                          onClick={() => handleSetCategoryId(parent)}
+                        >
+                          {parent?.name}
+                        </Dropdown.Item>
+                        {parent?.subcategories?.map((child) => {
+                          return (
+                            <CategorySubMenu
+                              data={child}
+                              handleChoose={handleSetCategoryId}
+                              key={child?.id}
+                            />
+                          );
+                        })}
+                      </li>
+                    );
+                  })}
+                </Dropdown.Menu>
+              </Dropdown>
+              <div className="d-flex justify-content-center align-items-center fw-bold">
+                {newSelection?.id ? newSelection?.name : currentData?.name}
+              </div>
             </div>
           </div>
           <div className="col-12 col-md-6 d-flex justtify-content-center align-items-center">
@@ -253,6 +258,12 @@ const ProductListBrowse = () => {
             </button>
           </div>
         </form>
+        {searchCategoryData?.data?.length !== 0 && (
+          <div className="fw-bold fs-3 fw-bold text-info my-4 d-flex flex-warp flex-row justify-content-center align-items-center">
+            Finding {searchCategoryData?.data?.length} products with category{" "}
+            {currentData?.name}
+          </div>
+        )}
         <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
           {searchCategoryData?.data?.map((item, index) => {
             return (
@@ -261,7 +272,7 @@ const ProductListBrowse = () => {
               </div>
             );
           })}
-          {searchCategoryData?.length === 0 && isFechtedEverything && (
+          {searchCategoryData?.data?.length === 0 && isFechtedEverything && (
             <div className="w-100 text-center fs-3 fw-bold">None was found</div>
           )}
         </div>

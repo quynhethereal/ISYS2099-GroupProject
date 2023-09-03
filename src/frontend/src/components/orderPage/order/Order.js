@@ -68,7 +68,8 @@ const Order = ({ data }) => {
   };
   const handleAcceptOrder = async (id) => {
     await acceptOrder(token(), id).then((res) => {
-      if (res?.data?.order?.status === "accepted") {
+      console.log(res);
+      if (res && res?.status === 200) {
         Swal.fire({
           icon: "success",
           title: "Accepted the order",
