@@ -20,38 +20,45 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   } = useForm({
     defaultValues: {
       name: "",
-      required: [],
-      optional: [],
+      required: "",
+      isOptional: false,
+      hasValue: "",
     },
   });
   const navigate = useNavigate();
   const { token } = useAuth();
 
   const [require, setRequire] = useState([]);
-  const [optional, setOptional] = useState([]);
 
-  const handleAddRequire = () => {
-    if (!require?.includes(getValues("required"))) {
-      setRequire([...require, getValues("required")]);
+  const handleAddAtr = () => {
+    if (
+      require.filter((item) => item.name === getValues("required")).length === 0
+    ) {
+      if (getValues("hasValue") !== "") {
+        setRequire([
+          ...require,
+          {
+            name: getValues("required"),
+            required: getValues("isOptional") === "true" ? true : false,
+            value: getValues("hasValue"),
+          },
+        ]);
+      } else {
+        setRequire([
+          ...require,
+          {
+            name: getValues("required"),
+            required: getValues("isOptional"),
+          },
+        ]);
+      }
       reset({ required: [] });
     }
   };
 
-  const handleAddOptional = () => {
-    if (!optional?.includes(getValues("optional"))) {
-      setOptional([...optional, getValues("optional")]);
-      reset({ optional: [] });
-    }
-  };
-
-  const handleRemoveRequire = (value) => {
-    if (require?.includes(value)) {
-      setRequire((prev) => prev?.filter((item) => item !== value));
-    }
-  };
-  const handleRemoveOptional = (value) => {
-    if (optional?.includes(value)) {
-      setOptional((prev) => prev?.filter((item) => item === value));
+  const handleRemoveAtr = (value) => {
+    if (require.filter((item) => item.name === value.name).length > 0) {
+      setRequire((prev) => prev?.filter((item) => item.name !== value.name));
     }
   };
 
@@ -65,12 +72,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
     }
     const payload = {
       name: e.name,
-      attributes: [
-        {
-          required: require,
-          optional: optional,
-        },
-      ],
+      attributes: require,
     };
     console.log(payload);
     await createCategory(token(), payload).then((res) => {
@@ -89,7 +91,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
         Swal.fire({
           icon: "error",
           title: "Oops!",
-          text: "Server error! Try again",
+          text: "Could not create new category",
         });
       }
     });
@@ -112,13 +114,26 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           <div>
             <Form.Group className="mb-3">
               <Form.Label>Required</Form.Label>
-              <div className="d-flex flex-row">
+              <div className="d-flex flex-row gap-2">
                 <Form.Control
                   type="text"
                   placeholder="Required attribute"
                   {...register("required", {})}
                 />
-                <Button variant="primary" onClick={() => handleAddRequire()}>
+                <select
+                  id="fromWarehouse"
+                  className="form-select form-select-lg"
+                  {...register("isOptional", {})}
+                >
+                  <option value={false}>False</option>
+                  <option value={true}>True</option>
+                </select>
+                <Form.Control
+                  type="text"
+                  placeholder="Optional value"
+                  {...register("hasValue", {})}
+                />
+                <Button variant="primary" onClick={() => handleAddAtr()}>
                   +
                 </Button>
               </div>
@@ -130,10 +145,10 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                     className="badge bg-info text-center pe-0 py-0"
                     key={index}
                   >
-                    {item}
+                    {item?.name} {item?.value}
                     <Button
                       className="btn btn-sm btn-info text-white"
-                      onClick={() => handleRemoveRequire(item)}
+                      onClick={() => handleRemoveAtr(item)}
                     >
                       x
                     </Button>
@@ -141,27 +156,6 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                 );
               })}
             </div>
-            <p className="text-danger">
-              {errors?.require && errors?.require?.message}
-            </p>
-          </div>
-          <div>
-            <Form.Group className="mb-3">
-              <Form.Label>Optional</Form.Label>
-              <div className="d-flex flex-row">
-                <Form.Control
-                  type="text"
-                  placeholder="Required attribute"
-                  {...register("optional", {})}
-                />
-                <Button variant="primary" onClick={() => handleAddOptional()}>
-                  +
-                </Button>
-              </div>
-            </Form.Group>
-            <p className="text-danger">
-              {errors?.require && errors?.require?.message}
-            </p>
           </div>
         </Form>
       </Modal.Body>
