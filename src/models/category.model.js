@@ -348,7 +348,44 @@ const findOne = async (id) => {
         throw new Error('Could not find category.');
     }
 }
+const findNestedSubcategories = async (category) => {
+    const catObj = {
+        id: category.id,
+        parentId: category.parentId,
+        name: category.name
+    };
 
+    const data = [];
+    data.push(catObj);
+
+    if (category.subcategories && category.subcategories.length > 0) {
+        
+        const subcategories = await Promise.all(category.subcategories.map((subcategory) => (findNestedSubcategories(subcategory))));
+
+        for (const subcategory of subcategories) {
+            data.push(...subcategory);
+        }
+    }
+    console.log(data);
+
+    return data;
+}
+
+const findAllFlatten = async () => {
+    try {
+        const categories = await Category.find({});
+        const data = [];
+
+        for (const category of categories) {
+            const catObj = await findNestedSubcategories(category);
+            data.push(...catObj);
+        }
+
+        return data;
+    } catch (err) {
+        throw new Error("Error fetching id and name of categories and subcategories.", err);
+    }
+}
 
 const findAttributes = async (id) => {
     try {
@@ -485,5 +522,5 @@ const findIDAndUpdate = async (category, request) => {
     }
 }
 
-module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAttributes, findProductCatId, updateCategoryData};
+module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData};
 
