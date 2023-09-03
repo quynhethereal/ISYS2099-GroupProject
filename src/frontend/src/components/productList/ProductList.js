@@ -2,59 +2,12 @@ import React, { useState, useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import { getAllProduct } from "../../action/product/product.js";
+import { getAllCategory } from "../../action/category/category.js";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Product from "./product/Product.js";
 
 import searchIcon from "../../assets/image/searchIcon.png";
-
-var testData = [
-  {
-    _id: "64e234d2e360f233a9c99ad5",
-    id: 1,
-    name: "Clothing and Accessories",
-    attributes: [],
-    parent: 2,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad6",
-    id: 2,
-    name: "Electronics and Gadgets",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad7",
-    id: 3,
-    name: "Home and Kitchen Appliances",
-    attributes: [],
-    parent: 1,
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad8",
-    id: 4,
-    name: "Beauty and Personal Care",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e234d2e360f233a9c99ad9",
-    id: 5,
-    name: "Books, Music, and Movies",
-    attributes: [],
-    __v: 0,
-  },
-  {
-    _id: "64e23ac7a11f741d717017e0",
-    id: 21,
-    name: "Instruments",
-    attributes: ["Entertaining", "Music"],
-    parent: 5,
-    __v: 0,
-  },
-];
 
 const ProductList = () => {
   // eslint-disable-next-line
@@ -66,12 +19,7 @@ const ProductList = () => {
   const categoryP = searchParams?.get("categoryP");
   const sortedDirectionP = searchParams?.get("sortedDirectionP");
   const sortedTermP = searchParams?.get("sortedTermP");
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit, getValues } = useForm({
     defaultValues: {
       searchKey: searchKeyP ? searchKeyP : "",
       categoryID: categoryP ? categoryP : "",
@@ -125,6 +73,18 @@ const ProductList = () => {
       getInitialData();
     }
     // eslint-disable-next-line
+  }, []);
+
+  //on working
+
+  useEffect(() => {
+    async function getAllCategoryData() {
+      await getAllCategory().then((res) => {
+        console.log(res);
+      });
+    }
+
+    getAllCategoryData();
   }, []);
 
   const handleSearchProduct = (e) => {
@@ -212,7 +172,7 @@ const ProductList = () => {
           </div>
           <div className="col-12 col-md-4 d-flex justtify-content-center align-items-center mt-md-3">
             <div className="col-12">
-              <select
+              {/* <select
                 id="fromWarehouse"
                 type="number"
                 className="form-select form-select-lg"
@@ -233,7 +193,7 @@ const ProductList = () => {
                     </option>
                   );
                 })}
-              </select>
+              </select> */}
             </div>
           </div>
         </form>
