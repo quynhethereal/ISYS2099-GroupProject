@@ -118,15 +118,15 @@ const isExistedCat = async (id) => {
     }
 }
 
-const findDuplicateName = async (category, name) => {
+const findDuplicateName = async (category, name, id) => {
     try {
-        if (category.name == name) {
+        if (category.name == name && category.id !== id) {
             return true;
         }
 
         if (category.subcategories) {
             for (const subcategory of category.subcategories) {
-                const duplicate = await findDuplicateName(subcategory, name);
+                const duplicate = await findDuplicateName(subcategory, name, id);
 
                 if (duplicate) {
                     return true;
@@ -142,10 +142,11 @@ const findDuplicateName = async (category, name) => {
 // handle cat
 const createCategory = async (catObj) => {
     try {
+        console.log('catObj', catObj);
         const categories = await Category.find();
 
         for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name);
+            const duplicate = await findDuplicateName(category, catObj.name, 0);
 
             if (duplicate) {
                 throw new Error('Category is existed');
@@ -155,7 +156,22 @@ const createCategory = async (catObj) => {
         // Handle generate ID
         const nextId = await generateID('category'); 
 
-        const attributes = catObj.attributes.map((description) => {
+        // attributes include name, required status, description
+        const attributes = catObj.attributes.map((attribute) => {
+            console.log('attribute', attribute);
+            if (attribute.name == null) {
+                throw new Error('Empty attribute name.');
+            }
+
+            if (!attribute.required) {
+                return {
+                    name: attribute.name,
+                    required: attribute.required
+                }
+            }
+
+            const description = attribute.value;
+
             let type;
             if (typeof description === 'string') {
                 type = 'string';
@@ -166,11 +182,15 @@ const createCategory = async (catObj) => {
             }
 
             return {
-                description: description,
-                type: type
+                name: attribute.name, 
+                required: attribute.required,
+                value: {
+                    description: description,
+                    type: type
+                } 
             }
         })
-
+            
         const data = new Category ({
             id: nextId,
             name: catObj.name,
@@ -191,9 +211,10 @@ const createSubcategory = async (catObj) => {
         const categories = await Category.find();
 
         for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name);
+            const duplicate = await findDuplicateName(category, catObj.name, 0);
 
             if (duplicate) {
+                console.log('Subcategory is existed');
                 throw new Error('Subcategory is existed');
             }
         }
@@ -213,7 +234,20 @@ const createSubcategory = async (catObj) => {
             throw new Error("Category parent ID is not existed.");
         }
 
-        const attributes = catObj.attributes.map((description) => {
+        const attributes = catObj.attributes.map((attribute) => {
+            if (attribute.name == null) {
+                throw new Error('Empty attribute name.');
+            }
+
+            if (!attribute.required) {
+                return {
+                    name: attribute.name,
+                    required: attribute.required
+                }
+            }
+
+            const description = attribute.value;
+
             let type;
             if (typeof description === 'string') {
                 type = 'string';
@@ -224,8 +258,12 @@ const createSubcategory = async (catObj) => {
             }
 
             return {
-                description: description,
-                type: type
+                name: attribute.name, 
+                required: attribute.required,
+                value: {
+                    description: description,
+                    type: type
+                } 
             }
         })
 
@@ -403,16 +441,17 @@ const updateCategoryData = async (catObj) => {
     try {
         const categories = await Category.find();
 
+        const id = catObj.id;
+
+        // Handle duplicate name with itself
         for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name);
+            const duplicate = await findDuplicateName(category, catObj.name, id);
 
             if (duplicate) {
                 console.log('Category name is existed!');
                 throw new Error('Category name is existed');
             }
         }
-
-        const id = catObj.id;
 
         const findCat = await Category.findOne({
             $or: [
@@ -432,7 +471,21 @@ const updateCategoryData = async (catObj) => {
             throw new Error('Products remain in category!');
         }
 
-        const attributes = catObj.attributes.map((description) => {
+        const attributes = catObj.attributes.map((attribute) => {
+            console.log('attribute', attribute);
+            if (attribute.name == null) {
+                throw new Error('Empty attribute name.');
+            }
+
+            if (!attribute.required) {
+                return {
+                    name: attribute.name,
+                    required: attribute.required
+                }
+            }
+
+            const description = attribute.value;
+
             let type;
             if (typeof description === 'string') {
                 type = 'string';
@@ -443,8 +496,12 @@ const updateCategoryData = async (catObj) => {
             }
 
             return {
-                description: description,
-                type: type
+                name: attribute.name, 
+                required: attribute.required,
+                value: {
+                    description: description,
+                    type: type
+                } 
             }
         })
 

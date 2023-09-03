@@ -15,7 +15,7 @@ exports.createCategory = async (req, res) => {
             });
             return;
         }
-        
+
         const data = {
             name: name, 
             attributes: req.body.attributes
@@ -23,11 +23,11 @@ exports.createCategory = async (req, res) => {
 
         const newCategory = await createCategory(data);
 
-        if (!newCategory) {
-            res.status(400).send({
-                message: "Unable to create new category."
-            })
-        }
+        // if (!newCategory) {
+        //     res.status(400).send({
+        //         message: "Unable to create new category."
+        //     })
+        // }
         res.status(200).json(newCategory);
     } catch (err) {
         res.status(500).send({
