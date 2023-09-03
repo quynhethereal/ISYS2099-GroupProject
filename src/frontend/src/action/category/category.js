@@ -19,3 +19,23 @@ export const getCategoryByID = async (id) => {
     return;
   }
 };
+
+export const getAllAttribute = async (id) => {
+  try {
+    const { data } = await api.getAllAttribute(id);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+
+export const getAllFlatternCategory = async () => {
+  try {
+    const { data } = await api.getAllFlatternCategory();
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};

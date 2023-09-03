@@ -210,14 +210,16 @@ const ProductList = () => {
             </div>
           </div>
         </form>
-        <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
-          {product?.map((item, index) => {
-            return (
-              <div key={index} className="">
-                <Product info={item}></Product>
-              </div>
-            );
-          })}
+        <div className="container">
+          <div className="row my-4 d-flex justify-content-start gap-3">
+            {product?.map((item, index) => {
+              return (
+                <div className="col" key={index}>
+                  <Product info={item}></Product>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <div className="my-4 d-flex justify-content-center algin-items-center">
           {isloading && (
