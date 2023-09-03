@@ -8,7 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
-const CategoryAttributeForm = ({ data, show, handleClose }) => {
+const CategoryUpdateAttributeForm = ({ data, show, handleClose }) => {
   const {
     register,
     handleSubmit,
@@ -25,7 +25,7 @@ const CategoryAttributeForm = ({ data, show, handleClose }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title className="ms-auto">Create Attribute</Modal.Title>
+        <Modal.Title className="ms-auto">Update Attribute</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex flex-column justify-content-center align-items-center"></div>
@@ -44,11 +44,11 @@ const CategoryAttributeForm = ({ data, show, handleClose }) => {
           variant="primary"
           onClick={() => handleClose()}
         >
-          Create
+          Update
         </Button> */}
       </Modal.Footer>
     </Modal>
   );
 };
 
-export default CategoryAttributeForm;
+export default CategoryUpdateAttributeForm;

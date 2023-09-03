@@ -2,10 +2,12 @@ import React, { useState } from "react";
 
 import CategoryCreateForm from "./CategoryCreateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
+import CategoryUpdateAttributeForm from "./CategoryUpdateAttributeForm";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showAddAttribute, setShowAddAttribute] = useState(false);
+  const [showUpdateAttribute, setShowUpdateAttribute] = useState(false);
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
@@ -13,6 +15,10 @@ const CategoryRow = ({ data, child }) => {
 
   const handleShowAddAttributeForm = () => {
     setShowAddAttribute((prev) => !prev);
+  };
+
+  const handleShowUpdateAttributeForm = () => {
+    setShowUpdateAttribute((prev) => !prev);
   };
   return (
     <div className="col-12 my-3">
@@ -44,17 +50,26 @@ const CategoryRow = ({ data, child }) => {
             show={showAddAttribute}
             handleClose={handleShowAddAttributeForm}
           />
+          <CategoryUpdateAttributeForm
+            data={data}
+            show={showUpdateAttribute}
+            handleClose={handleShowUpdateAttributeForm}
+          />
         </div>
       </div>
       <div className="col-12 d-flex flex-row flex-wrap my-2 gap-1">
         {data?.attributes?.map((atr, index) => {
           return (
-            <span
-              className="badge bg-info d-flex align-items-center justify-content-center"
+            <button
+              type="button"
+              className="btn btn-info p-0"
               key={index}
+              onClick={() => handleShowUpdateAttributeForm()}
             >
-              {atr?.description}{" "}
-            </span>
+              <span className="badge bg-info d-flex align-items-center justify-content-center">
+                {atr?.name}
+              </span>
+            </button>
           );
         })}
         <button
