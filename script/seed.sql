@@ -216,7 +216,7 @@ ALTER TABLE order_items
 
 -- Add foreign keys
 ALTER TABLE `order_items` ADD FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`);
-ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`);
+ALTER TABLE `order_items` ADD FOREIGN KEY (`inventory_id`) REFERENCES `inventory`(`id`) ON DELETE CASCADE;
 
 -- Drop all roles and users if exists
 drop role if exists 'admin', 'customer', 'seller', 'wh_admin';
