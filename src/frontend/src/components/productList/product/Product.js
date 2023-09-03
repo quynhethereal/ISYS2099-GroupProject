@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { deleteProduct } from "../../../action/product/product";
+import { getAllAttribute } from "../../../action/category/category";
 import { useAuth } from "../../../hook/AuthHook.js";
 import Swal from "sweetalert2";
 
@@ -11,6 +12,7 @@ import ProductUpdateForm from "../../../utils/ProductUpdateForm.js";
 const Product = ({ info, update }) => {
   const [showUpdateQuantityForm, setShowUpdateQuantityForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [attribute, setAttribute] = useState([]);
   const navigate = useNavigate();
   const { token } = useAuth();
   const hanleViewProduct = (item) => {
@@ -59,9 +61,23 @@ const Product = ({ info, update }) => {
       }
     });
   };
+
+  useEffect(() => {
+    async function getAllAtr() {
+      await getAllAttribute(info?.id).then((res) => {
+        if (res) {
+          setAttribute(res);
+        }
+      });
+    }
+
+    getAllAtr();
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <>
-      <div className="card" style={{ width: "16rem" }}>
+      <div className="card h-100" style={{ width: "16rem" }}>
         <div className="card-img-top text-center">
           <img
             src={info?.image}
@@ -71,7 +87,7 @@ const Product = ({ info, update }) => {
         </div>
         <div className="card-body">
           <h5 className="card-title text-truncate">{info?.title}</h5>
-          <div className="card-text ">
+          <div className="card-text">
             <p
               className="fw-bolder overflow-hidden"
               style={{ height: "4.5rem" }}
@@ -82,6 +98,20 @@ const Product = ({ info, update }) => {
               <b className="text-decoration-underline fw-bold">đ</b>
               {info?.price}
             </p>
+            <div style={{ height: 100 }}>
+              <div className="d-flex flex-row flex-wrap mb-3 gap-1">
+                {attribute?.attributes?.map((item, index) => {
+                  return (
+                    <span
+                      className="badge bg-info d-flex align-items-center justify-content-center"
+                      key={index}
+                    >
+                      {item?.description}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
           </div>
           {update && showUpdateQuantityForm && (
             <ProductPreview
