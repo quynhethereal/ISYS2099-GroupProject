@@ -106,7 +106,8 @@ const Product = ({ info, update }) => {
                       className="badge bg-info d-flex align-items-center justify-content-center"
                       key={index}
                     >
-                      {item?.description}
+                      {item?.name}
+                      {item?.value?.description}
                     </span>
                   );
                 })}
