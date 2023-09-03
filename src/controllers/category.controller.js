@@ -15,7 +15,7 @@ exports.createCategory = async (req, res) => {
             });
             return;
         }
-        
+
         const data = {
             name: name, 
             attributes: req.body.attributes
