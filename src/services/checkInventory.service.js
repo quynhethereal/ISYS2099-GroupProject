@@ -2,7 +2,7 @@ const Order = require('../models/order.model');
 const OrderItem = require('../models/order_item.model');
 const Inventory = require("../models/inventory.model");
 
-// this service takes in two parameters:
+// This service takes in two parameters:
 // Order object which specifies the order details
 // Inventory array that specifies the stock details for each product in the order
 const checkAllInventory = (order, inventory) => {

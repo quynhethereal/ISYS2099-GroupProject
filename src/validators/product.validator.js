@@ -31,7 +31,7 @@ ProductValidator.validateImage = (image) => {
 }
 
 ProductValidator.validateUpdateParams = (params) => {
-    const { title, description, price, image } = params;
+    const {title, description, price, image} = params;
 
     ProductValidator.validatePrice(price);
     ProductValidator.validateDescription(description);
@@ -42,4 +42,3 @@ ProductValidator.validateUpdateParams = (params) => {
 }
 
 module.exports = ProductValidator;
-

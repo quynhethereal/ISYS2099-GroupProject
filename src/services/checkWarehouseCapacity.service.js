@@ -1,4 +1,3 @@
-
 // this func check if toWarehouse has enough space to store the product to be moved
 // example payload
 // {
@@ -9,11 +8,10 @@
 //         "width": 10.0,
 //         "length": 10.0
 //     },
-
-const checkWarehouseCapacityService =  (params) => {
+const checkWarehouseCapacityService = (params) => {
     try {
 
-        const { toWarehouseCapacity } = params;
+        const {toWarehouseCapacity} = params;
 
         // Cast strings to floats
         const toWarehouseCapacityFloat = parseFloat(toWarehouseCapacity);
@@ -30,7 +28,7 @@ const checkWarehouseCapacityService =  (params) => {
         // Calculate the total volume of the product to be moved
         const totalVolume = quantityFloat * heightFloat * widthFloat * lengthFloat;
 
-    // Check if the target warehouse has enough capacity
+        // Check if the target warehouse has enough capacity
         return toWarehouseCapacityFloat >= totalVolume;
     } catch (err) {
         throw new Error(err.message);

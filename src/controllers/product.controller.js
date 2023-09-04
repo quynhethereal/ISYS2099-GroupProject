@@ -58,7 +58,7 @@ exports.findAllByCategory = async (req, res) => {
             if (!validSortTerms.includes(sortTerm1)) {
                 throw new Error('Invalid sort term 1.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection1)) {
                 throw new Error('Invalid sorting order 1.');
             }
@@ -66,11 +66,12 @@ exports.findAllByCategory = async (req, res) => {
             if (!validSortTerms.includes(sortTerm2)) {
                 throw new Error('Invalid sort term 2.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        } else {}
+        } else {
+        }
 
         const params = {
             queryParams: req.query,
@@ -106,7 +107,7 @@ exports.update = async (req, res) => {
         const params = {
             productId,
             sellerId: req.currentUser.id,
-            ... req.body
+            ...req.body
         }
 
         const updatedProduct = await Product.update(params);
@@ -184,7 +185,7 @@ exports.findBySellerId = async (req, res) => {
 
         // check if user is seller 
         if (req.currentUser.role !== 'seller') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const params = {
@@ -227,7 +228,7 @@ exports.findAllByPriceRange = async (req, res) => {
             if (!validSortTerms.includes(sortTerm1)) {
                 throw new Error('Invalid sort term 1.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection1)) {
                 throw new Error('Invalid sorting order 1.');
             }
@@ -235,12 +236,13 @@ exports.findAllByPriceRange = async (req, res) => {
             if (!validSortTerms.includes(sortTerm2)) {
                 throw new Error('Invalid sort term 2.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        } else {}
-        
+        } else {
+        }
+
         const params = {
             queryParams: req.query,
             minPrice: minPrice,
@@ -286,7 +288,7 @@ exports.findAllByKey = async (req, res) => {
             if (!validSortTerms.includes(sortTerm1)) {
                 throw new Error('Invalid sort term 1.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection1)) {
                 throw new Error('Invalid sorting order 1.');
             }
@@ -294,11 +296,12 @@ exports.findAllByKey = async (req, res) => {
             if (!validSortTerms.includes(sortTerm2)) {
                 throw new Error('Invalid sort term 2.');
             }
-    
+
             if (!validSortDirections.includes(sortDirection2)) {
                 throw new Error('Invalid sorting order 2.');
             }
-        } else {}
+        } else {
+        }
 
         const params = {
             queryParams: req.query,
@@ -332,7 +335,7 @@ exports.delete = async (req, res) => {
 
         // check if user is seller
         if (req.currentUser.role !== 'seller') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const deletedProduct = await Product.delete(productId, req.currentUser.id);

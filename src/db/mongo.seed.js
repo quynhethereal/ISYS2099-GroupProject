@@ -1,6 +1,7 @@
 const {Category, Sequence, CategoryMeta} = require('../models/category.model');
-const { generateMany } = require('./mongo.helper');
+const {generateMany} = require('./mongo.helper');
 
+// drop categories collection
 exports.dropCollection = async () => {
     try {
         await Category.collection.drop();
@@ -14,7 +15,8 @@ exports.dropCollection = async () => {
     }
 }
 
-exports.generateSeedData  = async (count) => {
+// generate seed data for categories collection
+exports.generateSeedData = async (count) => {
     try {
         const count = await Category.countDocuments();
 

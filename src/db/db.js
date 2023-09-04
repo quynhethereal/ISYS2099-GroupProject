@@ -100,11 +100,10 @@ wh_pool.getConnection(function (err, connection) {
         throw err;
     }
 
-  console.log('Connected warehouse admin pool to MySQL!');
+    console.log('Connected warehouse admin pool to MySQL!');
     connection.on('error', function (err) {
         throw err;
     });
 });
 
 module.exports = {mongodb_connection, admin_pool, customer_pool, seller_pool, wh_pool};
-

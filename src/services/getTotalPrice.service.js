@@ -1,4 +1,3 @@
-
 // sample input
 // [
 //     { order_quantity: 5, price: '1499.99' },
@@ -13,4 +12,4 @@ const getTotalPrice = (productList) => {
     return totalPrice;
 }
 
-module.exports = { getTotalPrice };
+module.exports = {getTotalPrice};

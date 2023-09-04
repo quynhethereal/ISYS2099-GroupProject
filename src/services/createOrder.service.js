@@ -1,9 +1,9 @@
-const { admin_pool } = require("../db/db");
+const {admin_pool} = require("../db/db");
 const Order = require("../models/order.model");
 const Inventory = require("../models/inventory.model");
 const OrderItem = require("../models/order_item.model");
 const {checkAllInventory} = require("./checkInventory.service");
-const { getTotalPrice } = require("./getTotalPrice.service");
+const {getTotalPrice} = require("./getTotalPrice.service");
 
 const CreateOrderService = {};
 // params
@@ -54,7 +54,7 @@ CreateOrderService.createOrder = async (params) => {
 
         // create order item records + update the inventories in the database
         for (const productId in inventoryMapping) {
-            if (inventoryMapping[productId].length === 0){
+            if (inventoryMapping[productId].length === 0) {
                 transactionResult.unfulfilledProducts.push(parseInt(productId));
                 continue;
             }
@@ -62,7 +62,7 @@ CreateOrderService.createOrder = async (params) => {
             for (const inventory of inventoryMapping[productId]) {
                 const updateInventoryQuery = await connection.execute('UPDATE inventory SET reserved_quantity = reserved_quantity + ? WHERE product_id = ? AND warehouse_id = ?', [inventory.quantity, productId, inventory.warehouseId]);
 
-            // create order item record
+                // create order item record
                 await connection.query('INSERT INTO order_items (inventory_id, order_id, quantity) VALUES (?,?,?)', [inventory.inventoryId, order.id, inventory.quantity]);
             }
         }

@@ -4,7 +4,7 @@ exports.getAll = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const inventory = await Inventory.getAllInventory();
@@ -20,10 +20,10 @@ exports.moveInventory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
-        const { productId, fromWarehouse, toWarehouse, quantity } = req.body;
+        const {productId, fromWarehouse, toWarehouse, quantity} = req.body;
 
         // validate presence of params
         if (productId === null || fromWarehouse === null || toWarehouse === null || quantity === null) {
@@ -49,7 +49,7 @@ exports.moveInventory = async (req, res) => {
             return;
         }
 
-        const result = await moveInventoryService.moveInventory( productId, fromWarehouse, toWarehouse, quantity);
+        const result = await moveInventoryService.moveInventory(productId, fromWarehouse, toWarehouse, quantity);
 
         res.status(200).json(result);
 
@@ -64,12 +64,12 @@ exports.updateInventory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'seller') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         // check if quantity is valid
         if (req.body.quantity < 0 || req.body.quantity === null || req.body.quantity === undefined) {
-            return res.status(400).json({ message: "Invalid quantity." });
+            return res.status(400).json({message: "Invalid quantity."});
         }
 
         const inventory = await Inventory.updateInventory(req.params.id, req.body.quantity);
@@ -86,7 +86,7 @@ exports.getPendingInventory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const inventory = await Inventory.getPendingInventory(req.query);
@@ -102,12 +102,12 @@ exports.getInventoryByProductId = async (req, res) => {
     try {
         // check if user is seller
         if (req.currentUser.role !== 'seller') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const inventory = await Inventory.getInventoryByProductId(req.params.id);
         if (inventory === null) {
-            return res.status(404).json({ message: "Inventory not found." });
+            return res.status(404).json({message: "Inventory not found."});
         }
         res.status(200).json(inventory);
     } catch (err) {

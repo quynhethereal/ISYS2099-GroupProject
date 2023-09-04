@@ -1,4 +1,5 @@
 const {admin_pool} = require("../db/db");
+
 class Warehouse {
     constructor(params = {}) {
         this.id = params.id;
@@ -45,7 +46,16 @@ Warehouse.create = async (params) => {
     try {
         const {name, province, city, district, street, number, total_volume, available_volume} = params;
 
-        const warehouse = new Warehouse({name, province, city, district, street, number, total_volume, available_volume});
+        const warehouse = new Warehouse({
+            name,
+            province,
+            city,
+            district,
+            street,
+            number,
+            total_volume,
+            available_volume
+        });
 
         const insertWarehouseQuery = await connection.execute(
             'INSERT INTO `warehouses`(name, province, city, district, street, number, total_volume, available_volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -103,7 +113,7 @@ Warehouse.findAll = async (params) => {
         const total = await Warehouse.count();
         const totalPages = Math.ceil(total / limit);
 
-        const [rows] = await connection.execute("SELECT * FROM `warehouses` ORDER BY ID ASC LIMIT ?,?", [offset + "", limit +""]);
+        const [rows] = await connection.execute("SELECT * FROM `warehouses` ORDER BY ID ASC LIMIT ?,?", [offset + "", limit + ""]);
 
         if (rows.length === 0) {
             throw new Error('No warehouses found.');
@@ -163,7 +173,16 @@ Warehouse.update = async (warehouseId, params) => {
     try {
         const {name, province, city, district, street, number, total_volume, available_volume} = params;
 
-        const warehouse = new Warehouse({name, province, city, district, street, number, total_volume, available_volume});
+        const warehouse = new Warehouse({
+            name,
+            province,
+            city,
+            district,
+            street,
+            number,
+            total_volume,
+            available_volume
+        });
 
         const [res] = await connection.execute("UPDATE `warehouses` SET name = ?, province = ?, city = ?, district = ?, street = ?, number = ?, total_volume = ?, available_volume = ? WHERE id = ?", [warehouse.name, warehouse.province, warehouse.city, warehouse.district, warehouse.street, warehouse.number, warehouse.total_volume, warehouse.available_volume, warehouseId]);
 
