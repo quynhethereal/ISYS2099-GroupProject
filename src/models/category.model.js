@@ -386,6 +386,7 @@ const findOne = async (id) => {
         throw new Error('Could not find category.');
     }
 }
+
 const findNestedSubcategories = async (category) => {
     const catObj = {
         id: category.id,
@@ -579,5 +580,153 @@ const findIDAndUpdate = async (category, request) => {
     }
 }
 
-module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData};
+const deleteCategory = async (id) => {
+    try {
+        const findCat = await Category.findOne({id: id});
+
+        if (!findCat) {
+            console.log("Category ID is not existed.");
+            throw new Error("Category ID is not existed.");
+        }
+
+        const catCount = await Product.countByCategory(id);
+
+        if (catCount > 0) {
+            console.log('Products remain in category!');
+            throw new Error('Products remain in category!');
+        }
+
+        for (let i = 0; i < findCat.subcategoriesArray.length; i++) {
+            let count = await Product.countByCategory(findCat.subcategoriesArray[i]);
+
+            if (count > 0) {
+                console.log('Products remain in subcategories of category!');
+                throw new Error('Products remain in subcategories of category!');
+            }
+        }
+
+        const deleteAction = await Category.deleteOne({id: id});
+
+        if (deleteAction.deletedCount > 0) {
+            console.log('Delete successful!');
+        } else {
+            console.log('Fail to delete!');
+        }
+    } catch (err) {
+        console.log('Could not delete category.');
+        throw new Error('Could not delete category.');
+    }
+}
+
+const deleteSubcategory = async (id) => {
+    try {  
+        const findCat = await Category.findOne({subcategoriesArray: {$elemMatch: {$eq: id}}});
+
+        if (!findCat) {
+            console.log("Category ID is not existed.");
+            throw new Error("Category ID is not existed.");
+        }
+
+        const catCount = await Product.countByCategory(id);
+
+        if (catCount > 0) {
+            console.log('Products remain in subcategory!');
+            throw new Error('Products remain in subcategory!');
+        }
+
+        const deleteAction = await removeSubcategory(findCat, id);
+        console.log('deleteAction', deleteAction); 
+
+        findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
+
+        await findCat.save();
+
+        if (deleteAction === null) {
+            console.log('Unable to remove subcategory!');
+            throw new Error('Unable to remove subcategory!');
+
+        } else {
+            const newSubcategoriesArray = []
+            for (const subId of findCat.subcategoriesArray) {
+                if (!deleteAction.includes(subId)) {
+                    newSubcategoriesArray.push(subId);
+                }
+            }
+
+            findCat.subcategoriesArray = newSubcategoriesArray;
+            await findCat.save();
+            console.log('Remove subcategory successful!')
+        }
+
+    } catch (err) {
+        console.log(err.stack);
+        console.log('Could not delete subcategory.');
+        throw new Error('Could not delete subcategory.');
+    }
+}
+
+const removeSubcategory = async (category, id) => {
+    try {
+        const newSubcategories = [];
+        let data = [];
+
+        for (let i = 0; i < category.subcategories.length; i++) {
+            if (category.subcategories[i].id !== id) {
+                newSubcategories.push(category.subcategories[i]);
+            } 
+            else {
+                const subCats = await countProduct(category.subcategories[i]);
+                console.log(subCats);
+                const count = subCats.count;
+
+                if (count > 0) {
+                    console.log('Product remain in subcategory.');
+                    newSubcategories.push(category.subcategories[i]);
+                } else {
+                    data.push(category.subcategories[i].id, ...subCats.subcatIds);
+                    console.log('data', data);
+                }
+            }
+        }
+        
+        category.subcategories = newSubcategories;
+
+        for (const subcategory of category.subcategories) {
+            const subData = await removeSubcategory(subcategory, id);
+            data = data.concat(subData);
+        }
+        return data;
+
+    } catch (err) {
+        console.log(err.stack);
+        console.log('Fail to remove subcategory in category');
+        throw new Error('Fail to remove subcategory in category');
+    }
+}
+
+const countProduct = async (category) => {
+    try {
+        let count = 0;
+        const subcatIds = [];
+
+        if (category === null) {
+            return 0;
+        }
+
+        for (const subcategory of category.subcategories) {
+            let value = await Product.countByCategory(subcategory.id);
+            count += value;
+            let subCount = await countProduct(subcategory);
+            count += subCount.count;
+            subcatIds.push(subcategory.id, ...subCount.subcatIds);
+        }
+
+        return {count, subcatIds};
+    } catch (err) {
+        console.log('Could not count total product for subcategory');
+        throw new Error('Could not count total product for subcategory');
+    }
+}
+
+module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData, deleteCategory, deleteSubcategory};
 

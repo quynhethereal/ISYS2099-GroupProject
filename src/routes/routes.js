@@ -79,6 +79,8 @@ module.exports = app => {
     router.get("/category", categories.findAll);
     router.get("/category/:id", categories.findOne);
     router.get("/category/:id/attributes", categories.findAttributes);
+    router.delete("/category/:id", authMiddleware.verifyToken, categories.deleteCategory);
+    router.put("/category/:id/subcategory/delete", authMiddleware.verifyToken, categories.deleteSubcategory);
 
     app.use('/api', router);
 }

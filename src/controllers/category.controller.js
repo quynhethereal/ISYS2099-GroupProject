@@ -1,4 +1,4 @@
-const {createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData} = require('../models/category.model');
+const {createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData, deleteCategory, deleteSubcategory} = require('../models/category.model');
 
 exports.createCategory = async (req, res) => {
     try {
@@ -249,4 +249,57 @@ exports.updateCategory = async (req, res) => {
             message: err.message || "Error creating subcategory."
         });
     }   
+}
+
+exports.deleteCategory = async (req, res) => {
+    try {
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const id = parseInt(req.params.id);
+
+        if (!id) {
+            return res.status(400).send({
+                message: "Invalid request. Empty category Id."
+            });
+        }
+
+        const deleteValue = await deleteCategory(id);
+
+        res.status(200).send({
+            message: "Delete successful."
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error deleting category."
+        });
+    }
+}
+
+exports.deleteSubcategory = async (req, res) => {
+    try {
+        if (req.currentUser.role !== 'admin') {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const id = parseInt(req.params.id);
+        console.log(id);
+
+        if (!id) {
+            return res.status(400).send({
+                message: "Invalid request. Empty category Id."
+            });
+        }
+
+        const deleteValue = await deleteSubcategory(id);
+
+        res.status(200).send({
+            message: "Delete successful."
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error deleting category."
+        });
+    }
 }
