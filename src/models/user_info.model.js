@@ -1,8 +1,7 @@
 const {admin_pool} = require("../db/db");
-const Helpers = require('../helpers/helpers');
 // UserModel model
-const UserInfo = function(userInfo){
-    //TODO
+const UserInfo = function (userInfo) {
+
 }
 
 UserInfo.findByUserId = (userId) => {
@@ -32,5 +31,3 @@ UserInfo.findByUserId = (userId) => {
 
 
 module.exports = UserInfo;
-
-

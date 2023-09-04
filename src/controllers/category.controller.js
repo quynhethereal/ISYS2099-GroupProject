@@ -1,10 +1,19 @@
-const {createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData} = require('../models/category.model');
+const {
+    createCategory,
+    createSubcategory,
+    findAll,
+    findOne,
+    findAllFlatten,
+    findAttributes,
+    findProductCatId,
+    updateCategoryData
+} = require('../models/category.model');
 
 exports.createCategory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const name = req.body.name;
@@ -17,7 +26,7 @@ exports.createCategory = async (req, res) => {
         }
 
         const data = {
-            name: name, 
+            name: name,
             attributes: req.body.attributes
         }
 
@@ -33,23 +42,23 @@ exports.createCategory = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error creating category."
         });
-    }   
+    }
 }
 
 exports.createSubcategory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const parentId = parseInt(req.params.id);
 
-        if(!parentId) {
+        if (!parentId) {
             res.status(400).send({
                 message: "Invalid request. Empty parent Id."
             })
-        } 
+        }
 
         const name = req.body.name;
 
@@ -59,16 +68,16 @@ exports.createSubcategory = async (req, res) => {
             });
             return;
         }
-        
+
         const data = {
             parentId: parentId,
-            name: name, 
+            name: name,
             attributes: req.body.attributes
         }
 
         const newSubcategory = await createSubcategory(data);
 
-        if(!newSubcategory) {
+        if (!newSubcategory) {
             res.status(400).send({
                 message: "Unable to create new subcategory."
             })
@@ -79,7 +88,7 @@ exports.createSubcategory = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error creating subcategory."
         });
-    }   
+    }
 }
 
 exports.findAll = async (req, res) => {
@@ -114,8 +123,8 @@ exports.findOne = async (req, res) => {
             });
             return;
         }
-        
-        const category  = await findOne(categoryId);
+
+        const category = await findOne(categoryId);
 
         if (!category) {
             res.status(404).send({
@@ -123,7 +132,7 @@ exports.findOne = async (req, res) => {
             });
         } else {
             res.status(200).json(category);
-        } 
+        }
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error get category."
@@ -160,7 +169,7 @@ exports.findAttributes = async (req, res) => {
         const data = await findAttributes(id);
 
         if (!data) {
-            res.status(404).send ({
+            res.status(404).send({
                 message: `Category with id ${req.params.id} not found.`
             })
         }
@@ -189,7 +198,7 @@ exports.findAttributesProduct = async (req, res) => {
         const data = await findProductCatId(id);
 
         if (!data) {
-            res.status(404).send ({
+            res.status(404).send({
                 message: `Category with id ${req.params.id} not found.`
             })
         }
@@ -209,9 +218,9 @@ exports.updateCategory = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
-        
+
         const id = parseInt(req.params.id);
 
         if (!id) {
@@ -220,24 +229,24 @@ exports.updateCategory = async (req, res) => {
             });
             return;
         }
-        
+
         const name = req.body.name;
 
-        if(!name) {
+        if (!name) {
             res.status(400).send({
                 message: "Invalid request. Empty name."
             })
-        } 
+        }
 
         const data = {
             id: id,
-            name: name, 
+            name: name,
             attributes: req.body.attributes
         }
 
         const updateData = await updateCategoryData(data);
 
-        if(!updateData) {
+        if (!updateData) {
             res.status(400).send({
                 message: "Unable to create new subcategory."
             })
@@ -248,5 +257,5 @@ exports.updateCategory = async (req, res) => {
         res.status(500).send({
             message: err.message || "Error creating subcategory."
         });
-    }   
+    }
 }

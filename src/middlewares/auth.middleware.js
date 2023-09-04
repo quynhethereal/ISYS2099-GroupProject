@@ -16,12 +16,12 @@ exports.verifyToken = (req, res, next) => {
     jwt.verify(token, privateKey, (err, decoded) => {
         if (err) {
             res.status(401).send({
-                message:  err.message || "Unauthorized."
+                message: err.message || "Unauthorized."
             });
         }
 
-        const { id, username, firstName, lastName, email, role } = decoded;
-        req.currentUser = new User({ id, username, firstName, lastName, email, role});
+        const {id, username, firstName, lastName, email, role} = decoded;
+        req.currentUser = new User({id, username, firstName, lastName, email, role});
 
         next();
     });

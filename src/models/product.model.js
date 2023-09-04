@@ -14,6 +14,7 @@ class Product {
     }
 }
 
+// Function to find a product by its ID in the database.
 Product.findById = (productId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
@@ -40,6 +41,7 @@ Product.findById = (productId) => {
     });
 }
 
+// Function to count number of products
 Product.count = () => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
@@ -59,6 +61,7 @@ Product.count = () => {
     });
 }
 
+// Function to count number of products by category ID
 Product.countByCategory = (categoryId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
@@ -78,10 +81,10 @@ Product.countByCategory = (categoryId) => {
     });
 }
 
+// Function to count number of products by seller ID
 Product.countBySellerID = (sellerId) => {
     return new Promise((resolve, reject) => {
         customer_pool.execute(
-
             'SELECT COUNT(*) as count FROM `products` WHERE seller_id = ?',
             [sellerId],
             (err, results) => {
@@ -111,7 +114,7 @@ Product.findBySellerId = async (params) => {
         const res = await new Promise((resolve, reject) => {
             seller_pool.execute(
                 "SELECT * FROM `products` WHERE seller_id = ? ORDER BY id ASC LIMIT ?,?",
-                [params.sellerId, offset +"", limit+""],
+                [params.sellerId, offset + "", limit + ""],
                 (err, results) => {
                     if (err) {
                         console.log('Unable to find products.');
@@ -130,12 +133,12 @@ Product.findBySellerId = async (params) => {
             totalPages: totalPages,
             totalProductCount: productCount
         }
-        
+
     } catch (err) {
         console.log(err.stack);
         console.log('Unable to find products.');
         throw err;
-    } 
+    }
 
 }
 
@@ -492,7 +495,6 @@ Product.updateCategory = (params) => {
 //   "image": "updated.jpg",
 //   "category": "Electronics"
 // }
-
 Product.update = async (params) => {
     try {
         // validate params
@@ -538,6 +540,7 @@ Product.update = async (params) => {
     }
 }
 
+// Func to get product image
 Product.getImage = async (productId) => {
     try {
         const product = await Product.findById(productId);
@@ -562,7 +565,7 @@ Product.getImage = async (productId) => {
                 );
             });
 
-        // write to file
+            // write to file
             const defaultFilePath = path.join(__dirname, '../..', 'public', 'uploads', 'images', imageQuery[0].image_name);
             Helpers.decodeImage(imageQuery[0].image, defaultFilePath);
 
@@ -599,6 +602,7 @@ Product.countByPriceRange = (minPrice, maxPrice) => {
     });
 }
 
+// use offset - limit
 Product.findByPriceRange = async (params) => {
     try {
         const limit = parseInt(params.queryParams.limit) || 10;

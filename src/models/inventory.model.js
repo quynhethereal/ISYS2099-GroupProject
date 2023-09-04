@@ -1,4 +1,4 @@
-const { admin_pool } = require("../db/db");
+const {admin_pool} = require("../db/db");
 
 class Inventory {
     constructor(params = {}) {
@@ -9,9 +9,10 @@ class Inventory {
     }
 }
 
+// get inventory by product id and quantity
 Inventory.getProductInventory = async (params) => {
     try {
-        const { productId, quantity } = params;
+        const {productId, quantity} = params;
 
         return new Promise(async (resolve, reject) => {
             await admin_pool.execute('SELECT * FROM `inventory` WHERE product_id = ? AND quantity >= ?', [productId, quantity], (err, results) => {
@@ -25,13 +26,14 @@ Inventory.getProductInventory = async (params) => {
             });
         });
     } catch
-    (err) {
+        (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
     }
 }
 
+// get all inventory count
 Inventory.getCountAll = async () => {
     try {
         return new Promise(async (resolve, reject) => {
@@ -46,7 +48,7 @@ Inventory.getCountAll = async () => {
             });
         });
     } catch
-    (err) {
+        (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -95,7 +97,7 @@ Inventory.getCountByWarehouseId = async (warehouseId) => {
             });
         });
     } catch
-    (err) {
+        (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -131,7 +133,8 @@ Inventory.getInventoryByWarehouseId = async (params) => {
     }
 }
 
-Inventory.updateInventory = async (productId,quantity) => {
+// assign inventory to warehouse by calling stored procedure
+Inventory.updateInventory = async (productId, quantity) => {
     const connection = await admin_pool.promise().getConnection();
 
     try {
@@ -173,7 +176,7 @@ Inventory.getPendingInventoryCount = async () => {
             });
         });
     } catch
-    (err) {
+        (err) {
         console.log('Unable to find inventory.');
         // rethrow error
         throw err;
@@ -207,7 +210,8 @@ Inventory.getPendingInventory = async (params) => {
     }
 }
 
-Inventory.getInventoryByProductId  = async (productId) => {
+// get all inventory of a product
+Inventory.getInventoryByProductId = async (productId) => {
     const connection = await admin_pool.promise().getConnection();
 
     try {

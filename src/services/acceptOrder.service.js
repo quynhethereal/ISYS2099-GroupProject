@@ -1,7 +1,7 @@
-const {admin_pool} = require('../db/db');
+const {customer_pool} = require('../db/db');
 const Order = require("../models/order.model");
 const acceptOrder = async (orderId, userId) => {
-    const connection = await admin_pool.promise().getConnection();
+    const connection = await customer_pool.promise().getConnection();
     try {
         // check if user is authorized to accept order. In reality, should use RBAC to check if user is authorized to accept order.
         const [rows] = await connection.execute("SELECT * FROM `orders` WHERE id = ? AND user_id = ? AND status = 'pending'", [orderId, userId]);

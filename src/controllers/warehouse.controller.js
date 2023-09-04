@@ -1,19 +1,19 @@
 const Warehouse = require('../models/warehouse.model.js');
-const {validateCreateWarehousePayload }  = require('../validators/createWarehouse.validator');
+const {validateCreateWarehousePayload} = require('../validators/createWarehouse.validator');
 const Inventory = require('../models/inventory.model');
 exports.create = async (req, res) => {
     try {
 
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         // validate params
         const isValid = validateCreateWarehousePayload(req.body);
 
         if (!isValid) {
-            return res.status(400).json({ message: "Invalid payload." });
+            return res.status(400).json({message: "Invalid payload."});
         }
 
         const warehouse = await Warehouse.create(req.body);
@@ -29,7 +29,7 @@ exports.getInventoryByWarehouseId = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
         const warehouseId = req.params.id;
         const params = {
@@ -49,7 +49,7 @@ exports.findAll = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const warehouses = await Warehouse.findAll(req.query);
@@ -65,7 +65,7 @@ exports.findById = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const warehouse = await Warehouse.findById(parseInt(req.params.id));
@@ -87,7 +87,7 @@ exports.delete = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const warehouseId = parseInt(req.params.id);
@@ -104,7 +104,7 @@ exports.update = async (req, res) => {
     try {
         // check if user is admin
         if (req.currentUser.role !== 'admin') {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({message: "Unauthorized"});
         }
 
         const warehouseId = parseInt(req.params.id);

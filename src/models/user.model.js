@@ -1,5 +1,6 @@
 const {admin_pool} = require("../db/db");
 const Helpers = require('../helpers/helpers');
+
 // UserModel model
 
 class User {
@@ -14,13 +15,11 @@ class User {
 }
 
 User.findByUsernamePassword = (username, password) => {
-    // console.log(username, password);
-    // console.log(admin_pool)
     return new Promise((resolve, reject) => {
         admin_pool.execute(
             'SELECT * FROM `users` WHERE username = ?',
             [username],
-            function(err, results) {
+            function (err, results) {
                 if (err) {
                     console.log('Unable to find user.');
                     reject(err);
