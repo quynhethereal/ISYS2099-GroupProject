@@ -9,7 +9,7 @@ require("multer");
 require("./src/middlewares/auth.middleware");
 require("./src/db/db");
 
-const { generateSeedData, dropCollection } = require("./src/db/mongo.seed");
+const {generateSeedData, dropCollection} = require("./src/db/mongo.seed");
 
 // ---- uncomment to drop categories collection ----
 // dropCollection()
@@ -21,21 +21,21 @@ const { generateSeedData, dropCollection } = require("./src/db/mongo.seed");
 //   });
 
 generateSeedData()
-  .then(() => {
-    console.log("Seed data for mongoDB generated.");
-  })
-  .catch((err) => {
-    console.log("Error generating seed data:", err);
-  });
+    .then(() => {
+        console.log("Seed data for mongoDB generated.");
+    })
+    .catch((err) => {
+        console.log("Error generating seed data:", err);
+    });
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 const port = process.env.NODE_PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}.`);
+    console.log(`Server is running on port ${port}.`);
 });
 
 require("./src/routes/routes")(app);
