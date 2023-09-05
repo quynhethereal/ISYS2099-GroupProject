@@ -48,11 +48,13 @@ const generateOne = async () => {
             id: nextId,
             name: faker.commerce.product() + " " + "Parent Category" + " " + Math.floor(Math.random() * 100),
             subcategoriesArray: [],
+            subcategoriesNameArray: [],
             subcategories: [],
             attributes: [],
         };
         
         const subCatIds = [];
+        const subCatNames = [];
 
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {
@@ -62,7 +64,7 @@ const generateOne = async () => {
 
         const subcategoryCount = faker.number.int({ min: 0, max: 3 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcategory = await generateSubcategory(category.id, subCatIds);
+            const subcategory = await generateSubcategory(category.id, subCatIds, subCatNames);
 
             const subCatObj = ({
                 id: subcategory.id,
@@ -73,6 +75,8 @@ const generateOne = async () => {
             })
 
             category.subcategoriesArray.push(subcategory.id, ...subcategory.subcatIds);   // For fast track cat
+
+            category.subcategoriesNameArray.push(subcategory.name, ...subcategory.subCatNames);   // For fast track cat
 
             category.subcategories.push(subCatObj);
         }
@@ -88,27 +92,39 @@ const generateOne = async () => {
 
         const returnData = Array.from(result);
         returnData.sort((a,b) => a - b);
+
+        const dataNames = category.subcategoriesNameArray;
+        const nameResult = new Set();
+
+        for (const data of dataNames) {
+            if (!nameResult.has(data)) {
+                nameResult.add(data);
+            }
+        }
+
+        const returnNames = Array.from(nameResult);
+        returnNames.sort((a,b) => {
+            return a.localeCompare(b);
+        });
         
         const newCategory = new Category({
             id: category.id,
             name: category.name,
             subcategoriesArray: returnData,
+            subcategoriesNameArray: returnNames,
             subcategories: category.subcategories,
             attributes: category.attributes,
         });
 
         await newCategory.save();
 
-        if (newCategory) {
-            await generateMeta(nextId, category.name);
-            return newCategory;
-        } 
+        return newCategory;
     } catch (error) {
         console.error('Error saving category:', error);
     }
 };
 
-const generateSubcategory = async (parentId, subCatIds) => {
+const generateSubcategory = async (parentId, subCatIds, subCatNames) => {
     try {
         const nextId = await generateID('category');
 
@@ -120,8 +136,6 @@ const generateSubcategory = async (parentId, subCatIds) => {
             attributes: [],
         };
 
-        await generateMeta(nextId, subcategory.name);
-
         const attributeCount = faker.number.int({ min: 1, max: 3 });
         for (let i = 0; i < attributeCount; i++) {
             const attribute = await generateAttribute();
@@ -130,7 +144,7 @@ const generateSubcategory = async (parentId, subCatIds) => {
 
         const subcategoryCount = faker.number.int({ min: 0, max: 1 });
         for (let i = 0; i < subcategoryCount; i++) {
-            const subcat = await generateSubcategory(subcategory.id, subCatIds);
+            const subcat = await generateSubcategory(subcategory.id, subCatIds, subCatNames);
 
             const subcatObj = ({
                 id: subcat.id,
@@ -142,16 +156,21 @@ const generateSubcategory = async (parentId, subCatIds) => {
 
             subCatIds.push(...subcat.subcategories.map((subcategory) => subcategory.id));
 
+            subCatNames.push(...subcat.subcategories.map((subcategory) => subcategory.name));
+
             subcategory.subcategories.push(subcatObj);
         }
 
         subCatIds.push(...subcategory.subcategories.map((subcategory) => subcategory.id));  // Add to element in subcat and cat
+
+        subCatNames.push(...subcategory.subcategories.map((subcategory) => subcategory.name));  // Add to element in subcat and cat
 
         return ({
             id: subcategory.id,
             parentId: subcategory.parentId,
             name: subcategory.name,
             subcatIds: subCatIds,
+            subCatNames: subCatNames,
             subcategories: subcategory.subcategories,
             attributes: subcategory.attributes
         });

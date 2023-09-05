@@ -30,6 +30,10 @@ const CategorySchema = new mongoose.Schema({
         type: [Number],
         index: 1
     },
+    subcategoriesNameArray: {
+        type: [String],
+        index: true
+    },
     subcategories: [],
     attributes: [{
         name: String, 
@@ -49,24 +53,8 @@ const CategorySchema = new mongoose.Schema({
     }]   // Array of attribute documents
 }, {autoIndex: true});
 
-const MetaSchema = new mongoose.Schema ({
-    id: {
-        type: Number,
-        required: true, 
-        unique: true,
-        index: 1
-    },
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true
-    }
-}, {autoIndex: true});
-
 const Category = mongoose.model('Category', CategorySchema);
 const Sequence = mongoose.model('Sequence', SequenceSchema);
-const CategoryMeta = mongoose.model('CategoryMeta', MetaSchema);
 
 const generateID = async (model) => {
     try {
@@ -81,23 +69,6 @@ const generateID = async (model) => {
     }
 
 };
-
-const generateMeta = async (id, name) => {
-    try {
-        if (!id || !name) {
-            throw new Error('Id or Name of metadata is empty.');
-        }
-
-        const data = new CategoryMeta ({
-            id: id, 
-            name: name
-        });
-
-        await data.save();
-    } catch (err) {
-        console.log('Error generating metadata for Category:', err);
-    }
-}
 
 const isExistedCat = async (id) => {
     try {
@@ -144,16 +115,18 @@ const findDuplicateName = async (category, name, id) => {
 // handle cat
 const createCategory = async (catObj) => {
     try {
-        console.log('catObj', catObj);
-        const categories = await Category.find();
+        const name = catObj.name;
 
-        for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name, 0);
+        const findName = await Category.findOne({
+            $or: [
+                {name: name},
+                {subcategoriesNameArray: {$elemMatch: {$eq: name}}}
+            ]
+        });
 
-            if (duplicate) {
-                console.log('Category is existed');
-                throw new Error('Category is existed');
-            }
+        if (findName) {
+            console.log('Category name is existed');
+            throw new Error('Category name is existed');
         }
 
         // Handle generate ID
@@ -161,7 +134,6 @@ const createCategory = async (catObj) => {
 
         // attributes include name, required status, description
         const attributes = catObj.attributes.map((attribute) => {
-            console.log('attribute', attribute);
             if (attribute.name == null) {
                 console.log('Empty attribute name.');
                 throw new Error('Empty attribute name.');
@@ -199,8 +171,10 @@ const createCategory = async (catObj) => {
         const data = new Category ({
             id: nextId,
             name: catObj.name,
-            attributes: attributes,
-            subcategories: []
+            subcategoriesArray:[],
+            subcategoriesNameArray:[],
+            subcategories: [],
+            attributes: attributes
         });
 
         await data.save();
@@ -214,21 +188,25 @@ const createCategory = async (catObj) => {
 
 const createSubcategory = async (catObj) => {
     try {
-        const categories = await Category.find();
+        const name = catObj.name;
 
-        for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name, 0);
+        const findName = await Category.findOne({
+            $or: [
+                {name: name},
+                {subcategoriesNameArray: {$elemMatch: {$eq: name}}}
+            ]
+        });
 
-            if (duplicate) {
-                console.log('Subcategory is existed');
-                throw new Error('Subcategory is existed');
-            }
+        if (findName) {
+            console.log('Category name is existed');
+            throw new Error('Category name is existed');
         }
 
         const nextId = await generateID('category'); 
 
         const parentId = catObj.parentId;
-
+        
+        // define parent category
         const findCat = await Category.findOne({
             $or: [
                 {id: parentId},
@@ -288,6 +266,8 @@ const createSubcategory = async (catObj) => {
         findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
 
         findCat.subcategoriesArray.push(nextId);
+
+        findCat.subcategoriesNameArray.push(catObj.name);
 
         await findCat.save();
 
@@ -497,19 +477,22 @@ const findProductCatId = async (id) => {
     }
 }
 
+// update name in array name and name of cat
 const updateCategoryData = async (catObj) => {
     try {
-        const categories = await Category.find();
-
         const id = catObj.id;
+        const name = catObj.name;
+        let duplicate = false;
 
-        for (const category of categories) {
-            const duplicate = await findDuplicateName(category, catObj.name, id);
+        const findName = await Category.findOne({
+            $or: [
+                {name: name},
+                {subcategoriesNameArray: {$elemMatch: {$eq: name}}}
+            ]
+        });
 
-            if (duplicate) {
-                console.log('Category name is existed!');
-                throw new Error('Category name is existed');
-            }
+        if (findName) {
+            duplicate = true;
         }
 
         const findCat = await Category.findOne({
@@ -566,10 +549,11 @@ const updateCategoryData = async (catObj) => {
         const request = {
             id: id, 
             name: catObj.name,
-            attributes: attributes
+            attributes: attributes,
+            duplicate: duplicate
         }
 
-        findIDAndUpdate(findCat, request);
+        await findIDAndUpdate(findCat, request);
 
         findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
 
@@ -585,6 +569,7 @@ const updateCategoryData = async (catObj) => {
     }
 }
 
+// need to check duplicate name
 const findIDAndUpdate = async (category, request) => {
     try {
         if (category.id === request.id) {
@@ -657,7 +642,6 @@ const deleteSubcategory = async (id) => {
         }
 
         const deleteAction = await removeSubcategory(findCat, id);
-        console.log('deleteAction', deleteAction); 
 
         findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
 
@@ -746,5 +730,5 @@ const countProduct = async (category) => {
     }
 }
 
-module.exports = {Category, Sequence, CategoryMeta, generateID, generateMeta, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData, deleteCategory, deleteSubcategory};
+module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData, deleteCategory, deleteSubcategory};
 
