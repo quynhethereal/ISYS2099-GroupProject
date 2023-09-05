@@ -114,6 +114,7 @@ const isExistedCat = async (id) => {
 
         return true;
     } catch (err) {
+        console.log('Could not find category', err.stack);
         throw new Error('Could not find category');
     }
 }
@@ -135,6 +136,7 @@ const findDuplicateName = async (category, name, id) => {
         }
         return false;
     } catch (err) {
+        console.log('Could not find category name.', err.stack);
         throw new Error('Could not find category name.');
     }
 }
@@ -149,6 +151,7 @@ const createCategory = async (catObj) => {
             const duplicate = await findDuplicateName(category, catObj.name, 0);
 
             if (duplicate) {
+                console.log('Category is existed');
                 throw new Error('Category is existed');
             }
         }
@@ -160,6 +163,7 @@ const createCategory = async (catObj) => {
         const attributes = catObj.attributes.map((attribute) => {
             console.log('attribute', attribute);
             if (attribute.name == null) {
+                console.log('Empty attribute name.');
                 throw new Error('Empty attribute name.');
             }
 
@@ -178,6 +182,7 @@ const createCategory = async (catObj) => {
             } else if (typeof description === 'number') {
                 type = 'number';
             } else {
+                console.log('Invalid attributes.');
                 throw new Error('Invalid attributes.');
             }
 
@@ -194,14 +199,15 @@ const createCategory = async (catObj) => {
         const data = new Category ({
             id: nextId,
             name: catObj.name,
-            attributes: attributes
+            attributes: attributes,
+            subcategories: []
         });
 
         await data.save();
 
         return data;
     } catch (err) {
-        console.log('err',err);
+        console.log('Could not create new category', err.stack);
         throw new Error('Could not create new category');
     }
 }
@@ -231,11 +237,13 @@ const createSubcategory = async (catObj) => {
         });
 
         if (findCat == null) {
+            console.log("Category parent ID is not existed.");
             throw new Error("Category parent ID is not existed.");
         }
 
         const attributes = catObj.attributes.map((attribute) => {
             if (attribute.name == null) {
+                console.log('Empty attribute name.');
                 throw new Error('Empty attribute name.');
             }
 
@@ -263,7 +271,7 @@ const createSubcategory = async (catObj) => {
                 value: {
                     description: description,
                     type: type
-                } 
+                }
             }
         })
 
@@ -271,7 +279,8 @@ const createSubcategory = async (catObj) => {
             id: nextId, 
             parentId: parentId,
             name: catObj.name,
-            attributes: attributes
+            attributes: attributes,
+            subcategories: []
         }
 
         findParentAndUpdate(findCat, request);
@@ -287,6 +296,7 @@ const createSubcategory = async (catObj) => {
             category: findCat
         });
     } catch (err) {
+        console.log('Could not create new subcategory', err.stack);
         throw new Error ('Could not create new subcategory');
     }
 }
@@ -302,6 +312,7 @@ const findParentAndUpdate = async (category, request) => {
             findParentAndUpdate(subcategory, request);
         }
     } catch (err) {
+        console.log('Could not create new subcategory by update category', err.stack);
         throw new Error('Could not create new subcategory by update category');
     }
 }
@@ -310,7 +321,8 @@ const findAll = async () => {
     try {
         const categories = await Category.find({});
         return categories;  
-    } catch (error) {
+    } catch (err) {
+        console.log('Error finding categories.', err.stack);
         throw new Error("Error finding categories.");
     }
 };
@@ -335,6 +347,7 @@ const findName = async (category, id) => {
             }
         }
     } catch (err) {
+        console.log('Error getting category by id.', err.stack);
         throw new Error("Error getting category by id.");
     }
 }
@@ -383,31 +396,37 @@ const findOne = async (id) => {
         return data;
 
     } catch (err) {
+        console.log('Could not find category.', err.stack);
         throw new Error('Could not find category.');
     }
 }
 
 const findNestedSubcategories = async (category) => {
-    const catObj = {
-        id: category.id,
-        parentId: category.parentId,
-        name: category.name
-    };
-
-    const data = [];
-    data.push(catObj);
-
-    if (category.subcategories && category.subcategories.length > 0) {
-        
-        const subcategories = await Promise.all(category.subcategories.map((subcategory) => (findNestedSubcategories(subcategory))));
-
-        for (const subcategory of subcategories) {
-            data.push(...subcategory);
+    try {
+        const catObj = {
+            id: category.id,
+            parentId: category.parentId,
+            name: category.name
+        };
+    
+        const data = [];
+        data.push(catObj);
+    
+        if (category.subcategories && category.subcategories.length > 0) {
+            
+            const subcategories = await Promise.all(category.subcategories.map((subcategory) => (findNestedSubcategories(subcategory))));
+    
+            for (const subcategory of subcategories) {
+                data.push(...subcategory);
+            }
         }
+        console.log(data);
+    
+        return data;
+    } catch (err) {
+        console.log('Error fetching id and name of subcategories in nested data.', err.stack);
+        throw new Error("Error fetching id and name of subcategories in nested data.");
     }
-    console.log(data);
-
-    return data;
 }
 
 const findAllFlatten = async () => {
@@ -422,7 +441,8 @@ const findAllFlatten = async () => {
 
         return data;
     } catch (err) {
-        throw new Error("Error fetching id and name of categories and subcategories.", err);
+        console.log('Error fetching id and name of categories and subcategories.', err.stack)
+        throw new Error("Error fetching id and name of categories and subcategories.");
     }
 }
 
@@ -447,6 +467,7 @@ const findAttributes = async (id) => {
 
         return Array.from(dataSet);
     } catch (err) {
+        console.log('Error getting attributes by id.', err.stack);
         throw new Error("Error getting attributes by id.");
     }
 }
@@ -471,6 +492,7 @@ const findProductCatId = async (id) => {
 
         return data;
     } catch (err) {
+        console.log('Error getting category id by  product id.', err.stack);
         throw new Error("Error getting category id by  product id.");
     }
 }
@@ -481,7 +503,6 @@ const updateCategoryData = async (catObj) => {
 
         const id = catObj.id;
 
-        // Handle duplicate name with itself
         for (const category of categories) {
             const duplicate = await findDuplicateName(category, catObj.name, id);
 
@@ -510,7 +531,6 @@ const updateCategoryData = async (catObj) => {
         }
 
         const attributes = catObj.attributes.map((attribute) => {
-            console.log('attribute', attribute);
             if (attribute.name == null) {
                 throw new Error('Empty attribute name.');
             }
@@ -560,6 +580,7 @@ const updateCategoryData = async (catObj) => {
             category: findCat
         });
     } catch (err) {
+        console.log('Could not update subcategory', err.stack);
         throw new Error ('Could not update subcategory');
     }
 }
@@ -576,6 +597,7 @@ const findIDAndUpdate = async (category, request) => {
             findIDAndUpdate(subcategory, request);
         }
     } catch (err) {
+        console.log('Could not create new subcategory by update category', err.stack);
         throw new Error('Could not create new subcategory by update category');
     }
 }
@@ -613,7 +635,7 @@ const deleteCategory = async (id) => {
             console.log('Fail to delete!');
         }
     } catch (err) {
-        console.log('Could not delete category.');
+        console.log('Could not delete category.', err.stack);
         throw new Error('Could not delete category.');
     }
 }
@@ -659,8 +681,7 @@ const deleteSubcategory = async (id) => {
         }
 
     } catch (err) {
-        console.log(err.stack);
-        console.log('Could not delete subcategory.');
+        console.log('Could not delete subcategory.', err.stack);
         throw new Error('Could not delete subcategory.');
     }
 }
@@ -676,7 +697,6 @@ const removeSubcategory = async (category, id) => {
             } 
             else {
                 const subCats = await countProduct(category.subcategories[i]);
-                console.log(subCats);
                 const count = subCats.count;
 
                 if (count > 0) {
@@ -684,7 +704,6 @@ const removeSubcategory = async (category, id) => {
                     newSubcategories.push(category.subcategories[i]);
                 } else {
                     data.push(category.subcategories[i].id, ...subCats.subcatIds);
-                    console.log('data', data);
                 }
             }
         }
@@ -698,8 +717,7 @@ const removeSubcategory = async (category, id) => {
         return data;
 
     } catch (err) {
-        console.log(err.stack);
-        console.log('Fail to remove subcategory in category');
+        console.log('Fail to remove subcategory in category', err.stack);
         throw new Error('Fail to remove subcategory in category');
     }
 }
@@ -723,7 +741,7 @@ const countProduct = async (category) => {
 
         return {count, subcatIds};
     } catch (err) {
-        console.log('Could not count total product for subcategory');
+        console.log('Could not count total product for subcategory', err.stack);
         throw new Error('Could not count total product for subcategory');
     }
 }
