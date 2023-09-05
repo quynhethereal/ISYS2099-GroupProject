@@ -6,7 +6,7 @@ const SequenceSchema = new mongoose.Schema({
     _id: String, 
     sequence: {
         type: Number, 
-        default: 0
+        default: 28
     }
 });
 
