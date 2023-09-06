@@ -68,3 +68,23 @@ export const createSubCategory = async (token, id, formData) => {
     return;
   }
 };
+
+export const deleteCategory = async (token, id) => {
+  try {
+    const { data } = await api.deleteCategory(token, id);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+
+export const deleteSubCategory = async (token, id) => {
+  try {
+    const { data } = await api.deleteSubCategory(token, id);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};

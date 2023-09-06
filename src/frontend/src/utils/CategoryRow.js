@@ -5,6 +5,10 @@ import CategoryUpdateForm from "./CategoryUpdateForm";
 import CategoryAttributeForm from "./CategoryAttributeForm";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import {
+  deleteCategory,
+  deleteSubCategory,
+} from "../action/category/category.js";
 
 const CategoryRow = ({ data, child }) => {
   const [showCreate, setShowCreate] = useState(false);
