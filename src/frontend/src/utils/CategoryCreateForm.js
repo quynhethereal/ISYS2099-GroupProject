@@ -29,6 +29,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
   const { token } = useAuth();
 
   const [require, setRequire] = useState([]);
+  const [showRequire, setShowRequire] = useState(false);
 
   const handleAddAtr = () => {
     if (getValues("required") === "" || getValues("required").length === 0) {
@@ -38,15 +39,22 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
+    if (getValues("isOptional") === "true" && getValues("hasValue") === "") {
+      Swal.fire({
+        title: "The name value is required!",
+        icon: "error",
+      });
+      return;
+    }
     if (
       require.filter((item) => item.name === getValues("required")).length === 0
     ) {
-      if (getValues("hasValue") !== "") {
+      if (getValues("isOptional") === "true") {
         setRequire([
           ...require,
           {
             name: getValues("required"),
-            required: getValues("isOptional") === "true" ? true : false,
+            required: true,
             value: parseInt(getValues("hasValue"))
               ? parseInt(getValues("hasValue"))
               : getValues("hasValue"),
@@ -57,7 +65,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
           ...require,
           {
             name: getValues("required"),
-            required: getValues("isOptional") === "true" ? true : false,
+            required: false,
           },
         ]);
       }
@@ -155,15 +163,20 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                   id="fromWarehouse"
                   className="form-select form-select-lg"
                   {...register("isOptional", {})}
+                  onChange={() => setShowRequire((prev) => !prev)}
                 >
                   <option value={false}>False</option>
                   <option value={true}>True</option>
                 </select>
-                <Form.Control
-                  type="text"
-                  placeholder="Value"
-                  {...register("hasValue", {})}
-                />
+                {showRequire && (
+                  <Form.Control
+                    type="text"
+                    placeholder="Value"
+                    {...register("hasValue", {
+                      require: "Value is the required field",
+                    })}
+                  />
+                )}
                 <Button variant="primary" onClick={() => handleAddAtr()}>
                   +
                 </Button>

@@ -22,7 +22,6 @@ const CategoryAttributeForm = ({ data }) => {
       {show && (
         <Modal show={show} onHide={handleClose} size="lg">
           <Modal.Header closeButton>
-            {console.log(data)}
             <Modal.Title className="ms-auto">{data?.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>

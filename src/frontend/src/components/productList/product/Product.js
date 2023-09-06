@@ -54,6 +54,11 @@ const Product = ({ info, update }) => {
             }).then(() => {
               navigate(0);
             });
+          } else {
+            Swal.fire({
+              title: "Could not delete the product",
+              icon: "error",
+            });
           }
         });
       } else if (result.isDenied) {
