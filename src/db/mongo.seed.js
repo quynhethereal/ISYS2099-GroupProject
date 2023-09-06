@@ -1,11 +1,10 @@
-const {Category, Sequence, CategoryMeta} = require('../models/category.model');
+const {Category, Sequence} = require('../models/category.model');
 const {generateMany} = require('./mongo.helper');
 
 // drop categories collection
 exports.dropCollection = async () => {
     try {
         await Category.collection.drop();
-        await CategoryMeta.collection.drop()
         await Sequence.collection.drop();
         console.log('Categories collection dropped');
 
