@@ -108,11 +108,10 @@ const Product = ({ info, update }) => {
                 {attribute?.attributes?.map((item, index) => {
                   return (
                     <span
-                      className="badge bg-info d-flex align-items-center justify-content-center"
+                      className="badge bg-info d-flex align-items-center justify-content-center text-truncate"
                       key={index}
                     >
                       {item?.name}
-                      {item?.value?.description}
                     </span>
                   );
                 })}
