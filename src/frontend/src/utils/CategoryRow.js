@@ -9,11 +9,13 @@ import {
   deleteCategory,
   deleteSubCategory,
 } from "../action/category/category.js";
+import { useAuth } from "../hook/AuthHook";
 
-const CategoryRow = ({ data, child }) => {
+const CategoryRow = ({ data, child, parent }) => {
   const [showCreate, setShowCreate] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const handleShowCreateForm = () => {
     setShowCreate((prev) => !prev);
@@ -32,20 +34,49 @@ const CategoryRow = ({ data, child }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         console.log("Awaiting for deleting api");
-        // await deleteProduct(token(), info?.id).then((res) => {
-        //   if (res?.message) {
-        //     Swal.fire({
-        //       icon: "success",
-        //       title: res?.message,
-        //       text: "Reloading in 2 secs for changes...",
-        //       showConfirmButton: false,
-        //       timer: 2000,
-        //       timerProgressBar: true,
-        //     }).then(() => {
-        //       navigate(0);
-        //     });
-        //   }
-        // });
+        if (parent) {
+          await deleteCategory(token(), data?.id).then((res) => {
+            if (res?.message) {
+              Swal.fire({
+                icon: "success",
+                title: res?.message,
+                text: "Reloading in 2 secs for changes...",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              }).then(() => {
+                navigate(0);
+              });
+            } else {
+              Swal.fire({
+                title:
+                  "Could not the delete the category! The category still has the products",
+                icon: "error",
+              });
+            }
+          });
+        } else {
+          await deleteSubCategory(token(), data?.id).then((res) => {
+            if (res?.message) {
+              Swal.fire({
+                icon: "success",
+                title: res?.message,
+                text: "Reloading in 2 secs for changes...",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              }).then(() => {
+                navigate(0);
+              });
+            } else {
+              Swal.fire({
+                title:
+                  "Could not the delete the category! The category still has the products",
+                icon: "error",
+              });
+            }
+          });
+        }
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }
@@ -79,7 +110,7 @@ const CategoryRow = ({ data, child }) => {
             className="btn btn-danger ms-2"
             onClick={() => handleDeleteCategory()}
           >
-            Delete
+            {parent ? "Delete" : "DeleteSub"}
           </button>
           {showCreate && (
             <CategoryCreateForm

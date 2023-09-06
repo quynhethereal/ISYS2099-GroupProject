@@ -38,7 +38,7 @@ const Category = () => {
       </div>
       <CategoryCreateForm show={show} handleClose={handleShowModal} />
       {data?.map((parent, index) => {
-        return <CategoryRow data={parent} key={parent?.id} />;
+        return <CategoryRow data={parent} key={parent?.id} parent={true} />;
       })}
     </div>
   );

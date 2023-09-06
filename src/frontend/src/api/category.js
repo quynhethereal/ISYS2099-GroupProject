@@ -28,11 +28,11 @@ export const createSubCategory = (token, id, formData) =>
   });
 
 export const deleteCategory = (token, id) =>
-  axios.put(`${backend_url}/api/category/${id}`, {
+  axios.delete(`${backend_url}/api/category/${id}`, {
     headers: { "x-access-token": token },
   });
 
 export const deleteSubCategory = (token, id) =>
-  axios.put(`${backend_url}/api/category/${id}/subcategory/delete`, {
+  axios.put(`${backend_url}/api/category/${id}/subcategory/delete`, null, {
     headers: { "x-access-token": token },
   });
