@@ -361,6 +361,11 @@ exports.delete = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        // check if user is seller
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+        
         const {title, description, price, category, image, length, width, height} = req.body;
 
         // validate presence of params
