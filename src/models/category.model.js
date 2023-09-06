@@ -6,7 +6,7 @@ const SequenceSchema = new mongoose.Schema({
     _id: String, 
     sequence: {
         type: Number, 
-        default: 28
+        default: 29
     }
 });
 
@@ -58,12 +58,14 @@ const Sequence = mongoose.model('Sequence', SequenceSchema);
 
 const generateID = async (model) => {
     try {
-        const doc = await Sequence.findOneAndUpdate (
-            {_id: model},      // Define the model that need to adjust ID value
-            {$inc: {sequence : 1}}, // Increase ID by 1
-            {new: true, upsert: true}
-        )
-        return doc.sequence;
+        let seq = await Sequence.findOne({ _id: model });
+        if (!seq) {
+            seq = new Sequence({ _id: model, sequence: 28 });
+            await seq.save();
+        }
+        seq.sequence++;
+        await seq.save();
+        return seq.sequence;
     } catch (err) {
         console.error('Error generate id for category:', err);
     }
