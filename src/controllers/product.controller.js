@@ -1,5 +1,6 @@
 const Product = require('../models/product.model');
 const Helper = require('../helpers/helpers');
+const {isExistedCat} = require("../models/category.model");
 
 exports.findAll = async (req, res) => {
     try {
@@ -94,12 +95,21 @@ exports.findAllByCategory = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const productId = parseInt(req.params.id);
-        const {title, description, price, categoryId, image} = req.body;
+        const {title, description, price, category, image} = req.body;
 
         // validate presence of params
-        if (productId === null || title === null || description === null || price === null || categoryId === null || image === null) {
+        if (productId === null || title === null || description === null || price === null || category === null || image === null) {
             res.status(400).send({
                 message: "Invalid request."
+            });
+            return;
+        }
+
+        const isCatExist = await isExistedCat(req.body.category);
+
+        if (!isCatExist) {
+            res.status(400).send({
+                message: "Invalid category."
             });
             return;
         }
@@ -345,6 +355,45 @@ exports.delete = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error deleting product."
+        });
+    }
+}
+
+exports.create = async (req, res) => {
+    try {
+        const {title, description, price, category, image, length, width, height} = req.body;
+
+        // validate presence of params
+        if (title === null || description === null || price === null || category === null || image === null || length === null || width === null || height === null) {
+            res.status(400).send({
+                message: "Invalid request."
+            });
+            return;
+        }
+
+
+        const isCatExist = await isExistedCat(req.body.category);
+
+        if (!isCatExist) {
+            res.status(400).send({
+                message: "Invalid category."
+            });
+            return;
+        }
+
+        const params = {
+            sellerId: req.currentUser.id,
+            ...req.body
+        }
+
+        const product = await Product.create(params);
+        res.status(200).json({
+            message: `Product created successfully.`,
+            product: product
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error creating product."
         });
     }
 }
