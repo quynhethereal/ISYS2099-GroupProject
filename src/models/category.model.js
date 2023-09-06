@@ -37,18 +37,13 @@ const CategorySchema = new mongoose.Schema({
     subcategories: [],
     attributes: [{
         name: String, 
-        value: {
-            description: {
-                type: mongoose.Schema.Types.Mixed,
-            }, 
-            type: {
-                type: String, 
-                enum:['string','number'],
-            }
-        },
         required: {
             type: Boolean,
             required: true
+        },
+        type: {
+            type: String, 
+            enum:['string','number'],
         }
     }]   // Array of attribute documents
 }, {autoIndex: true});
@@ -118,32 +113,21 @@ const createCategory = async (catObj) => {
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                console.log('Invalid attributes.');
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                } 
+                type: attribute.type
             }
         })
             
@@ -204,31 +188,21 @@ const createSubcategory = async (catObj) => {
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                }
+                type: attribute.type
             }
         })
 
@@ -482,34 +456,25 @@ const updateCategoryData = async (catObj) => {
 
         const attributes = catObj.attributes.map((attribute) => {
             if (attribute.name == null) {
+                console.log('Empty attribute name.');
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                } 
+                type: attribute.type
             }
         })
 

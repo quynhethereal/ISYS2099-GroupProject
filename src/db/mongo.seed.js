@@ -1,4 +1,5 @@
 const {Category, Sequence} = require('../models/category.model');
+const {ProductAttributes} = require('../models/product_attributes.model');
 
 const data = [
     {
@@ -26,18 +27,12 @@ const data = [
                     attributes: [
                         {
                             name: "Mobile",
-                            value: {
-                                description: "User-friendly", 
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         },
                         {
-                            name: "Price",
-                            value: {
-                                description: 300,
-                                type: "number"
-                            },
+                            name: "Brand",
+                            type: "string",
                             required: true
                         }
                     ]
@@ -50,14 +45,12 @@ const data = [
                         attributes: [
                             {
                                 name: "Functionality",
+                                type: "string",
                                 required: false
                             },
                             {
                                 name: "Collection",
-                                value: {
-                                    description: "Multiple version",
-                                    type: "string"
-                                },
+                                type: "string",
                                 required: true
                             }
                         ]
@@ -78,14 +71,12 @@ const data = [
                         attributes: [
                             {
                                 name: "Weight",
-                                value: {
-                                    description: 3, 
-                                    type: "number"
-                                },
+                                type: "number",
                                 required: true
                             },
                             {
-                                name: "Price",
+                                name: "Software version",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -94,14 +85,12 @@ const data = [
                 attributes: [
                     {
                         name: "Size",
+                        type: "number",
                         required: false
                     },
                     {
                         name: "Screen",
-                        value: {
-                            description: "13-inch, 14-inch, 15-inch", 
-                            type: "string"
-                        },
+                        type: "string",
                         required: true
                     }
                 ]
@@ -109,19 +98,8 @@ const data = [
         ],
         attributes: [
             {
-                name: "Smarthome",
-                value: {
-                    description: "Electronic devices for smarthome",
-                    type: "string"
-                },
-                required: true
-            },
-            {
-                name: "Price",
-                value: {
-                    description: 500,
-                    type: "number"
-                },
+                name: "Connection type",
+                type: "string",
                 required: true
             }
         ]
@@ -151,10 +129,7 @@ const data = [
                     attributes: [
                         {
                             name: "Power Storage",
-                            value: {
-                                description: "1000GB",
-                                type: "string"
-                            },
+                            type: "nummber",
                             required: true
                         }
                     ]
@@ -167,10 +142,12 @@ const data = [
                         attributes: [
                             {
                                 name: "Router type",
+                                type: "string",
                                 required: false
                             },
                             {
                                 name: "Modern",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -179,6 +156,7 @@ const data = [
                 attributes: [
                     {
                         name: "Color",
+                        type: "string",
                         required: false
                     }
                 ]
@@ -195,18 +173,12 @@ const data = [
                     attributes: [
                         {
                             name: "Waterproof level",
-                            value: {
-                                description: 3,
-                                type: "number"
-                            },
+                            type: "number",
                             required: true
                         },
                         {
                             name: "Size",
-                            value: {
-                                description: "Many sizes",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         }
                     ]
@@ -217,11 +189,8 @@ const data = [
                         required: false
                     },
                     {
-                        name: "Storage hour",
-                        value: {
-                            description: 5,
-                            type: "number"
-                        },
+                        name: "Battery hour",
+                        type: "number",
                         required: true
                     }
                 ]
@@ -230,14 +199,12 @@ const data = [
         attributes: [
             {
                 name: "Connection Type",
-                value: {
-                description: "USB, Bluetooth, HDMI",
-                type: "string"
-                },
+                type: "string",
                 required: true
             },
             {
                 name: "Warranty",
+                type: "string",
                 required: false
             }
         ]
@@ -268,18 +235,12 @@ const data = [
                     attributes: [
                         {
                             name: "TV Size",
-                            value: {
-                                description: "24-inch, 20-inch, 30-inch",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         },
                         {
                             name: "Functionality",
-                            value: {
-                                description: "Multiple Applications",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         }
                     ]
@@ -292,6 +253,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Cooling function",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -312,6 +274,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Inventer",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -324,6 +287,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Inventer",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -332,10 +296,7 @@ const data = [
                 attributes: [
                     {
                         name: "Volumn",
-                        value: {
-                            description: 100,
-                            type: "number"
-                        },
+                        type: "number",
                         required: true
                     }
                 ]
@@ -344,14 +305,12 @@ const data = [
         attributes: [
             {
                 name: "Compatibility",
+                type: "string",
                 required: false
             },
             {
                 name: "Material",
-                value: {
-                    description: "metal",
-                    type: "string"
-                },
+                type: "string",
                 required: true
             }
         ]
@@ -386,6 +345,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Irritability",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -394,18 +354,12 @@ const data = [
                 attributes: [
                     {
                         name: "Feeling",
-                        value: {
-                            description: "Nourishing",
-                            type: "string"
-                        },
+                        type: "string",
                         required: true
                     },
                     {
                         name: "Fresh level",
-                        value: {
-                            description: 80,
-                            type: "number"
-                        },
+                        type: "number",
                         required: true
                     }
                 ]
@@ -418,10 +372,7 @@ const data = [
             },
             {
                 name: "Ingredients",
-                value: {
-                    description: "silky",
-                    type: "string"
-                },
+                type: "string",
                 required: true
             }
         ]
@@ -457,6 +408,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Size",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -471,11 +423,8 @@ const data = [
                 ],
                 attributes: [
                     {
-                        name: "Water leaking",
-                        value: {
-                            description: "Waterproof",
-                            type: "string"
-                        },
+                        name: "Waterproof",
+                        type: "string",
                         required: true
                     }
                 ]
@@ -485,11 +434,14 @@ const data = [
     },
 ]
 
+// Include hard code database of product attributes
+
 // drop categories collection
 exports.dropCollection = async () => {
     try {
         await Category.collection.drop();
         await Sequence.collection.drop();
+        await ProductAttributes.collection.drop();
         console.log('Categories collection dropped');
 
     } catch (err) {
