@@ -76,12 +76,12 @@ const createAttributes = async (productId, categoryId, attributes) => {
             }
 
             data.push({
-                name: attribute.name,
+                name: matchValue.name,
                 value: {
                     description: attribute.value.description,
-                    type: attribute.value.type
+                    type: matchValue.type
                 },
-                required: attribute.required
+                required: matchValue.required
             }); 
         }
 
