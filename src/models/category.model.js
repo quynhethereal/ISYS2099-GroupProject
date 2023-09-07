@@ -629,6 +629,7 @@ const deleteSubcategory = async (id) => {
         }
 
         const deleteAction = await removeSubcategory(findCat, id);
+        console.log(deleteAction);
 
         findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
 
@@ -639,14 +640,24 @@ const deleteSubcategory = async (id) => {
             throw new Error('Unable to remove subcategory!');
 
         } else {
-            const newSubcategoriesArray = []
+            const newSubcategoriesArray = [];
+            const newSubcategoriesNameArray = [];
+
             for (const subId of findCat.subcategoriesArray) {
-                if (!deleteAction.includes(subId)) {
+                if (!deleteAction.data.includes(subId)) {
                     newSubcategoriesArray.push(subId);
                 }
             }
 
+            for (const subName of findCat.subcategoriesNameArray) {
+                if (!deleteAction.dataNames.includes(subName)) {
+                    newSubcategoriesNameArray.push(subName);
+                }
+            }
+
             findCat.subcategoriesArray = newSubcategoriesArray;
+            findCat.subcategoriesNameArray = newSubcategoriesNameArray;
+
             await findCat.save();
             console.log('Remove subcategory successful!')
         }
@@ -662,6 +673,11 @@ const removeSubcategory = async (category, id) => {
     try {
         const newSubcategories = [];
         let data = [];
+        let dataNames = [];
+
+        if (category === null) {
+            return {count: 0, subcatIds, subcatNames};
+        }
 
         for (let i = 0; i < category.subcategories.length; i++) {
             if (category.subcategories[i].id !== id) {
@@ -669,6 +685,7 @@ const removeSubcategory = async (category, id) => {
             } 
             else {
                 const subCats = await countProduct(category.subcategories[i]);
+                console.log(subCats);
                 const count = subCats.count;
 
                 if (count > 0) {
@@ -676,6 +693,8 @@ const removeSubcategory = async (category, id) => {
                     newSubcategories.push(category.subcategories[i]);
                 } else {
                     data.push(category.subcategories[i].id, ...subCats.subcatIds);
+                    dataNames.push(category.subcategories[i].name, ...subCats.subcatNames);
+                    console.log('dataNames', dataNames);
                 }
             }
         }
@@ -684,10 +703,14 @@ const removeSubcategory = async (category, id) => {
 
         for (const subcategory of category.subcategories) {
             const subData = await removeSubcategory(subcategory, id);
-            data = data.concat(subData);
+            data = data.concat(subData.data);
+            dataNames = dataNames.concat(subData.dataNames);
+            console.log(dataNames);
         }
-        return data;
 
+        console.log(dataNames);
+
+        return {data, dataNames};
     } catch (err) {
         console.log('Fail to remove subcategory in category');
         throw new Error('Fail to remove subcategory in category');
@@ -698,6 +721,7 @@ const countProduct = async (category) => {
     try {
         let count = 0;
         const subcatIds = [];
+        const subcatNames = [];
 
         if (category === null) {
             return 0;
@@ -709,9 +733,11 @@ const countProduct = async (category) => {
             let subCount = await countProduct(subcategory);
             count += subCount.count;
             subcatIds.push(subcategory.id, ...subCount.subcatIds);
+            subcatNames.push(subcategory.name, ...subCount.subcatNames);
         }
 
-        return {count, subcatIds};
+        console.log(subcatNames); 
+        return {count, subcatIds, subcatNames};
     } catch (err) {
         console.log('Could not count total product for subcategory');
         throw new Error('Could not count total product for subcategory');
