@@ -2,6 +2,7 @@ const {customer_pool, seller_pool} = require("../db/db");
 const productValidator = require('../validators/product.validator');
 const path = require('path');
 const Helpers = require('../helpers/helpers');
+const {deleteAttributes} = require('../models/product_attributes.model');
 
 class Product {
     constructor(params = {}) {
@@ -412,7 +413,7 @@ Product.delete = async (productId, sellerId) => {
     }
 
     // delete product by setting the order status to 'deleted' and delete the project
-    await new Promise((resolve, reject) => {
+    const promise = await new Promise((resolve, reject) => {
         seller_pool.execute(
             'DELETE FROM `products` WHERE id = ?',
             [productId],
@@ -425,8 +426,14 @@ Product.delete = async (productId, sellerId) => {
                 console.log("Product deleted.");
                 resolve(results);
             }
-        );
+        );  
+
+       
     });
+
+    if (promise) {
+        deleteAttributes(productId);
+    }
 }
 
 Product.updateImage = async (params) => {

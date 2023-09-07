@@ -3,7 +3,10 @@ const {findAttributes} = require('./category.model.js');
 const Product = require('./product.model');
 
 const AttributeSchema = new mongoose.Schema ({
-    productId: Number, 
+    productId: {
+        type: Number,
+        index: 1
+    }, 
     attributes: [
         {
             name: String, 

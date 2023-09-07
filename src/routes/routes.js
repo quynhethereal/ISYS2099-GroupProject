@@ -89,6 +89,7 @@ module.exports = app => {
     router.get("/attributes/product/:id", attributes.findByProductId);
     router.put("/attributes/:id", authMiddleware.verifyToken, attributes.updateAttributes);
     router.delete("/attributes/:id", authMiddleware.verifyToken, attributes.deleteAttributes);
+    router.post("/attributes/:id/recreate", authMiddleware.verifyToken, attributes.recreateAttributes);
 
     app.use('/api', router);
 }
