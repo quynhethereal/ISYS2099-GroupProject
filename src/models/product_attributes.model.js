@@ -42,7 +42,7 @@ const createAttributes = async (productId, categoryId, attributes) => {
             throw new Error('Attributes for product Id are existed.');
         }
 
-        const categoryAttributes = await findAttributes(product.category_id);
+        const categoryAttributes = await findAttributes(categoryId);
 
         if (!categoryAttributes) {
             console.log('This product requires no attributes.');
