@@ -17,6 +17,7 @@ const orders = require("../controllers/order.controller.js");
 const warehouses = require("../controllers/warehouse.controller.js");
 const authMiddleware = require('../middlewares/auth.middleware');
 const categories = require('../controllers/category.controller');
+const attributes = require('../controllers/product_attributes.controller');
 
 module.exports = app => {
     let router = require("express").Router();
@@ -37,7 +38,7 @@ module.exports = app => {
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
     // ---- find attributes for product ----
-    router.get("/product/:id/attributes", categories.findAttributesProduct);
+    // router.get("/product/:id/attributes", categories.findAttributesProduct);
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
@@ -81,6 +82,14 @@ module.exports = app => {
     router.get("/category/:id/attributes", categories.findAttributes);
     router.delete("/category/:id", authMiddleware.verifyToken, categories.deleteCategory);
     router.put("/category/:id/subcategory/delete", authMiddleware.verifyToken, categories.deleteSubcategory);
+
+    // product attributes 
+    router.post("/attributes/:id", authMiddleware.verifyToken, attributes.createProductAttributes);
+    router.get("/attributes", attributes.findAll);
+    router.get("/attributes/product/:id", attributes.findOne);
+    router.get("/attributes/filterbar", attributes.findAttributesAllCat);
+    router.get("/attributes/filterbar/:id", attributes.findAttributesByCat);
+    router.put("/attributes/:id");
 
     app.use('/api', router);
 }

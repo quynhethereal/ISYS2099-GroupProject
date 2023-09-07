@@ -657,6 +657,7 @@ const deleteSubcategory = async (id) => {
     }
 }
 
+// TODO: remove category name in subcategoriesNameArray
 const removeSubcategory = async (category, id) => {
     try {
         const newSubcategories = [];

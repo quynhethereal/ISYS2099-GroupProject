@@ -435,6 +435,71 @@ const data = [
 ]
 
 // Include hard code database of product attributes
+const attributes = [
+    {
+        productId: 1,
+        attributes: [
+            {
+                name: "Power storage", 
+                value: {
+                    description: 1000,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Sony",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 2,
+        attributes: [
+            {
+                name: "Waterproof", 
+                value: {
+                    description: "IPX6",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Samsung",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 3,
+        attributes: [
+            {
+                name: "Waterproof", 
+                value: {
+                    description: "IPX7",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Compatibility", 
+                value: {
+                    description: "",
+                    type: "string"
+                },
+                required: false
+            }
+        ]
+    }
+]
 
 // drop categories collection
 exports.dropCollection = async () => {
@@ -453,9 +518,10 @@ exports.dropCollection = async () => {
 // generate seed data for categories collection
 exports.generateSeedData = async (count) => {
     try {
-        const count = await Category.countDocuments();
+        const catCount = await Category.countDocuments();
+        const attrCount = await ProductAttributes.countDocuments();
 
-        if (count === 0) {
+        if (catCount === 0) {
             // Category.insertMany(await generateMany(10))
             Category.insertMany(data)
                 .then((result) => {
@@ -463,6 +529,16 @@ exports.generateSeedData = async (count) => {
                 })
                 .catch((error) => {
                     console.log(`Categories could not save to MongoDB`, error);
+                });
+        }
+
+        if (attrCount === 0) {
+            ProductAttributes.insertMany(attributes)
+                .then((result) => {
+                    console.log(`Product attributes saved to MongoDB`);
+                })
+                .catch((error) => {
+                    console.log(`Product attributes could not save to MongoDB`, error);
                 });
         }
     } catch (err) {

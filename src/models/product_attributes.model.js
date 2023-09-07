@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Category, findAttributes} = require('./category.model.js'); 
+const {findAttributes} = require('./category.model.js'); 
 const Product = require('./product.model');
 
 const AttributeSchema = new mongoose.Schema ({
@@ -57,24 +57,24 @@ const createAttributes = async (productId, categoryId, attributes) => {
             }
 
             if (matchValue.required) {
-                if (!attribute.value || typeof attribute.value.description !== matchingAttribute.type) {
+                if (!attribute.value || typeof attribute.value.description !== matchValue.type) {
                     console.log(`Invalid type '${attribute.type}' for attribute.`);
                     throw new Error(`Invalid type '${attribute.type}' for attribute.`);
                 }
             }
 
             data.push({
-                name: matchValue.name,
+                name: attribute.name,
                 value: {
                     description: attribute.value.description,
                     type: attribute.value.type
                 },
-                required: attribute.name
+                required: attribute.required
             }); 
         }
 
         const newProductAttributes = new ProductAttributes ({
-            id: productId,
+            productId: productId,
             attributes: data
         });
 
@@ -82,8 +82,18 @@ const createAttributes = async (productId, categoryId, attributes) => {
 
         return newProductAttributes;
     } catch (err) {
-        console.log('Unable to create attributes for products');
+        console.log('Unable to create attributes for products', err.stack);
         throw new Error('Unable to create attributes for products');
+    }
+}
+
+const findAll = async () => {
+    try {
+        const attributes = await ProductAttributes.find();
+        return attributes;
+    } catch (err) {
+        console.log('Unable to find all product attributes');
+        throw new Error('Unable to find all product attributes');
     }
 }
 
@@ -91,37 +101,167 @@ const findProductAttributes = async (id) => {
     try {
         const product = await ProductAttributes.findOne({productId: id});
 
+        console.log(product);
         if (!product) {
-            console.log('Product ID not found.');
-            throw new Error('Product ID not found.');
+            console.log('Product attributes not found.');
+            throw new Error('Product attributes not found.');
         }
 
-        const attributes = product.attributes;
+        const data = product.attributes;
 
-        return attributes;
+        return data;
     } catch (err) {
-        console.log('Unable to retrieve attributes for product.');
+        console.log('Unable to retrieve attributes for product.', err.stack);
         throw new Error('Unable to retrieve attributes for product.');
     }
 }
 
-// TODO
 const findByKey = async (key) => {
     try {
+        const regex = new RegExp(key, 'i'); // case sensitive
 
+        const data = await ProductAttributes.find({'attributes.value.description': regex});
+
+        if (data.length > 0) {
+            const result = data.map(d => d.attributes.filter(attr => regex.test(attr.name)));
+            return result;
+        }
+
+        return null;
     } catch (err) {
         console.log('Unable to find key.');
         throw new Error('Unable to find key.');
     }
 }
 
-// TODO
-const findByName = async (name) => {
+const findAllAttributes = async () => {
     try {
+        const products = await ProductAttributes.find({});
+        const attributeValuesMap = {};
 
+        products.forEach((product) => {
+            product.attributes.forEach((attr) => {
+                const attributeName = attr.name;
+                const attributeValues = attr.value.description;
+
+                if (attributeValues.length == 0) {
+                    return;
+                }
+
+                if (attributeName in attributeValuesMap) {
+                    attributeValuesMap[attributeName].push(attributeValues);
+                } else {
+                    attributeValuesMap[attributeName] = [attributeValues];
+                }
+            });
+        });
+
+        return attributeValuesMap;
     } catch (err) {
-        console.log('Unable to find by attribute name.');
-        throw new Error('Unable to find by attribute name.');
+        console.log('Unable to fetching description following the list of attributes');
+        throw new Error('Unable to fetching description following the list of attributes');
+    }
+}
+
+const findAllAttributesByCat = async (id) => {
+    try {
+        const categoryAttributes = await findAttributes(id);
+
+        // console.log(categoryAttributes);
+        if (!categoryAttributes) {
+            console.log('No avalable category attributes.');
+            throw new Error('No avalable category attributes.');
+        }
+
+        const products = await ProductAttributes.find({});
+        const attributeValuesMap = {};
+
+        products.forEach((product) => {
+            product.attributes.forEach((attr) => {
+                const attributeName = attr.name;
+                const attributeValues = attr.value.description;
+
+                if (categoryAttributes.some((attribute) => attribute.name === attributeName)) {
+                    if (attributeValues.length == 0){
+                        return;
+                    }
+
+                    if (attributeName in attributeValuesMap) {
+                        attributeValuesMap[attributeName].push(attributeValues);
+                    } else {
+                        attributeValuesMap[attributeName] = [attributeValues];
+                    }   
+                }
+            });
+        });
+
+        return attributeValuesMap;
+    } catch (err) {
+        console.log('Unable to fetching description following the list of attributes');
+        throw new Error('Unable to fetching description following the list of attributes');
+    }
+}
+
+const updateCurrentAttributes = async (productId, attributes) => {
+    try {
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            console.log('Product Id not found!');
+            throw new Error('Product Id not found.');
+        }
+
+        const productCatId = parseInt(product.category_id);
+
+        if (!productCatId) {
+            console.log('Unable to find product category Id!');
+            throw new Error('Unable to find product category Id!')
+        }
+
+        const categoryAttributes = await findAttributes(productCatId);
+
+        if (!categoryAttributes) {
+            console.log('This product requires no attributes.');
+            throw new Error('This product requires no attributes.');
+        }
+
+        const data = [];
+        for (const attribute of attributes) {
+            const matchValue = categoryAttributes.find(catAttr => catAttr.name === attribute.name);
+
+            if (!matchValue) {
+                console.log(`Invalid attribute description '${attribute.name}'.`);
+                throw new Error(`Invalid attribute description '${attribute.name}'.`);
+            }
+
+            if (matchValue.required) {
+                if (!attribute.value || typeof attribute.value.description !== matchingAttribute.type) {
+                    console.log(`Invalid type '${attribute.type}' for attribute.`);
+                    throw new Error(`Invalid type '${attribute.type}' for attribute.`);
+                }
+            }
+
+            data.push({
+                name: attribute.name,
+                value: {
+                    description: attribute.value.description,
+                    type: attribute.value.type
+                },
+                required: attribute.required
+            }); 
+        }
+
+        const updateData = await ProductAttributes.findOneAndUpdate({productId: productId}, {attributes: data}, {new: true});
+
+        if (!updateData) {
+            console.log('Error in updating data.');
+            throw new Error('Error in updating data.');
+        }
+
+        return updateData;
+    } catch (err) {
+        console.log('Unable to update attributes with current cat.');
+        throw new Error('Unable to update attributes with current cat.');
     }
 }
 
@@ -139,14 +279,15 @@ const updateAttributes = async (productId, categoryId, attributes) => {
         const newAttributes = await createAttributes(productId, categoryId, attributes);
 
         if(!newAttributes) {
+            const restoreAction = await createAttributes(productId, categoryId, result);
             console.log('Fail to update attributes');
             throw new Error('Fail to update attributes');
         }
 
         return newAttributes;
     } catch (err) {
-        console.log('Unable to update attributes.');
-        throw new Error('Unable to update attributes.');
+        console.log('Unable to update attributes when changing category.');
+        throw new Error('Unable to update attributes when changing category.');
     }
 }
 
@@ -172,5 +313,16 @@ const deleteAttributes = async (id) => {
     }
 }
 
-module.exports = {ProductAttributes, createAttributes, findProductAttributes, updateAttributes, deleteAttributes};
+module.exports = {
+    ProductAttributes, 
+    createAttributes, 
+    findAll, 
+    findProductAttributes, 
+    findByKey, 
+    findAllAttributes,
+    findAllAttributesByCat,
+    updateCurrentAttributes, 
+    updateAttributes, 
+    deleteAttributes
+};
 
