@@ -3,9 +3,9 @@ const {
     findAll,
     findProductAttributes, 
     updateCurrentAttributes,
-    recreateAttributes,
-    deleteAttributes
 } = require ('../models/product_attributes.model');
+
+const {recreateAttributes} = require('../services/recreateAttributes.service');
 
 exports.createProductAttributes = async (req, res) => {
     try {
@@ -116,33 +116,6 @@ exports.updateAttributes = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: err.message || "Error updating attributes."
-        });
-    }
-}
-
-exports.deleteAttributes = async (req, res) => {
-    try {
-        if (req.currentUser.role !== 'seller') {
-            return res.status(401).json({message: "Unauthorized"});
-        }
-
-        const id = parseInt(req.params.id);
-
-        if (!id) {
-            res.status(400).send({
-                message: "Invalid request. Product id is empty."
-            });
-            return;
-        }
-
-        const deleteAction = await deleteAttributes(id);
-
-        res.status(200).send({
-            message: "Delete successful."
-        });
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error deleting attributes."
         });
     }
 }

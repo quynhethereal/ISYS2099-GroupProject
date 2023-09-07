@@ -1,5 +1,6 @@
 const Product = require('../models/product.model');
 const Helper = require('../helpers/helpers');
+const {deleteProduct} = require('../services/deleteAttributes.service');
 
 exports.findAll = async (req, res) => {
     try {
@@ -338,7 +339,8 @@ exports.delete = async (req, res) => {
             return res.status(401).json({message: "Unauthorized"});
         }
 
-        const deletedProduct = await Product.delete(productId, req.currentUser.id);
+        const deletedProduct = await deleteProduct(productId, req.currentUser.id);
+        
         res.status(200).json({
             message: `Product with id ${productId} deleted successfully.`
         });
