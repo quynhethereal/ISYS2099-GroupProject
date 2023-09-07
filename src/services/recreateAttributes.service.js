@@ -1,7 +1,7 @@
 const Product = require('../models/product.model');
 const {ProductAttributes} = require('../models/product_attributes.model');
 const {findAttributes} = require('../models/category.model');
-const {deleteAttributes} = require('./deleteAttributes.service');
+const {deleteAttributes} = require('./deleteProduct.service');
 
 const recreateAttributes = async (productId, categoryId, attributes) => {
     try {  

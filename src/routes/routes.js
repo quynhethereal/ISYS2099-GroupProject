@@ -37,8 +37,6 @@ module.exports = app => {
     router.put("/product/:id", authMiddleware.verifyToken, products.update);
     router.post("/product/:id/image", upload.single('productImage'), authMiddleware.verifyToken, products.updateImage);
     router.get("/product/:id/image", products.getImage);
-    // ---- find attributes for product ----
-    // router.get("/product/:id/attributes", categories.findAttributesProduct);
     router.get("/seller/products", authMiddleware.verifyToken, products.findBySellerId);
     router.get("/products/price-range", products.findAllByPriceRange);
     router.get("/products/search", products.findAllByKey);
@@ -85,11 +83,10 @@ module.exports = app => {
     router.put("/category/:id/subcategory/delete", authMiddleware.verifyToken, categories.deleteSubcategory);
 
     // product attributes 
-    router.post("/attributes/:id", authMiddleware.verifyToken, attributes.createProductAttributes);
     router.get("/attributes", attributes.findAll);
     router.get("/attributes/product/:id", attributes.findByProductId);
-    router.put("/attributes/:id", authMiddleware.verifyToken, attributes.updateAttributes);
-    router.post("/attributes/:id/recreate", authMiddleware.verifyToken, attributes.recreateAttributes);
+    router.put("/attributes/product/:id", authMiddleware.verifyToken, attributes.updateAttributes);
+    router.post("/attributes/recreate/:id", authMiddleware.verifyToken, attributes.recreateAttributes);
 
     app.use('/api', router);
 }

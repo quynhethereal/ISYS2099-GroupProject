@@ -1,7 +1,8 @@
 const Product = require('../models/product.model');
 const Helper = require('../helpers/helpers');
-const {deleteProduct} = require('../services/deleteAttributes.service');
+const {deleteProduct} = require('../services/deleteProduct.service');
 const {isExistedCat} = require("../models/category.model");
+const {create} = require("../services/createProduct.service");
 
 exports.findAll = async (req, res) => {
     try {
@@ -393,7 +394,8 @@ exports.create = async (req, res) => {
             ...req.body
         }
 
-        const product = await Product.create(params);
+        const product = await create(params);
+        
         res.status(200).json({
             message: `Product created successfully.`,
             product: product

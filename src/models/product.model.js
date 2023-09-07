@@ -676,41 +676,4 @@ Product.findByKey = async (params) => {
     }
 }
 
-Product.create = async (params) => {
-    const connection = await seller_pool.promise().getConnection();
-
-    try {
-        const {title, description, price, category, sellerId, image, length, width, height} = params;
-
-        const imageName = params.imageName || 'default_prod_image.jpg';
-
-        const insertProductQuery = await connection.execute(
-            'INSERT INTO `products` (title, description, price, category_id, seller_id, image, image_name, length, width, height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [title, description, price, category, sellerId, image, imageName, length, width, height]
-        );
-
-        const productId = insertProductQuery[0].insertId;
-
-        return new Product({
-            title,
-            description,
-            price,
-            category,
-            sellerId,
-            image,
-            imageName,
-            productId,
-            length,
-            width,
-            height
-        });
-    } catch (err) {
-        console.log('Unable to create product.');
-        // rethrow error
-        throw err;
-    } finally {
-        connection.release();
-    }
-}
-
 module.exports = Product;
