@@ -126,7 +126,6 @@ Inventory.getInventoryByWarehouseId = async (params) => {
     } catch (err) {
         console.log('Unable to find inventory.');
         // rethrow error
-        console.log(err.stack);
         throw err;
     } finally {
         connection.release();

@@ -22,14 +22,13 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       name: "",
       required: "",
       isOptional: false,
-      hasValue: "",
+      hasValue: "string",
     },
   });
   const navigate = useNavigate();
   const { token } = useAuth();
 
   const [require, setRequire] = useState([]);
-  const [showRequire, setShowRequire] = useState(false);
 
   const handleAddAtr = () => {
     if (getValues("required") === "" || getValues("required").length === 0) {
@@ -39,38 +38,22 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    if (getValues("isOptional") === "true" && getValues("hasValue") === "") {
-      Swal.fire({
-        title: "The name value is required!",
-        icon: "error",
-      });
-      return;
-    }
-    if (
-      require.filter((item) => item.name === getValues("required")).length === 0
-    ) {
-      if (getValues("isOptional") === "true") {
-        setRequire([
-          ...require,
-          {
-            name: getValues("required"),
-            required: true,
-            value: parseInt(getValues("hasValue"))
-              ? parseInt(getValues("hasValue"))
-              : getValues("hasValue"),
-          },
-        ]);
-      } else {
-        setRequire([
-          ...require,
-          {
-            name: getValues("required"),
-            required: false,
-          },
-        ]);
-      }
-      reset({ hasValue: "", required: "" });
-    }
+    // if (
+    //   require.filter((item) => item.name === getValues("required")).length === 0
+    // ) {
+    setRequire([
+      ...require,
+      {
+        name: getValues("required"),
+        required: getValues("isOptional"),
+        value: {
+          description: "",
+          type: getValues("hasValue"),
+        },
+      },
+    ]);
+    reset({ required: "" });
+    // }
   };
 
   const handleRemoveAtr = (value) => {
@@ -163,20 +146,18 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                   id="fromWarehouse"
                   className="form-select form-select-lg"
                   {...register("isOptional", {})}
-                  onChange={() => setShowRequire((prev) => !prev)}
                 >
                   <option value={false}>False</option>
                   <option value={true}>True</option>
                 </select>
-                {showRequire && (
-                  <Form.Control
-                    type="text"
-                    placeholder="Value"
-                    {...register("hasValue", {
-                      require: "Value is the required field",
-                    })}
-                  />
-                )}
+                <select
+                  id="fromWarehouse"
+                  className="form-select form-select-lg"
+                  {...register("hasValue", {})}
+                >
+                  <option value={"string"}>String</option>
+                  <option value={"number"}>Number</option>
+                </select>
                 <Button variant="primary" onClick={() => handleAddAtr()}>
                   +
                 </Button>
@@ -189,7 +170,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                     className="badge bg-info text-center pe-0 py-0"
                     key={index}
                   >
-                    {item?.name} {item?.value}
+                    {item?.name} {item?.value?.type}
                     <Button
                       className="btn btn-sm btn-info text-white"
                       onClick={() => handleRemoveAtr(item)}
@@ -202,23 +183,15 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
             </div>
           </div>
           <div className="col-12">
+            {console.log(require)}
             {require?.map((item, index) => {
               return (
                 <div className="my-2" key={index}>
-                  <b>Name</b>: {item?.name}, <b>Require</b>:{" "}
+                  <b>Name</b>: {item?.name}, <b>Require</b>:
                   {item?.required ? "True" : "False"},
-                  {item?.value && (
-                    <span>
-                      <b>Value</b>: {item?.value?.description || item?.value},{" "}
-                      <b>Type</b>: {item?.value?.type || typeof item?.value}
-                    </span>
-                  )}
-                  {!item?.value && (
-                    <span>
-                      <b>Value</b>: {item?.value?.description || "None"},{" "}
-                      <b>Type</b>: {item?.value?.type || "None"}
-                    </span>
-                  )}
+                  <span>
+                    <b>Type</b>: {item?.value?.type}
+                  </span>
                 </div>
               );
             })}

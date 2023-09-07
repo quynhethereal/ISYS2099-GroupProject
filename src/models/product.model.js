@@ -11,6 +11,9 @@ class Product {
         // TODO: add category
         this.category = params.category;
         this.title = params.title;
+        this.length = params.length;
+        this.width = params.width;
+        this.height = params.height;
     }
 }
 
@@ -135,7 +138,6 @@ Product.findBySellerId = async (params) => {
         }
 
     } catch (err) {
-        console.log(err.stack);
         console.log('Unable to find products.');
         throw err;
     }
@@ -454,14 +456,11 @@ Product.update = async (params) => {
         const title = params.title + "";
         const description = params.description + "";
         const price = parseFloat(params.price);
-        const category = params.category + "";
+        const category = params.category;
         const id = params.productId;
         const image = params.image;
 
-
         const product = await Product.findByIdAndSellerId(id, params.sellerId);
-
-        // TODO: check if category is valid
 
         if (!product) {
             console.log("Product not found.");
@@ -487,6 +486,7 @@ Product.update = async (params) => {
         return new Product(params);
 
     } catch (err) {
+        console.log(err.stack)
         console.log('Unable to update product.');
         throw err;
     }
@@ -673,6 +673,43 @@ Product.findByKey = async (params) => {
         };
     } catch (err) {
         console.log('Unable to search products.');
+    }
+}
+
+Product.create = async (params) => {
+    const connection = await seller_pool.promise().getConnection();
+
+    try {
+        const {title, description, price, category, sellerId, image, length, width, height} = params;
+
+        const imageName = params.imageName || 'default_prod_image.jpg';
+
+        const insertProductQuery = await connection.execute(
+            'INSERT INTO `products` (title, description, price, category_id, seller_id, image, image_name, length, width, height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [title, description, price, category, sellerId, image, imageName, length, width, height]
+        );
+
+        const productId = insertProductQuery[0].insertId;
+
+        return new Product({
+            title,
+            description,
+            price,
+            category,
+            sellerId,
+            image,
+            imageName,
+            productId,
+            length,
+            width,
+            height
+        });
+    } catch (err) {
+        console.log('Unable to create product.');
+        // rethrow error
+        throw err;
+    } finally {
+        connection.release();
     }
 }
 

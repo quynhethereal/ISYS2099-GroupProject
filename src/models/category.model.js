@@ -76,11 +76,8 @@ const isExistedCat = async (id) => {
             ]
         });
 
-        if (findCat == null) {
-            return false;
-        } 
+        return findCat !== null;
 
-        return true;
     } catch (err) {
         console.log('Could not find category');
         throw new Error('Could not find category');
@@ -745,4 +742,3 @@ const countProduct = async (category) => {
 }
 
 module.exports = {Category, Sequence, generateID, isExistedCat, createCategory, createSubcategory, findAll, findOne, findAllFlatten, findAttributes, findProductCatId, updateCategoryData, deleteCategory, deleteSubcategory};
-

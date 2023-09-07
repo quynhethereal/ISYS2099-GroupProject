@@ -4,11 +4,20 @@ import Dropdown from "react-bootstrap/Dropdown";
 const CategorySubMenu = ({ data, handleChoose }) => {
   return (
     <ul className="dropdown-menu dropdown-submenu">
-      <li>
-        <Dropdown.Item onClick={() => handleChoose(data)}>
-          {data?.name}
-        </Dropdown.Item>
-        {data?.subcategories?.map((child) => {
+      {console.log(data)}
+      {data?.subcategories?.map((sub) => {
+        return (
+          <li key={sub?.id}>
+            <Dropdown.Item onClick={() => handleChoose(sub)}>
+              {sub?.name}
+            </Dropdown.Item>
+            {sub?.subcategories?.length !== 0 && (
+              <CategorySubMenu data={sub} handleChoose={handleChoose} />
+            )}
+          </li>
+        );
+      })}
+      {/* {data?.subcategories?.map((child) => {
           return (
             <CategorySubMenu
               data={child}
@@ -16,8 +25,7 @@ const CategorySubMenu = ({ data, handleChoose }) => {
               key={child?.id}
             />
           );
-        })}
-      </li>
+        })} */}
     </ul>
   );
 };

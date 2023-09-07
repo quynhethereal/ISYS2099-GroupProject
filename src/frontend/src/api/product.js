@@ -77,3 +77,8 @@ export const searchByCategory = (
   axios.get(
     `${backend_url}/api/category/${id}/products?sortDirection1=${sortDirection1}&sortTerm1=${sortedTerm1}&sortDirection2=${sortDirection2}&sortTerm2=${sortedTerm2}&limit=${limit}&currentPage=${currentPage}`
   );
+
+export const createProduct = (token, formData) =>
+  axios.post(`${backend_url}/api/product`, formData, {
+    headers: { "x-access-token": token },
+  });
