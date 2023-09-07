@@ -37,6 +37,8 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     },
   });
 
+  console.log(getValues("category"));
+
   useEffect(() => {
     async function getAllCategoryData() {
       await getAllFlatternCategory().then((res) => {
@@ -49,9 +51,8 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
 
   useEffect(() => {
     async function getCurrentCategory() {
-      await getCategoryByID(currentChoice || data?.id).then((res) => {
+      await getCategoryByID(currentChoice || data?.category_id).then((res) => {
         if (res) {
-          console.log(res);
           setCurrentCategoryData(res);
         }
       });
@@ -99,8 +100,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          console.log(res);
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({
@@ -177,6 +177,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                     <select
                       id="category"
                       type="number"
+                      value={currentChoice || getValues("category")}
                       className="form-select form-select-lg w-100"
                       {...register("category", {
                         valueAsNumber: true,
