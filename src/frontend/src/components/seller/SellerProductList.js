@@ -4,6 +4,7 @@ import { useAuth } from "../../hook/AuthHook.js";
 import { getProductBySellerId } from "../../action/product/product.js";
 
 import Product from "../productList/product/Product.js";
+import ProductCreateForm from "../../utils/ProductCreateForm.js";
 
 const SellerProductList = () => {
   const { token } = useAuth();
@@ -15,6 +16,11 @@ const SellerProductList = () => {
 
   const [products, setProducts] = useState([]);
   const [more, setMore] = useState(false);
+  const [showCreateProduct, setShowCreateProduct] = useState(false);
+
+  const handleShowCreateProductForm = () => {
+    setShowCreateProduct((prev) => !prev);
+  };
 
   useEffect(() => {
     async function getProducts() {
@@ -46,6 +52,20 @@ const SellerProductList = () => {
 
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
+      <div className="col-12 d-flex">
+        <button
+          className="btn btn-info ms-auto"
+          onClick={() => handleShowCreateProductForm()}
+        >
+          Create Product
+        </button>
+      </div>
+      {showCreateProduct && (
+        <ProductCreateForm
+          show={showCreateProduct}
+          handleClose={handleShowCreateProductForm}
+        />
+      )}
       <div className="my-4 d-flex flex-wrap flex-row justify-content-center align-items-center">
         {products?.map((item, index) => {
           return (

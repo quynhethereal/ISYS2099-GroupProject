@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
-import { updateProduct } from "../action/product/product.js";
+import { createProduct } from "../action/product/product.js";
 import {
   getAllFlatternCategory,
   getCategoryByID,
@@ -14,7 +14,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import FormInput from "./FormInput.js";
 
-const ProductUpdateForm = ({ data, show, handleClose }) => {
+const ProductCreateForm = ({ show, handleClose }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [imageSoure, setImageSoure] = useState();
@@ -29,11 +29,14 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: data?.category_id,
-      title: data?.title,
-      description: data?.description,
-      price: data?.price,
-      image: data?.image,
+      category: 1,
+      title: "",
+      description: "",
+      price: 0,
+      image: "",
+      length: 0,
+      width: 0,
+      height: 0,
     },
   });
 
@@ -49,7 +52,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
 
   useEffect(() => {
     async function getCurrentCategory() {
-      await getCategoryByID(currentChoice || data?.id).then((res) => {
+      await getCategoryByID(currentChoice || 1).then((res) => {
         if (res) {
           console.log(res);
           setCurrentCategoryData(res);
@@ -58,7 +61,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     }
     getCurrentCategory();
     // eslint-disable-next-line
-  }, [currentChoice, data]);
+  }, [currentChoice]);
 
   const handleFetchImageSoure = async (imgUrl) => {
     const checkImage = (path) =>
@@ -80,7 +83,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   };
   // token, id, title, description, price, category, image;
 
-  const handleUpdateProduct = async (value) => {
+  const handleCreateProduct = async (value) => {
     if (imageSoure === "error" && imageSoure) {
       Swal.fire({
         icon: "error",
@@ -89,7 +92,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    await updateProduct(token(), data?.id, value).then((res) => {
+    await createProduct(token(), value).then((res) => {
       if (res) {
         Swal.fire({
           icon: "success",
@@ -99,8 +102,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          console.log(res);
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({
@@ -114,9 +116,9 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
 
   return (
     <Modal show={show} onHide={handleClose}>
-      <form onSubmit={handleSubmit(handleUpdateProduct)}>
+      <form onSubmit={handleSubmit(handleCreateProduct)}>
         <Modal.Header closeButton>
-          <Modal.Title className="ms-auto">#{data?.id} Product</Modal.Title>
+          <Modal.Title className="ms-auto">Create New Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="col-12 d-flex flex-column justify-content-center align-items-center">
@@ -166,6 +168,33 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                   inputName={"price"}
                   inputLabel={"Product Price"}
                   inputPlaceHolder={"Ennter new price of product"}
+                  register={register}
+                  inputType={"number"}
+                  errors={errors}
+                  step={"0.01"}
+                ></FormInput>
+                <FormInput
+                  inputName={"width"}
+                  inputLabel={"Product Width"}
+                  inputPlaceHolder={"Ennter width of product"}
+                  register={register}
+                  inputType={"number"}
+                  errors={errors}
+                  step={"0.01"}
+                ></FormInput>
+                <FormInput
+                  inputName={"height"}
+                  inputLabel={"Product Height"}
+                  inputPlaceHolder={"Ennter height of product"}
+                  register={register}
+                  inputType={"number"}
+                  errors={errors}
+                  step={"0.01"}
+                ></FormInput>
+                <FormInput
+                  inputName={"length"}
+                  inputLabel={"Product Length"}
+                  inputPlaceHolder={"Ennter length of product"}
                   register={register}
                   inputType={"number"}
                   errors={errors}
@@ -224,7 +253,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
             Cancel
           </Button>
           <Button className="btn btn-primary" type="submit">
-            Update Product
+            Create Product
           </Button>
         </Modal.Footer>
       </form>
@@ -232,4 +261,4 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   );
 };
 
-export default ProductUpdateForm;
+export default ProductCreateForm;

@@ -150,3 +150,16 @@ export const searchByCategory = async (
     console.log(error);
   }
 };
+
+export const createProduct = async (token, formData) => {
+  try {
+    const res = await api.createProduct(token, formData);
+    if (res?.status === 200) {
+      const { data } = res;
+      return data;
+    }
+    // return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
