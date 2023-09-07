@@ -10,7 +10,7 @@ const SellerProductList = () => {
   const { token } = useAuth();
   const [params, setParams] = useState({
     limit: 10,
-    currentPage: null,
+    currentPage: 0,
     totalPages: null,
   });
 
@@ -26,7 +26,7 @@ const SellerProductList = () => {
     async function getProducts() {
       await getProductBySellerId(
         token(),
-        params.currentPage || 1,
+        params.currentPage + 1,
         params.limit
       ).then((res) => {
         if (res) {
@@ -37,7 +37,7 @@ const SellerProductList = () => {
           }
           setParams({
             limit: res?.limit,
-            currentPage: res?.currentPage + 1,
+            currentPage: res?.currentPage,
             totalPages: res?.totalPages,
           });
         }
@@ -49,6 +49,8 @@ const SellerProductList = () => {
     }
     // eslint-disable-next-line
   }, [more]);
+
+  console.log(params);
 
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">

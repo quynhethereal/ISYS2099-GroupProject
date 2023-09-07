@@ -54,7 +54,6 @@ const ProductCreateForm = ({ show, handleClose }) => {
     async function getCurrentCategory() {
       await getCategoryByID(currentChoice || 1).then((res) => {
         if (res) {
-          console.log(res);
           setCurrentCategoryData(res);
         }
       });
@@ -102,7 +101,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          navigate(0);
+          // navigate(0);
         });
       } else {
         Swal.fire({
