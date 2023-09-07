@@ -2,14 +2,12 @@ const {
     createAttributes, 
     findAll,
     findProductAttributes, 
-    findAllAttributes,
-    findAllAttributesByCat,
-    updateCurrentAttributes
+    updateCurrentAttributes,
+    deleteAttributes
 } = require ('../models/product_attributes.model');
 
 exports.createProductAttributes = async (req, res) => {
     try {
-        // check if user is admin
         if (req.currentUser.role !== 'seller') {
             return res.status(401).json({message: "Unauthorized"});
         }
@@ -60,7 +58,7 @@ exports.findAll = async (req, res) => {
     }
 }
 
-exports.findOne = async (req, res) => {
+exports.findByProductId = async (req, res) => {
     try {
         const id = parseInt(req.params.id);
 
@@ -91,48 +89,59 @@ exports.findOne = async (req, res) => {
     }
 }
 
-exports.findAttributesAllCat = async (req, res) => {
+exports.updateAttributes = async (req, res) => {
     try {
-        const attributes = await findAllAttributes();
-
-        if (!attributes) {
-            res.status(400).send({
-                message: "Invalid request."
-            });
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({message: "Unauthorized"});
         }
 
-        res.status(200).json(attributes);
-    } catch (err) {
-        res.status(500).send({
-            message: err.message || "Error fetching attributes by name list."
-        });
-    }
-}
-
-exports.findAttributesByCat = async (req, res) => {
-    try {
         const id = parseInt(req.params.id);
 
         if (!id) {
             res.status(400).send({
-                message: "Invalid request. Category id is empty."
+                message: "Invalid request. Product id is empty."
             });
             return;
         }
 
-        const attributes = await findAllAttributesByCat(id);
+        const attribute = await updateCurrentAttributes(id, req.body.attributes);
 
-        if (!attributes) {
+        if (!attribute) {
             res.status(400).send({
-                message: "Invalid request."
-            });
+                message: "Unable to create new category."
+            })
         }
-
-        res.status(200).json(attributes);
+        res.status(200).json(attribute);
     } catch (err) {
         res.status(500).send({
-            message: err.message || "Error fetching attributes by name list."
+            message: err.message || "Error updating attributes."
         });
     }
 }
 
+exports.deleteAttributes = async (req, res) => {
+    try {
+        if (req.currentUser.role !== 'seller') {
+            return res.status(401).json({message: "Unauthorized"});
+        }
+
+        const id = parseInt(req.params.id);
+
+        if (!id) {
+            res.status(400).send({
+                message: "Invalid request. Product id is empty."
+            });
+            return;
+        }
+
+        const deleteAction = await deleteAttributes(id);
+
+        res.status(200).send({
+            message: "Delete successful."
+        });
+    } catch (err) {
+        res.status(500).send({
+            message: err.message || "Error deleting attributes."
+        });
+    }
+}

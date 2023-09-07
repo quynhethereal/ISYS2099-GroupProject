@@ -86,10 +86,9 @@ module.exports = app => {
     // product attributes 
     router.post("/attributes/:id", authMiddleware.verifyToken, attributes.createProductAttributes);
     router.get("/attributes", attributes.findAll);
-    router.get("/attributes/product/:id", attributes.findOne);
-    router.get("/attributes/filterbar", attributes.findAttributesAllCat);
-    router.get("/attributes/filterbar/:id", attributes.findAttributesByCat);
-    router.put("/attributes/:id");
+    router.get("/attributes/product/:id", attributes.findByProductId);
+    router.put("/attributes/:id", authMiddleware.verifyToken, attributes.updateAttributes);
+    router.delete("/attributes/:id", authMiddleware.verifyToken, attributes.deleteAttributes);
 
     app.use('/api', router);
 }
