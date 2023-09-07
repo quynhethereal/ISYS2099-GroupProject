@@ -193,15 +193,10 @@ const ProductList = () => {
                         >
                           {parent?.name}
                         </Dropdown.Item>
-                        {parent?.subcategories?.map((child) => {
-                          return (
-                            <CategorySubMenu
-                              data={child}
-                              handleChoose={handleFilterByCategory}
-                              key={child?.id}
-                            />
-                          );
-                        })}
+                        <CategorySubMenu
+                          data={parent}
+                          handleChoose={handleFilterByCategory}
+                        />
                       </li>
                     );
                   })}

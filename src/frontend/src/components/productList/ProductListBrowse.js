@@ -173,15 +173,6 @@ const ProductListBrowse = () => {
                         >
                           {parent?.name}
                         </Dropdown.Item>
-                        {/* {parent?.subcategories?.map((child) => {
-                          return (
-                            <CategorySubMenu
-                              data={child}
-                              handleChoose={handleSetCategoryId}
-                              key={child?.id}
-                            />
-                          );
-                        })} */}
                         <CategorySubMenu
                           data={parent}
                           handleChoose={handleSetCategoryId}

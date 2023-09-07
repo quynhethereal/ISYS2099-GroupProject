@@ -103,7 +103,7 @@ const Product = ({ info, update }) => {
               <b className="text-decoration-underline fw-bold">đ</b>
               {info?.price}
             </p>
-            <div style={{ height: 100 }}>
+            <div className="overflow-y-scroll" style={{ height: 70 }}>
               <div className="d-flex flex-row flex-wrap mb-3 gap-1">
                 {attribute?.attributes?.map((item, index) => {
                   return (
@@ -111,7 +111,7 @@ const Product = ({ info, update }) => {
                       className="badge bg-info d-flex align-items-center justify-content-center text-truncate"
                       key={index}
                     >
-                      {item?.name}
+                      {item?.name} {update && item?.value?.description}
                     </span>
                   );
                 })}
