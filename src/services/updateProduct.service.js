@@ -1,7 +1,6 @@
 const Product = require('../models/product.model');
-const {recreateAttributes} = require('./recreateAttributes.service');
 const {seller_pool} = require('../db/db');
-const {findProductAttributes} = require('../models/product_attributes.model');
+const {findProductAttributes, updateCurrentAttributes} = require('../models/product_attributes.model');
 const productValidator = require('../validators/product.validator');
 
 // example payload
@@ -47,8 +46,8 @@ const update = async (params) => {
                 );
             });
 
-            if (!promise) {
-                const updateAttributes = await recreateAttributes(id, category, attributes);
+            if (promise) {
+                const updateAttributes = await updateCurrentAttributes(id, category, attributes);
             
                 if (!updateAttributes) {
                     console.log('Unable to recreate product attributes.');
@@ -67,7 +66,7 @@ const update = async (params) => {
         }
 
     } catch (err) {
-        console.log(err.stack)
+        console.log(err.stack);
         console.log('Unable to update product.');
         throw err;
     }

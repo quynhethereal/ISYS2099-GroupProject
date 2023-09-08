@@ -98,7 +98,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
         name: element?.name,
         required: element?.required,
         value: {
-          description: element?.description,
+          description: element?.description ? element?.description : "",
           type: element?.type,
         },
       };
@@ -258,19 +258,20 @@ const ProductCreateForm = ({ show, handleClose }) => {
                     >
                       {currentCategoryData &&
                         currentCategoryData?.attributes?.map((item, index) => {
+                          console.log(currentCategoryData);
                           return (
                             <Form.Group className="mb-3" key={index}>
                               <Form.Label className="form-label">
                                 {item?.name}{" "}
                                 {item?.required ? (
-                                  <b> (Required)</b>
+                                  <b> (Required - {item?.type})</b>
                                 ) : (
-                                  <b> (Not Required)</b>
+                                  <b> (Not Required - {item?.type})</b>
                                 )}
                               </Form.Label>
                               <Form.Control
                                 className="form-control"
-                                type={item?.value?.type}
+                                type={item?.type}
                                 {...register(
                                   `attributes.${index}.description`,
                                   {

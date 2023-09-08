@@ -173,10 +173,12 @@ const ProductListBrowse = () => {
                         >
                           {parent?.name}
                         </Dropdown.Item>
-                        <CategorySubMenu
-                          data={parent}
-                          handleChoose={handleSetCategoryId}
-                        />
+                        {parent?.subcategories?.length !== 0 && (
+                          <CategorySubMenu
+                            data={parent}
+                            handleChoose={handleSetCategoryId}
+                          />
+                        )}
                       </li>
                     );
                   })}

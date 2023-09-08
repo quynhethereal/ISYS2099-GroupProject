@@ -193,10 +193,12 @@ const ProductList = () => {
                         >
                           {parent?.name}
                         </Dropdown.Item>
-                        <CategorySubMenu
-                          data={parent}
-                          handleChoose={handleFilterByCategory}
-                        />
+                        {parent?.subcategories?.length !== 0 && (
+                          <CategorySubMenu
+                            data={parent}
+                            handleChoose={handleFilterByCategory}
+                          />
+                        )}
                       </li>
                     );
                   })}

@@ -90,6 +90,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   const handleUpdateProduct = async (value) => {
     var attributesPayload = [];
     value?.attributes?.forEach((element) => {
+      console.log(element);
       let object = {
         name: element?.name,
         required: element?.required,
@@ -100,6 +101,8 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       };
       attributesPayload.push(object);
     });
+
+    value = { ...value, attributes: attributesPayload };
 
     if (imageSoure === "error" && imageSoure) {
       Swal.fire({
@@ -228,14 +231,14 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                               <Form.Label className="form-label">
                                 {item?.name}{" "}
                                 {item?.required ? (
-                                  <b> (Required)</b>
+                                  <b> (Required - {item?.type})</b>
                                 ) : (
-                                  <b> (Not Required)</b>
+                                  <b> (Not Required - {item?.type})</b>
                                 )}
                               </Form.Label>
                               <Form.Control
                                 className="form-control"
-                                type={item?.value?.type}
+                                type={item?.type}
                                 {...register(
                                   `attributes.${index}.description`,
                                   {

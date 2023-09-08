@@ -164,7 +164,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
                     className="badge bg-info text-center pe-0 py-0"
                     key={index}
                   >
-                    {item?.name} {item?.value?.type}
+                    {item?.name} {item?.type}
                     <Button
                       className="btn btn-sm btn-info text-white"
                       onClick={() => handleRemoveAtr(item)}
