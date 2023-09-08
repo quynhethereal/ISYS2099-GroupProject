@@ -98,7 +98,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
         name: element?.name,
         required: element?.required,
         value: {
-          description: element?.description,
+          description: element?.description ? element?.description : "",
           type: element?.type,
         },
       };
@@ -258,6 +258,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
                     >
                       {currentCategoryData &&
                         currentCategoryData?.attributes?.map((item, index) => {
+                          console.log(currentCategoryData);
                           return (
                             <Form.Group className="mb-3" key={index}>
                               <Form.Label className="form-label">

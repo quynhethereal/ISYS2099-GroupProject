@@ -90,6 +90,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   const handleUpdateProduct = async (value) => {
     var attributesPayload = [];
     value?.attributes?.forEach((element) => {
+      console.log(element);
       let object = {
         name: element?.name,
         required: element?.required,
@@ -100,6 +101,8 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       };
       attributesPayload.push(object);
     });
+
+    value = { ...value, attributes: attributesPayload };
 
     if (imageSoure === "error" && imageSoure) {
       Swal.fire({
