@@ -125,8 +125,24 @@ const createAttributes = async (productId, categoryId, attributes) => {
 
 const findAll = async () => {
     try {
-        const attributes = await ProductAttributes.find();
-        return attributes;
+        const products = await ProductAttributes.find();
+
+        const filterProduct = [];
+
+        for (const product of products) {
+            const filterAttributes = [];
+            for (const attribute of product.attributes) {
+                if(attribute.value.description.length !== 0) {
+                    filterAttributes.push(attribute);
+                }
+            }
+            filterProduct.push({
+                productId: product.productId,
+                attributes: filterAttributes
+            })
+        }
+        
+        return filterProduct;
     } catch (err) {
         console.log('Unable to find all product attributes');
         throw new Error('Unable to find all product attributes');
