@@ -202,6 +202,7 @@ const data = [
                 attributes: [
                     {
                         name: "Flight distance",
+                        type: "number",
                         required: false
                     },
                     {
@@ -383,7 +384,8 @@ const data = [
         ],
         attributes: [
             {
-                name: "Calming",
+                name: "Calming efficiency",
+                type: "string",
                 required: false
             },
             {
