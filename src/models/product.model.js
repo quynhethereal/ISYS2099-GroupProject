@@ -441,57 +441,6 @@ Product.updateCategory = (params) => {
     });
 }
 
-// example payload
-// {
-//   "name": "Updated Product Name",
-//   "description": "Updated product description.",
-//   "price": 29.99,
-//   "image": "updated.jpg",
-//   "category": "Electronics"
-// }
-Product.update = async (params) => {
-    try {
-        // validate params
-        productValidator.validateUpdateParams(params);
-        const title = params.title + "";
-        const description = params.description + "";
-        const price = parseFloat(params.price);
-        const category = params.category;
-        const id = params.productId;
-        const image = params.image;
-
-        const product = await Product.findByIdAndSellerId(id, params.sellerId);
-
-        if (!product) {
-            console.log("Product not found.");
-            throw new Error("Product not found or you are not the owner of this product.");
-        } else {
-            await new Promise((resolve, reject) => {
-                seller_pool.execute(
-                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?',
-                    [title, description, price, category, image, id],
-                    (err, results) => {
-                        if (err) {
-                            console.log('Unable to update product.');
-                            reject(err);
-                            return;
-                        }
-                        console.log("Product updated.");
-                        resolve(results);
-                    }
-                );
-            });
-        }
-
-        return new Product(params);
-
-    } catch (err) {
-        console.log(err.stack)
-        console.log('Unable to update product.');
-        throw err;
-    }
-}
-
 // Func to get product image
 Product.getImage = async (productId) => {
     try {

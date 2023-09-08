@@ -6,7 +6,7 @@ const SequenceSchema = new mongoose.Schema({
     _id: String, 
     sequence: {
         type: Number, 
-        default: 29
+        default: 31
     }
 });
 
@@ -55,7 +55,7 @@ const generateID = async (model) => {
     try {
         let seq = await Sequence.findOne({ _id: model });
         if (!seq) {
-            seq = new Sequence({ _id: model, sequence: 28 });
+            seq = new Sequence({ _id: model, sequence: 30 });
             await seq.save();
         }
         seq.sequence++;
