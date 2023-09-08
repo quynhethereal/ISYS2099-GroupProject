@@ -30,6 +30,7 @@ const AttributeSchema = new mongoose.Schema ({
 const ProductAttributes = mongoose.model('ProductAttributes', AttributeSchema);
 
 const createAttributes = async (productId, categoryId, attributes) => {
+    console.log('attributes', attributes);
     try {  
         const product = await Product.findById(productId);
 
@@ -71,11 +72,26 @@ const createAttributes = async (productId, categoryId, attributes) => {
             }
 
             if (matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
                 if (!attribute.value || typeof attribute.value.description !== matchValue.type) {
                     console.log(`Invalid type '${attribute.type}' for attribute.`);
                     throw new Error(`Invalid type '${attribute.type}' for attribute.`);
                 }
                 dataCount++;
+            }
+
+            if (!matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
+                if (typeof attribute.value.description !== matchValue.type) {
+                    console.log(`Invalid type '${attribute.type}' for attribute.`);
+                    throw new Error(`Invalid type '${attribute.type}' for attribute.`);
+                }
             }
 
             data.push({
@@ -179,11 +195,26 @@ const updateCurrentAttributes = async (productId, categoryId, attributes) => {
             }
 
             if (matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
                 if (!attribute.value || typeof attribute.value.description !== matchValue.type) {
                     console.log(`Invalid type '${attribute.type}' for attribute.`);
                     throw new Error(`Invalid type '${attribute.type}' for attribute.`);
                 }
                 dataCount++;
+            }
+
+            if (!matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
+                if (typeof attribute.value.description !== matchValue.type) {
+                    console.log(`Invalid type '${attribute.type}' for attribute.`);
+                    throw new Error(`Invalid type '${attribute.type}' for attribute.`);
+                }
             }
 
             data.push({
