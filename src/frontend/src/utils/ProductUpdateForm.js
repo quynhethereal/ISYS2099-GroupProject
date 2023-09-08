@@ -40,8 +40,6 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     },
   });
 
-  console.log(data?.category_id);
-
   useFieldArray({
     control,
     name: "attributes",
@@ -88,7 +86,6 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       }
     });
   };
-  // token, id, title, description, price, category, image;
 
   const handleUpdateProduct = async (value) => {
     var attributesPayload = [];
@@ -121,7 +118,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
           showConfirmButton: false,
           timer: 2000,
         }).then(() => {
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({

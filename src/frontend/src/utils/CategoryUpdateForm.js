@@ -57,8 +57,6 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
     // }
   };
 
-  console.log(require);
-
   const handleRemoveAtr = (value) => {
     if (require.filter((item) => item.name === value.name).length > 0) {
       setRequire((prev) => prev?.filter((item) => item.name !== value.name));
