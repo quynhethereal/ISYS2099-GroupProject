@@ -235,7 +235,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                               </Form.Label>
                               <Form.Control
                                 className="form-control"
-                                type={item?.value?.type}
+                                type={item?.type}
                                 {...register(
                                   `attributes.${index}.description`,
                                   {
