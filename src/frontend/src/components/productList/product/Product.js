@@ -70,7 +70,7 @@ const Product = ({ info, update }) => {
   useEffect(() => {
     async function getAllAtr() {
       await getProductAllAttribute(info?.id).then((res) => {
-        if (res) {
+        if (!res?.message) {
           setAttribute(res);
         }
       });
@@ -111,7 +111,7 @@ const Product = ({ info, update }) => {
                       className="badge bg-info d-flex align-items-center justify-content-center text-truncate"
                       key={index}
                     >
-                      {item?.name} {item?.value?.description}
+                      {update && item?.name} {item?.value?.description}
                     </span>
                   );
                 })}
