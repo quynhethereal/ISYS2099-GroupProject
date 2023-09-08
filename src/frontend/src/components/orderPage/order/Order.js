@@ -43,7 +43,7 @@ const Order = ({ data }) => {
 
   const handleRejctOrder = async (id) => {
     await rejectOrder(token(), id).then((res) => {
-      if (res?.data?.order?.status === "rejected") {
+      if (res && res?.status === 200) {
         Swal.fire({
           icon: "success",
           title: "Rejected the order",
@@ -68,7 +68,6 @@ const Order = ({ data }) => {
   };
   const handleAcceptOrder = async (id) => {
     await acceptOrder(token(), id).then((res) => {
-      console.log(res);
       if (res && res?.status === 200) {
         Swal.fire({
           icon: "success",
