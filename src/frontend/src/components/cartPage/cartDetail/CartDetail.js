@@ -39,7 +39,6 @@ const CartDetail = () => {
         var i = 0;
         var j = 0;
         while (++i <= cart?.length) {
-          console.log("run");
           while (++j <= unFullFilledId.length) {
             if (parseInt(unFullFilledId[j - 1]) === parseInt(cart[i - 1]?.id)) {
               unFullFilledName.push(cart[i - 1]?.title);

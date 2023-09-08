@@ -21,7 +21,7 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
     defaultValues: {
       name: "",
       required: "",
-      isOptional: false,
+      isOptional: "false",
       hasValue: "string",
     },
   });
@@ -38,18 +38,12 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    // if (
-    //   require.filter((item) => item.name === getValues("required")).length === 0
-    // ) {
     setRequire([
       ...require,
       {
         name: getValues("required"),
-        required: getValues("isOptional"),
-        value: {
-          description: "",
-          type: getValues("hasValue"),
-        },
+        required: getValues("isOptional") === "false" ? false : true,
+        type: getValues("hasValue"),
       },
     ]);
     reset({ required: "" });
@@ -183,14 +177,13 @@ const CategoryCreateForm = ({ data, show, handleClose }) => {
             </div>
           </div>
           <div className="col-12">
-            {console.log(require)}
             {require?.map((item, index) => {
               return (
                 <div className="my-2" key={index}>
                   <b>Name</b>: {item?.name}, <b>Require</b>:
                   {item?.required ? "True" : "False"},
                   <span>
-                    <b>Type</b>: {item?.value?.type}
+                    <b>Type</b>: {item?.type}
                   </span>
                 </div>
               );

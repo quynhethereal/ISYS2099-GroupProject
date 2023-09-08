@@ -10,8 +10,13 @@ export const getAllFlatternCategory = () =>
 export const getCategoryByID = (id) =>
   axios.get(`${backend_url}/api/category/${id}`);
 
-export const getAllAttribute = (id) =>
-  axios.get(`${backend_url}/api/product/${id}/attributes`);
+export const getProductAllAttribute = (id) =>
+  axios.get(`${backend_url}/api/attributes/product/${id}`);
+
+export const updateAttribute = (token, id, formData) =>
+  axios.put(`${backend_url}/api/attributes/product/${id}`, formData, {
+    headers: { "x-access-token": token },
+  });
 
 export const createCategory = (token, formData) =>
   axios.post(`${backend_url}/api/category`, formData, {

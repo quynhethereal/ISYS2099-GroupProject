@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { deleteProduct } from "../../../action/product/product";
-import { getAllAttribute } from "../../../action/category/category";
+import { getProductAllAttribute } from "../../../action/category/category";
 import { useAuth } from "../../../hook/AuthHook.js";
 import Swal from "sweetalert2";
 
@@ -69,8 +69,8 @@ const Product = ({ info, update }) => {
 
   useEffect(() => {
     async function getAllAtr() {
-      await getAllAttribute(info?.id).then((res) => {
-        if (res) {
+      await getProductAllAttribute(info?.id).then((res) => {
+        if (!res?.message) {
           setAttribute(res);
         }
       });
@@ -105,13 +105,13 @@ const Product = ({ info, update }) => {
             </p>
             <div className="overflow-y-scroll" style={{ height: 70 }}>
               <div className="d-flex flex-row flex-wrap mb-3 gap-1">
-                {attribute?.attributes?.map((item, index) => {
+                {attribute?.map((item, index) => {
                   return (
                     <span
                       className="badge bg-info d-flex align-items-center justify-content-center text-truncate"
                       key={index}
                     >
-                      {item?.name} {update && item?.value?.description}
+                      {update && item?.name} {item?.value?.description}
                     </span>
                   );
                 })}

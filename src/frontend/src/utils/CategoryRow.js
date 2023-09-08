@@ -33,7 +33,6 @@ const CategoryRow = ({ data, child, parent }) => {
       denyButtonText: `Cancel`,
     }).then(async (result) => {
       if (result.isConfirmed) {
-        console.log("Awaiting for deleting api");
         if (parent) {
           await deleteCategory(token(), data?.id).then((res) => {
             if (res?.message) {

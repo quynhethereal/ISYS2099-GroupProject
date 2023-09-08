@@ -21,8 +21,8 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
     defaultValues: {
       name: data?.name,
       required: "",
-      isOptional: false,
-      hasValue: "",
+      isOptional: "false",
+      hasValue: "string",
     },
   });
   const navigate = useNavigate();
@@ -35,34 +35,27 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
   }, [data]);
 
   const handleAddAtr = () => {
-    if (
-      require.filter((item) => item.name === getValues("required")).length === 0
-    ) {
-      if (getValues("hasValue") !== "") {
-        setRequire([
-          ...require,
-          {
-            name: getValues("required"),
-            required: getValues("isOptional") === "true" ? true : false,
-            value: parseInt(getValues("hasValue"))
-              ? parseInt(getValues("hasValue"))
-              : getValues("hasValue"),
-          },
-        ]);
-      } else {
-        setRequire([
-          ...require,
-          {
-            name: getValues("required"),
-            required: getValues("isOptional"),
-          },
-        ]);
-      }
-      reset({ hasValue: "", required: "" });
+    if (getValues("required") === "" || getValues("required").length === 0) {
+      Swal.fire({
+        title: "The name field is required for creating new attribute!",
+        icon: "error",
+      });
+      return;
     }
+    // if (
+    //   require.filter((item) => item.name === getValues("required")).length === 0
+    // ) {
+    setRequire([
+      ...require,
+      {
+        name: getValues("required"),
+        required: getValues("isOptional") === "false" ? false : true,
+        type: getValues("hasValue"),
+      },
+    ]);
+    reset({ required: "" });
+    // }
   };
-
-  console.log(require);
 
   const handleRemoveAtr = (value) => {
     if (require.filter((item) => item.name === value.name).length > 0) {
@@ -137,11 +130,14 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
                   <option value={false}>False</option>
                   <option value={true}>True</option>
                 </select>
-                <Form.Control
-                  type="text"
-                  placeholder="Optional value"
+                <select
+                  id="fromWarehouse"
+                  className="form-select form-select-lg"
                   {...register("hasValue", {})}
-                />
+                >
+                  <option value={"string"}>String</option>
+                  <option value={"number"}>Number</option>
+                </select>
                 <Button variant="primary" onClick={() => handleAddAtr()}>
                   +
                 </Button>
@@ -170,20 +166,11 @@ const CategoryUpdateForm = ({ data, show, handleClose }) => {
             {require?.map((item, index) => {
               return (
                 <div className="my-2" key={index}>
-                  <b>Name</b>: {item?.name}, <b>Require</b>:{" "}
+                  <b>Name</b>: {item?.name}, <b>Require</b>:
                   {item?.required ? "True" : "False"},
-                  {item?.value && (
-                    <span>
-                      <b>Value</b>: {item?.value?.description || item?.value},{" "}
-                      <b>Type</b>: {item?.value?.type || typeof item?.value}
-                    </span>
-                  )}
-                  {!item?.value && (
-                    <span>
-                      <b>Value</b>: {item?.value?.description || "None"},{" "}
-                      <b>Type</b>: {item?.value?.type || "None"}
-                    </span>
-                  )}
+                  <span>
+                    <b>Type</b>: {item?.type}
+                  </span>
                 </div>
               );
             })}

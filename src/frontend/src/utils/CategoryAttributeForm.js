@@ -30,20 +30,17 @@ const CategoryAttributeForm = ({ data }) => {
                 ID: <span className="fw-normal">{data?._id}</span>
               </p>
               <p className="fw-bold">
+                Name: <span className="fw-normal">{data?.name}</span>
+              </p>
+              <p className="fw-bold">
                 Require:{" "}
                 <span className="fw-normal">
                   {data?.required ? "True" : "False"}
                 </span>
               </p>
               <p className="fw-bold">
-                Value Description:{" "}
-                <span className="fw-normal">
-                  {data?.value?.description || "None"}
-                </span>
-              </p>
-              <p className="fw-bold">
                 Value Type:{" "}
-                <span className="fw-normal">{data?.value?.type || "None"}</span>
+                <span className="fw-normal">{data?.type || "None"}</span>
               </p>
             </div>
           </Modal.Body>
