@@ -30,6 +30,7 @@ const AttributeSchema = new mongoose.Schema ({
 const ProductAttributes = mongoose.model('ProductAttributes', AttributeSchema);
 
 const createAttributes = async (productId, categoryId, attributes) => {
+    console.log('attributes', attributes);
     try {  
         const product = await Product.findById(productId);
 
@@ -71,11 +72,26 @@ const createAttributes = async (productId, categoryId, attributes) => {
             }
 
             if (matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
                 if (!attribute.value || typeof attribute.value.description !== matchValue.type) {
                     console.log(`Invalid type '${attribute.type}' for attribute.`);
                     throw new Error(`Invalid type '${attribute.type}' for attribute.`);
                 }
                 dataCount++;
+            }
+
+            if (!matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
+                if (typeof attribute.value.description !== matchValue.type) {
+                    console.log(`Invalid type '${attribute.type}' for attribute.`);
+                    throw new Error(`Invalid type '${attribute.type}' for attribute.`);
+                }
             }
 
             data.push({
@@ -136,9 +152,9 @@ const findProductAttributes = async (id) => {
     }
 }
 
-const updateCurrentAttributes = async (productId, attributes) => {
+const updateCurrentAttributes = async (productId, categoryId, attributes) => {
     try {
-        const product = await Product.finddById(productId);
+        const product = await Product.findById(productId);
 
         if (!product) {
             console.log('Product Id not found!');
@@ -152,14 +168,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
             throw new Error('Attributes for product Id is not existed.');
         }
 
-        const productCatId = parseInt(product.category_id);
-
-        if (!productCatId) {
-            console.log('Unable to find product category Id!');
-            throw new Error('Unable to find product category Id!')
-        }
-
-        const categoryAttributes = await findAttributes(productCatId);
+        const categoryAttributes = await findAttributes(categoryId);
 
         if (!categoryAttributes) {
             console.log('This product requires no attributes.');
@@ -176,6 +185,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
 
         const data = [];
         let dataCount = 0;
+        console.log('attribute in model', attributes);
         for (const attribute of attributes) {
             const matchValue = categoryAttributes.find(catAttr => catAttr.name === attribute.name);
 
@@ -185,6 +195,10 @@ const updateCurrentAttributes = async (productId, attributes) => {
             }
 
             if (matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
                 if (!attribute.value || typeof attribute.value.description !== matchValue.type) {
                     console.log(`Invalid type '${attribute.type}' for attribute.`);
                     throw new Error(`Invalid type '${attribute.type}' for attribute.`);
@@ -192,13 +206,24 @@ const updateCurrentAttributes = async (productId, attributes) => {
                 dataCount++;
             }
 
+            if (!matchValue.required) {
+                if (matchValue.type === 'number') {
+                    attribute.value.description = parseInt(attribute.value.description);
+                }
+
+                if (typeof attribute.value.description !== matchValue.type) {
+                    console.log(`Invalid type '${attribute.type}' for attribute.`);
+                    throw new Error(`Invalid type '${attribute.type}' for attribute.`);
+                }
+            }
+
             data.push({
-                name: attribute.name,
+                name: matchValue.name,
                 value: {
                     description: attribute.value.description,
-                    type: attribute.value.type
+                    type: matchValue.type
                 },
-                required: attribute.required
+                required: matchValue.required
             }); 
         }
 
@@ -216,7 +241,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
 
         return updateData;
     } catch (err) {
-        console.log('Unable to update attributes with current cat.');
+        console.log('Unable to update attributes with current cat.', err.stack);
         throw new Error('Unable to update attributes with current cat.');
     }
 }
@@ -226,6 +251,6 @@ module.exports = {
     createAttributes, 
     findAll, 
     findProductAttributes, 
-    updateCurrentAttributes, 
+    updateCurrentAttributes
 };
 
