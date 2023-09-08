@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { updateProduct } from "../action/product/product.js";
 import {
   getAllFlatternCategory,
   getCategoryByID,
+  updateAttribute,
 } from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import FormInput from "./FormInput.js";
 
 const ProductUpdateForm = ({ data, show, handleClose }) => {
@@ -25,6 +27,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     register,
     handleSubmit,
     getValues,
+    control,
     setValue,
     formState: { errors },
   } = useForm({
@@ -34,10 +37,16 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       description: data?.description,
       price: data?.price,
       image: data?.image,
+      attributes: [{}],
     },
   });
 
-  console.log(getValues("category"));
+  console.log(data?.category_id);
+
+  useFieldArray({
+    control,
+    name: "attributes",
+  });
 
   useEffect(() => {
     async function getAllCategoryData() {
@@ -53,6 +62,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
     async function getCurrentCategory() {
       await getCategoryByID(currentChoice || data?.category_id).then((res) => {
         if (res) {
+          setValue("attributes", res?.attributes);
           setCurrentCategoryData(res);
         }
       });
@@ -82,6 +92,19 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   // token, id, title, description, price, category, image;
 
   const handleUpdateProduct = async (value) => {
+    var attributesPayload = [];
+    value?.attributes?.forEach((element) => {
+      let object = {
+        name: element?.name,
+        required: element?.required,
+        value: {
+          description: element?.description,
+          type: element?.type,
+        },
+      };
+      attributesPayload.push(object);
+    });
+
     if (imageSoure === "error" && imageSoure) {
       Swal.fire({
         icon: "error",
@@ -90,23 +113,53 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    await updateProduct(token(), data?.id, value).then((res) => {
+    delete value.attributes;
+    await updateProduct(token(), data?.id, value).then(async (res) => {
       if (res) {
         Swal.fire({
           icon: "success",
           title: res?.message,
-          text: "The product has been updated. Reloading in 2 secs...",
+          text: "The product info has been updated. Waiting for category to be updated...",
           showConfirmButton: false,
           timer: 2000,
-          timerProgressBar: true,
-        }).then(() => {
-          navigate(0);
+        }).then(async () => {
+          console.log(res?.product?.category);
+          await updateAttribute(
+            token(),
+            res?.product?.category,
+            attributesPayload
+          ).then((res) => {
+            console.log(res);
+            if (res) {
+              Swal.fire({
+                icon: "success",
+                title: res?.message,
+                text: "The product category has been changed. Reloading in 2 secs...",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              }).then(() => {
+                // navigate(0);
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Some error happened! Cannot update the product category. Reloading in 2 secs...",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+              }).then(() => {
+                // navigate(0);
+              });
+            }
+          });
         });
       } else {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Some error happened",
+          text: "Some error happened! Cannot update the product info",
         });
       }
     });
@@ -196,7 +249,9 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                     </select>
                   </div>
                   <div className="col-12 d-flex flex-column">
-                    <label htmlFor="atr">Attributes</label>
+                    <label htmlFor="atr" className="fw-bolder fs-4">
+                      Add-ons Attributes
+                    </label>
                     <div
                       className="col-12 d-flex flex-row flex-wrap gap-2"
                       id="atr"
@@ -204,13 +259,26 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                       {currentCategoryData &&
                         currentCategoryData?.attributes?.map((item, index) => {
                           return (
-                            <span
-                              className="badge bg-info d-flex align-items-center justify-content-center"
-                              key={index}
-                            >
-                              {item?.name}
-                              {item?.value?.description}
-                            </span>
+                            <Form.Group className="mb-3" key={index}>
+                              <Form.Label className="form-label">
+                                {item?.name}{" "}
+                                {item?.required ? (
+                                  <b> (Required)</b>
+                                ) : (
+                                  <b> (Not Required)</b>
+                                )}
+                              </Form.Label>
+                              <Form.Control
+                                className="form-control"
+                                type={item?.value?.type}
+                                {...register(
+                                  `attributes.${index}.description`,
+                                  {
+                                    required: item?.required,
+                                  }
+                                )}
+                              />
+                            </Form.Group>
                           );
                         })}
                     </div>

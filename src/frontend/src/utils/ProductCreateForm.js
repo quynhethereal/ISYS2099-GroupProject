@@ -43,7 +43,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  useFieldArray({
     control,
     name: "attributes",
   });
@@ -62,7 +62,6 @@ const ProductCreateForm = ({ show, handleClose }) => {
     async function getCurrentCategory() {
       await getCategoryByID(currentChoice || 1).then((res) => {
         if (res) {
-          console.log(res?.attributes);
           setValue("attributes", res?.attributes);
           setCurrentCategoryData(res);
         }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { deleteProduct } from "../../../action/product/product";
-import { getAllAttribute } from "../../../action/category/category";
+import { getProductAllAttribute } from "../../../action/category/category";
 import { useAuth } from "../../../hook/AuthHook.js";
 import Swal from "sweetalert2";
 
@@ -69,7 +69,7 @@ const Product = ({ info, update }) => {
 
   useEffect(() => {
     async function getAllAtr() {
-      await getAllAttribute(info?.id).then((res) => {
+      await getProductAllAttribute(info?.id).then((res) => {
         if (res) {
           setAttribute(res);
         }
