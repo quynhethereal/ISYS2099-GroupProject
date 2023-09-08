@@ -228,9 +228,9 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                               <Form.Label className="form-label">
                                 {item?.name}{" "}
                                 {item?.required ? (
-                                  <b> (Required - {item?.value?.type})</b>
+                                  <b> (Required - {item?.type})</b>
                                 ) : (
-                                  <b> (Not Required - {item?.value?.type})</b>
+                                  <b> (Not Required - {item?.type})</b>
                                 )}
                               </Form.Label>
                               <Form.Control
