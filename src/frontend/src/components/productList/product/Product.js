@@ -111,7 +111,7 @@ const Product = ({ info, update }) => {
                       className="badge bg-info d-flex align-items-center justify-content-center text-truncate"
                       key={index}
                     >
-                      {update && item?.name} {item?.value?.description}
+                      {item?.name} {item?.value?.description}
                     </span>
                   );
                 })}

@@ -106,17 +106,18 @@ const ProductDetail = () => {
               <p>{product?.description}</p>
             </div>
             <div className="d-flex flex-row flex-wrap mb-3 gap-1">
-              {attribute?.map((item, index) => {
-                return (
-                  <span
-                    className="badge bg-info d-flex align-items-center justify-content-center"
-                    key={index}
-                  >
-                    {item?.name}
-                    {item?.value?.description}
-                  </span>
-                );
-              })}
+              {!attribute?.message &&
+                attribute?.map((item, index) => {
+                  return (
+                    <span
+                      className="badge bg-info d-flex align-items-center justify-content-center"
+                      key={index}
+                    >
+                      {item?.name} {": "}
+                      {item?.value?.description}
+                    </span>
+                  );
+                })}
             </div>
             <div className="d-flex flex-row align-items-center">
               {[1, 2, 3, 4, 5].map((item) => {
