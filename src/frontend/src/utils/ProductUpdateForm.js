@@ -6,7 +6,6 @@ import { updateProduct } from "../action/product/product.js";
 import {
   getAllFlatternCategory,
   getCategoryByID,
-  updateAttribute,
 } from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
@@ -113,47 +112,16 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
       return;
     }
-    delete value.attributes;
     await updateProduct(token(), data?.id, value).then(async (res) => {
       if (res) {
         Swal.fire({
           icon: "success",
           title: res?.message,
-          text: "The product info has been updated. Waiting for category to be updated...",
+          text: "The product info has been updated. Reloading in 2 secs...",
           showConfirmButton: false,
           timer: 2000,
-        }).then(async () => {
-          console.log(res?.product?.category);
-          await updateAttribute(
-            token(),
-            res?.product?.category,
-            attributesPayload
-          ).then((res) => {
-            console.log(res);
-            if (res) {
-              Swal.fire({
-                icon: "success",
-                title: res?.message,
-                text: "The product category has been changed. Reloading in 2 secs...",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-              }).then(() => {
-                // navigate(0);
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Some error happened! Cannot update the product category. Reloading in 2 secs...",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
-              }).then(() => {
-                // navigate(0);
-              });
-            }
-          });
+        }).then(() => {
+          // navigate(0);
         });
       } else {
         Swal.fire({
