@@ -2,6 +2,7 @@ const Product = require('../models/product.model');
 const {recreateAttributes} = require('./recreateAttributes.service');
 const {seller_pool} = require('../db/db');
 const {findProductAttributes} = require('../models/product_attributes.model');
+const productValidator = require('../validators/product.validator');
 
 // example payload
 // {
