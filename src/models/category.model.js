@@ -6,7 +6,7 @@ const SequenceSchema = new mongoose.Schema({
     _id: String, 
     sequence: {
         type: Number, 
-        default: 29
+        default: 31
     }
 });
 
@@ -37,18 +37,13 @@ const CategorySchema = new mongoose.Schema({
     subcategories: [],
     attributes: [{
         name: String, 
-        value: {
-            description: {
-                type: mongoose.Schema.Types.Mixed,
-            }, 
-            type: {
-                type: String, 
-                enum:['string','number'],
-            }
-        },
         required: {
             type: Boolean,
             required: true
+        },
+        type: {
+            type: String, 
+            enum:['string','number'],
         }
     }]   // Array of attribute documents
 }, {autoIndex: true});
@@ -60,7 +55,7 @@ const generateID = async (model) => {
     try {
         let seq = await Sequence.findOne({ _id: model });
         if (!seq) {
-            seq = new Sequence({ _id: model, sequence: 28 });
+            seq = new Sequence({ _id: model, sequence: 30 });
             await seq.save();
         }
         seq.sequence++;
@@ -115,32 +110,21 @@ const createCategory = async (catObj) => {
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                console.log('Invalid attributes.');
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                } 
+                type: attribute.type
             }
         })
             
@@ -201,31 +185,21 @@ const createSubcategory = async (catObj) => {
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                }
+                type: attribute.type
             }
         })
 
@@ -479,34 +453,25 @@ const updateCategoryData = async (catObj) => {
 
         const attributes = catObj.attributes.map((attribute) => {
             if (attribute.name == null) {
+                console.log('Empty attribute name.');
                 throw new Error('Empty attribute name.');
             }
 
-            if (!attribute.required) {
-                return {
-                    name: attribute.name,
-                    required: attribute.required
-                }
+            if (typeof attribute.required !== 'boolean') {
+                console.log('Invalid required value!');
+                throw new Error('Invalid required value!');
             }
 
-            const description = attribute.value;
-
-            let type;
-            if (typeof description === 'string') {
-                type = 'string';
-            } else if (typeof description === 'number') {
-                type = 'number';
-            } else {
-                throw new Error('Invalid attributes.');
+            if (attribute.type !== 'string' && attribute.type !== 'number') {
+                console.log('Invalid type value!');
+                throw new Error('Invalid type value!');
+            
             }
 
             return {
                 name: attribute.name, 
                 required: attribute.required,
-                value: {
-                    description: description,
-                    type: type
-                } 
+                type: attribute.type
             }
         })
 
@@ -661,6 +626,7 @@ const deleteSubcategory = async (id) => {
         }
 
         const deleteAction = await removeSubcategory(findCat, id);
+        console.log(deleteAction);
 
         findCat.markModified('subcategories'); // Mark as subcategories modified - needed for nested object
 
@@ -671,14 +637,24 @@ const deleteSubcategory = async (id) => {
             throw new Error('Unable to remove subcategory!');
 
         } else {
-            const newSubcategoriesArray = []
+            const newSubcategoriesArray = [];
+            const newSubcategoriesNameArray = [];
+
             for (const subId of findCat.subcategoriesArray) {
-                if (!deleteAction.includes(subId)) {
+                if (!deleteAction.data.includes(subId)) {
                     newSubcategoriesArray.push(subId);
                 }
             }
 
+            for (const subName of findCat.subcategoriesNameArray) {
+                if (!deleteAction.dataNames.includes(subName)) {
+                    newSubcategoriesNameArray.push(subName);
+                }
+            }
+
             findCat.subcategoriesArray = newSubcategoriesArray;
+            findCat.subcategoriesNameArray = newSubcategoriesNameArray;
+
             await findCat.save();
             console.log('Remove subcategory successful!')
         }
@@ -689,10 +665,16 @@ const deleteSubcategory = async (id) => {
     }
 }
 
+// TODO: remove category name in subcategoriesNameArray
 const removeSubcategory = async (category, id) => {
     try {
         const newSubcategories = [];
         let data = [];
+        let dataNames = [];
+
+        if (category === null) {
+            return {count: 0, subcatIds, subcatNames};
+        }
 
         for (let i = 0; i < category.subcategories.length; i++) {
             if (category.subcategories[i].id !== id) {
@@ -700,6 +682,7 @@ const removeSubcategory = async (category, id) => {
             } 
             else {
                 const subCats = await countProduct(category.subcategories[i]);
+                console.log(subCats);
                 const count = subCats.count;
 
                 if (count > 0) {
@@ -707,6 +690,8 @@ const removeSubcategory = async (category, id) => {
                     newSubcategories.push(category.subcategories[i]);
                 } else {
                     data.push(category.subcategories[i].id, ...subCats.subcatIds);
+                    dataNames.push(category.subcategories[i].name, ...subCats.subcatNames);
+                    console.log('dataNames', dataNames);
                 }
             }
         }
@@ -715,10 +700,14 @@ const removeSubcategory = async (category, id) => {
 
         for (const subcategory of category.subcategories) {
             const subData = await removeSubcategory(subcategory, id);
-            data = data.concat(subData);
+            data = data.concat(subData.data);
+            dataNames = dataNames.concat(subData.dataNames);
+            console.log(dataNames);
         }
-        return data;
 
+        console.log(dataNames);
+
+        return {data, dataNames};
     } catch (err) {
         console.log('Fail to remove subcategory in category');
         throw new Error('Fail to remove subcategory in category');
@@ -729,6 +718,7 @@ const countProduct = async (category) => {
     try {
         let count = 0;
         const subcatIds = [];
+        const subcatNames = [];
 
         if (category === null) {
             return 0;
@@ -740,9 +730,11 @@ const countProduct = async (category) => {
             let subCount = await countProduct(subcategory);
             count += subCount.count;
             subcatIds.push(subcategory.id, ...subCount.subcatIds);
+            subcatNames.push(subcategory.name, ...subCount.subcatNames);
         }
 
-        return {count, subcatIds};
+        console.log(subcatNames); 
+        return {count, subcatIds, subcatNames};
     } catch (err) {
         console.log('Could not count total product for subcategory');
         throw new Error('Could not count total product for subcategory');

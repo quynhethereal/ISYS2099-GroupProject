@@ -50,8 +50,6 @@ const SellerProductList = () => {
     // eslint-disable-next-line
   }, [more]);
 
-  console.log(params);
-
   return (
     <div className="container p-4 d-flex flex-column justify-content-start align-items-center">
       <div className="col-12 d-flex">

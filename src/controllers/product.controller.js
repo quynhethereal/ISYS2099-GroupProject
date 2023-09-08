@@ -1,6 +1,9 @@
 const Product = require('../models/product.model');
 const Helper = require('../helpers/helpers');
-const {isExistedCat} = require("../models/category.model");
+const {deleteProduct} = require('../services/deleteProduct.service');
+const {isExistedCat} = require('../models/category.model');
+const {create} = require('../services/createProduct.service');
+const {update} = require('../services/updateProduct.service');
 
 exports.findAll = async (req, res) => {
     try {
@@ -120,7 +123,7 @@ exports.update = async (req, res) => {
             ...req.body
         }
 
-        const updatedProduct = await Product.update(params);
+        const updatedProduct = await update(params);
         res.status(200).json({
             message: `Product with id ${productId} updated successfully.`,
             product: updatedProduct
@@ -348,7 +351,8 @@ exports.delete = async (req, res) => {
             return res.status(401).json({message: "Unauthorized"});
         }
 
-        const deletedProduct = await Product.delete(productId, req.currentUser.id);
+        const deletedProduct = await deleteProduct(productId, req.currentUser.id);
+        
         res.status(200).json({
             message: `Product with id ${productId} deleted successfully.`
         });
@@ -391,7 +395,8 @@ exports.create = async (req, res) => {
             ...req.body
         }
 
-        const product = await Product.create(params);
+        const product = await create(params);
+        
         res.status(200).json({
             message: `Product created successfully.`,
             product: product

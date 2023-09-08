@@ -20,9 +20,19 @@ export const getCategoryByID = async (id) => {
   }
 };
 
-export const getAllAttribute = async (id) => {
+export const getProductAllAttribute = async (id) => {
   try {
-    const { data } = await api.getAllAttribute(id);
+    const { data } = await api.getProductAllAttribute(id);
+
+    return data;
+  } catch (error) {
+    return;
+  }
+};
+
+export const updateAttribute = async (token, id, formData) => {
+  try {
+    const { data } = await api.updateAttribute(token, id, formData);
 
     return data;
   } catch (error) {

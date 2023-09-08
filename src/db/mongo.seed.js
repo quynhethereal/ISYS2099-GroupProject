@@ -1,10 +1,11 @@
 const {Category, Sequence} = require('../models/category.model');
+const {ProductAttributes} = require('../models/product_attributes.model');
 
 const data = [
     {
         id: 1,
         name: "Electronic Devices",
-        subcategoriesArray: [2, 3, 4, 5, 6],
+        subcategoriesArray: [2, 30, 4, 29, 6],
         subcategoriesNameArray: [
             "Phones and tablets",
             "Phones",
@@ -19,26 +20,20 @@ const data = [
                 name: "Phones and tablets",
                 subcategories: [
                     {
-                    id: 3, 
+                    id: 30, 
                     parentId: 2,
                     name: "Phones",
                     subcategories: [],
                     attributes: [
                         {
-                            name: "Mobile",
-                            value: {
-                                description: "User-friendly", 
-                                type: "string"
-                            },
-                            required: true
+                            name: "Series",
+                            type: "string",
+                            required: false
                         },
                         {
-                            name: "Price",
-                            value: {
-                                description: 300,
-                                type: "number"
-                            },
-                            required: true
+                            name: "Functionality",
+                            type: "string",
+                            required: false
                         }
                     ]
                     },
@@ -49,21 +44,25 @@ const data = [
                         subcategories: [],
                         attributes: [
                             {
-                                name: "Functionality",
+                                name: "Compatibility",
+                                type: "string",
                                 required: false
-                            },
-                            {
-                                name: "Collection",
-                                value: {
-                                    description: "Multiple version",
-                                    type: "string"
-                                },
-                                required: true
                             }
                         ]
                     }
                 ],
-                attributes: []
+                attributes: [
+                    {
+                        name: "Waterproof level",
+                        type: "string", 
+                        required: true
+                    },
+                    {
+                        name: "Bluetooth connection",
+                        type: "number",
+                        required: true
+                    }
+                ]
             },
             {
                 id: 4, 
@@ -71,21 +70,19 @@ const data = [
                 name: "Laptops",
                 subcategories: [
                     {
-                        id: 5, 
+                        id: 29, 
                         parentId: 4,
                         name: "Gaming Laptops",
                         subcategories: [],
                         attributes: [
                             {
                                 name: "Weight",
-                                value: {
-                                    description: 3, 
-                                    type: "number"
-                                },
+                                type: "number",
                                 required: true
                             },
                             {
-                                name: "Price",
+                                name: "Graphics card",
+                                type: "string", 
                                 required: false
                             }
                         ]
@@ -94,34 +91,31 @@ const data = [
                 attributes: [
                     {
                         name: "Size",
-                        required: false
+                        type: "number",
+                        required: true
                     },
                     {
                         name: "Screen",
-                        value: {
-                            description: "13-inch, 14-inch, 15-inch", 
-                            type: "string"
-                        },
+                        type: "string",
                         required: true
+                    },
+                    {
+                        name: "Official version",
+                        type: "number",
+                        type: true
                     }
                 ]
             }
         ],
         attributes: [
             {
-                name: "Smarthome",
-                value: {
-                    description: "Electronic devices for smarthome",
-                    type: "string"
-                },
+                name: "Connection type",
+                type: "string",
                 required: true
             },
             {
-                name: "Price",
-                value: {
-                    description: 500,
-                    type: "number"
-                },
+                name: "Brand",
+                type: "string",
                 required: true
             }
         ]
@@ -150,11 +144,8 @@ const data = [
                     subcategories: [],
                     attributes: [
                         {
-                            name: "Power Storage",
-                            value: {
-                                description: "1000GB",
-                                type: "string"
-                            },
+                            name: "Storage Size",
+                            type: "number",
                             required: true
                         }
                     ]
@@ -167,10 +158,12 @@ const data = [
                         attributes: [
                             {
                                 name: "Router type",
+                                type: "string",
                                 required: false
                             },
                             {
                                 name: "Modern",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -179,6 +172,7 @@ const data = [
                 attributes: [
                     {
                         name: "Color",
+                        type: "string",
                         required: false
                     }
                 ]
@@ -195,18 +189,12 @@ const data = [
                     attributes: [
                         {
                             name: "Waterproof level",
-                            value: {
-                                description: 3,
-                                type: "number"
-                            },
+                            type: "number",
                             required: true
                         },
                         {
                             name: "Size",
-                            value: {
-                                description: "Many sizes",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         }
                     ]
@@ -217,11 +205,8 @@ const data = [
                         required: false
                     },
                     {
-                        name: "Storage hour",
-                        value: {
-                            description: 5,
-                            type: "number"
-                        },
+                        name: "Battery hour",
+                        type: "number",
                         required: true
                     }
                 ]
@@ -230,14 +215,12 @@ const data = [
         attributes: [
             {
                 name: "Connection Type",
-                value: {
-                description: "USB, Bluetooth, HDMI",
-                type: "string"
-                },
+                type: "string",
                 required: true
             },
             {
                 name: "Warranty",
+                type: "string",
                 required: false
             }
         ]
@@ -268,18 +251,12 @@ const data = [
                     attributes: [
                         {
                             name: "TV Size",
-                            value: {
-                                description: "24-inch, 20-inch, 30-inch",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         },
                         {
                             name: "Functionality",
-                            value: {
-                                description: "Multiple Applications",
-                                type: "string"
-                            },
+                            type: "string",
                             required: true
                         }
                     ]
@@ -292,6 +269,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Cooling function",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -312,6 +290,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Inventer",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -324,6 +303,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Inventer",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -332,10 +312,7 @@ const data = [
                 attributes: [
                     {
                         name: "Volumn",
-                        value: {
-                            description: 100,
-                            type: "number"
-                        },
+                        type: "number",
                         required: true
                     }
                 ]
@@ -344,14 +321,12 @@ const data = [
         attributes: [
             {
                 name: "Compatibility",
+                type: "string",
                 required: false
             },
             {
                 name: "Material",
-                value: {
-                    description: "metal",
-                    type: "string"
-                },
+                type: "string",
                 required: true
             }
         ]
@@ -386,6 +361,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Irritability",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -394,18 +370,12 @@ const data = [
                 attributes: [
                     {
                         name: "Feeling",
-                        value: {
-                            description: "Nourishing",
-                            type: "string"
-                        },
+                        type: "string",
                         required: true
                     },
                     {
                         name: "Fresh level",
-                        value: {
-                            description: 80,
-                            type: "number"
-                        },
+                        type: "number",
                         required: true
                     }
                 ]
@@ -418,10 +388,7 @@ const data = [
             },
             {
                 name: "Ingredients",
-                value: {
-                    description: "silky",
-                    type: "string"
-                },
+                type: "string",
                 required: true
             }
         ]
@@ -457,6 +424,7 @@ const data = [
                         attributes: [
                             {
                                 name: "Size",
+                                type: "string",
                                 required: false
                             }
                         ]
@@ -471,11 +439,8 @@ const data = [
                 ],
                 attributes: [
                     {
-                        name: "Water leaking",
-                        value: {
-                            description: "Waterproof",
-                            type: "string"
-                        },
+                        name: "Waterproof",
+                        type: "string",
                         required: true
                     }
                 ]
@@ -483,13 +448,930 @@ const data = [
         ],
         attributes: []
     },
+    {
+        id: 5,
+        name: "Home Decoration",
+        subcategoriesArray: [],
+        subcategoriesNameArray: [],
+        subcategories: [],
+        attributes: [
+            {
+                name: "Color",
+                type: "string",
+                required: true
+            },
+            {
+                name: "Size",
+                type: "number",
+                required: true
+            },
+            {
+                name: "Material",
+                type: "string",
+                required: true
+            }
+        ]
+    }, 
+    {
+        id: 3,
+        name: "Gym & Fitness",
+        subcategoriesArray: [],
+        subcategoriesNameArray: [],
+        subcategories: [],
+        attributes: [
+            {
+                name: "Color",
+                type: "string",
+                required: false
+            },
+            {
+                name: "Size",
+                type: "number",
+                required: false
+            }
+        ]
+    }
 ]
 
-// drop categories collection
+// Include hard code database of product attributes
+const attributes = [
+    {
+        productId: 1,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Type C",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Apple",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 2,
+        attributes: [
+            {
+                name: "Waterproof level", 
+                value: {
+                    description: "IPX6",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Samsung",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Bluetooth connection", 
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Type C",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 3,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Grey blue",
+                    type: "string"
+                },
+                required: false
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 7,
+                    type: "number"
+                },
+                required: false
+            }
+        ]
+    },
+    {
+        productId: 4,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Type C",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Samsung",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 5,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "USB C",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Samsung",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size", 
+                value: {
+                    description: 10,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Screen",
+                value: {
+                    description: "20-inch",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Official version",
+                value: {
+                    description: 11,
+                    type: "number"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 6,
+        attributes: [
+            {
+                name: "Waterproof level", 
+                value: {
+                    description: "IPX6",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Sony Interactive Entertainment",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Bluetooth connection", 
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Connection type", 
+                value: {
+                    description: "HDMI",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 7,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Power plug",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "JBL",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 8,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Black",
+                    type: "string"
+                },
+                required: false
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: false
+            }
+        ]
+    },
+    {
+        productId: 9,
+        attributes: [
+            {
+                name: "Waterproof level", 
+                value: {
+                    description: "IPX5",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Nikon",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Bluetooth connection", 
+                value: {
+                    description: 0,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Type C",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 10,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Power plug",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Kangaroo",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size", 
+                value: {
+                    description: 12,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Screen",
+                value: {
+                    description: "Not available",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Official version",
+                value: {
+                    description: 0,
+                    type: "number"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 11,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Black",
+                    type: "string"
+                },
+                required: false
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: false
+            }
+        ]
+    },
+    {
+        productId: 12,
+        attributes: [
+            {
+                name: "Waterproof level", 
+                value: {
+                    description: "IPX5",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Logitech",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Bluetooth connection", 
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Connection type", 
+                value: {
+                    description: "USB C",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 13,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Power plug",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Sony",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 14,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "No connection",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Walmart",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size", 
+                value: {
+                    description: 10,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Screen",
+                value: {
+                    description: "Not available",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Official version",
+                value: {
+                    description: 0,
+                    type: "number"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 15,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Bluetooth",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "JBL",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 16,
+        attributes: []
+    },
+    {
+        productId: 17,
+        attributes: [
+            {
+                name: "Waterproof level", 
+                value: {
+                    description: "Not supported",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Bissel",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Bluetooth connection", 
+                value: {
+                    description: 0,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Power Plug",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 18,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "Power Plug",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Dell",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 19,
+        attributes: [
+            {
+                name: "Connection type", 
+                value: {
+                    description: "No connection",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Brand", 
+                value: {
+                    description: "Harvest Growth",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size", 
+                value: {
+                    description: 5,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Screen",
+                value: {
+                    description: "Not available",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Official version",
+                value: {
+                    description: 0,
+                    type: "number"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 20,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Black",
+                    type: "string"
+                },
+                required: false
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 10,
+                    type: "number"
+                },
+                required: false
+            }
+        ]
+    },
+    {
+        productId: 21,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Golden brown",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 18,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Wood",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 22,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Brown",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 20,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Leather",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 23,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Light brown",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 18,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Wood",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 24,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Golden brown",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 12,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Acrylic",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 25,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Terracotta",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 18,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Synthetic Upholstery",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 26,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Off-white",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 12,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Marble",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 27,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Grey black",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 76,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Wood",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 28,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Beige",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 20,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Velvet",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 29,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Natural Wood Tones",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 24,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Laminate",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+    {
+        productId: 30,
+        attributes: [
+            {
+                name: "Color",
+                value: {
+                    description: "Tan brown",
+                    type: "string"
+                },
+                required: true
+            },
+            {
+                name: "Size",
+                value: {
+                    description: 6,
+                    type: "number"
+                },
+                required: true
+            },
+            {
+                name: "Material",
+                value: {
+                    description: "Pavers",
+                    type: "string"
+                },
+                required: true
+            }
+        ]
+    },
+]
+
+// drop all collection
 exports.dropCollection = async () => {
     try {
         await Category.collection.drop();
         await Sequence.collection.drop();
+        await ProductAttributes.collection.drop();
         console.log('Categories collection dropped');
 
     } catch (err) {
@@ -501,9 +1383,10 @@ exports.dropCollection = async () => {
 // generate seed data for categories collection
 exports.generateSeedData = async (count) => {
     try {
-        const count = await Category.countDocuments();
+        const catCount = await Category.countDocuments();
+        const attrCount = await ProductAttributes.countDocuments();
 
-        if (count === 0) {
+        if (catCount === 0) {
             // Category.insertMany(await generateMany(10))
             Category.insertMany(data)
                 .then((result) => {
@@ -511,6 +1394,16 @@ exports.generateSeedData = async (count) => {
                 })
                 .catch((error) => {
                     console.log(`Categories could not save to MongoDB`, error);
+                });
+        }
+
+        if (attrCount === 0) {
+            ProductAttributes.insertMany(attributes)
+                .then((result) => {
+                    console.log(`Product attributes saved to MongoDB`);
+                })
+                .catch((error) => {
+                    console.log(`Product attributes could not save to MongoDB`, error);
                 });
         }
     } catch (err) {

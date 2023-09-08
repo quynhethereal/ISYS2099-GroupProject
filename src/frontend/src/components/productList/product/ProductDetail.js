@@ -5,7 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hook/AuthHook.js";
 import { useCart } from "../../../hook/CartHook.js";
 import { getProductById } from "../../../action/product/product.js";
-import { getAllAttribute } from "../../../action/category/category";
+import { getProductAllAttribute } from "../../../action/category/category";
 
 import Header from "../../header/Header.js";
 import NotFoundProductPage from "./NotFoundProductPage.js";
@@ -38,7 +38,7 @@ const ProductDetail = () => {
 
   useEffect(() => {
     async function getAllAtr() {
-      await getAllAttribute(productId).then((res) => {
+      await getProductAllAttribute(productId).then((res) => {
         if (res) {
           setAttribute(res);
         }
@@ -106,7 +106,7 @@ const ProductDetail = () => {
               <p>{product?.description}</p>
             </div>
             <div className="d-flex flex-row flex-wrap mb-3 gap-1">
-              {attribute?.attributes?.map((item, index) => {
+              {attribute?.map((item, index) => {
                 return (
                   <span
                     className="badge bg-info d-flex align-items-center justify-content-center"

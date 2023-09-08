@@ -383,54 +383,6 @@ Product.findByIdAndSellerId = (productId, sellerId) => {
     });
 }
 
-Product.delete = async (productId, sellerId) => {
-    // check if product under seller exists
-    const product = await Product.findByIdAndSellerId(productId, sellerId);
-
-    if (!product) {
-        console.log("Product not found.");
-        throw new Error("Product not found.");
-    }
-
-    // if there is still pending order for this product, do not delete
-    const pendingOrder = await new Promise((resolve, reject) => {
-        seller_pool.execute(
-            'SELECT distinct o.id, o.status FROM `orders` o JOIN order_items oi ON oi.order_id = o.id JOIN inventory i ON oi.inventory_id = i.id JOIN products p ON i.product_id = ?  WHERE o.status = "pending"',
-            [productId],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to find pending orders.');
-                    reject(err);
-                    return;
-                }
-                resolve(results);
-            }
-        );
-    });
-
-    if (pendingOrder.length > 0) {
-        console.log("There is still pending order for this product.");
-        throw new Error("There is still pending order for this product. Delete cannot be performed.");
-    }
-
-    // delete product by setting the order status to 'deleted' and delete the project
-    await new Promise((resolve, reject) => {
-        seller_pool.execute(
-            'DELETE FROM `products` WHERE id = ?',
-            [productId],
-            (err, results) => {
-                if (err) {
-                    console.log('Unable to delete product.');
-                    reject(err);
-                    return;
-                }
-                console.log("Product deleted.");
-                resolve(results);
-            }
-        );
-    });
-}
-
 Product.updateImage = async (params) => {
     try {
         const product = await Product.findById(params.productId);
@@ -487,57 +439,6 @@ Product.updateCategory = (params) => {
             }
         );
     });
-}
-
-// example payload
-// {
-//   "name": "Updated Product Name",
-//   "description": "Updated product description.",
-//   "price": 29.99,
-//   "image": "updated.jpg",
-//   "category": "Electronics"
-// }
-Product.update = async (params) => {
-    try {
-        // validate params
-        productValidator.validateUpdateParams(params);
-        const title = params.title + "";
-        const description = params.description + "";
-        const price = parseFloat(params.price);
-        const category = params.category;
-        const id = params.productId;
-        const image = params.image;
-
-        const product = await Product.findByIdAndSellerId(id, params.sellerId);
-
-        if (!product) {
-            console.log("Product not found.");
-            throw new Error("Product not found or you are not the owner of this product.");
-        } else {
-            await new Promise((resolve, reject) => {
-                seller_pool.execute(
-                    'UPDATE `products` SET title = ?, description = ?, price = ?, category_id = ?, image = ? WHERE id = ?',
-                    [title, description, price, category, image, id],
-                    (err, results) => {
-                        if (err) {
-                            console.log('Unable to update product.');
-                            reject(err);
-                            return;
-                        }
-                        console.log("Product updated.");
-                        resolve(results);
-                    }
-                );
-            });
-        }
-
-        return new Product(params);
-
-    } catch (err) {
-        console.log(err.stack)
-        console.log('Unable to update product.');
-        throw err;
-    }
 }
 
 // Func to get product image
@@ -721,43 +622,6 @@ Product.findByKey = async (params) => {
         };
     } catch (err) {
         console.log('Unable to search products.');
-    }
-}
-
-Product.create = async (params) => {
-    const connection = await seller_pool.promise().getConnection();
-
-    try {
-        const {title, description, price, category, sellerId, image, length, width, height} = params;
-
-        const imageName = params.imageName || 'default_prod_image.jpg';
-
-        const insertProductQuery = await connection.execute(
-            'INSERT INTO `products` (title, description, price, category_id, seller_id, image, image_name, length, width, height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [title, description, price, category, sellerId, image, imageName, length, width, height]
-        );
-
-        const productId = insertProductQuery[0].insertId;
-
-        return new Product({
-            title,
-            description,
-            price,
-            category,
-            sellerId,
-            image,
-            imageName,
-            productId,
-            length,
-            width,
-            height
-        });
-    } catch (err) {
-        console.log('Unable to create product.');
-        // rethrow error
-        throw err;
-    } finally {
-        connection.release();
     }
 }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Swal from "sweetalert2";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { createProduct } from "../action/product/product.js";
 import {
   getAllFlatternCategory,
@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import FormInput from "./FormInput.js";
 
 const ProductCreateForm = ({ show, handleClose }) => {
@@ -26,6 +27,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
     handleSubmit,
     getValues,
     setValue,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -37,7 +39,13 @@ const ProductCreateForm = ({ show, handleClose }) => {
       length: 0,
       width: 0,
       height: 0,
+      attributes: [{}],
     },
+  });
+
+  useFieldArray({
+    control,
+    name: "attributes",
   });
 
   useEffect(() => {
@@ -54,6 +62,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
     async function getCurrentCategory() {
       await getCategoryByID(currentChoice || 1).then((res) => {
         if (res) {
+          setValue("attributes", res?.attributes);
           setCurrentCategoryData(res);
         }
       });
@@ -83,6 +92,19 @@ const ProductCreateForm = ({ show, handleClose }) => {
   // token, id, title, description, price, category, image;
 
   const handleCreateProduct = async (value) => {
+    var attributesPayload = [];
+    value?.attributes?.forEach((element) => {
+      let object = {
+        name: element?.name,
+        required: element?.required,
+        value: {
+          description: element?.description,
+          type: element?.type,
+        },
+      };
+      attributesPayload.push(object);
+    });
+    value = { ...value, attributes: attributesPayload };
     if (imageSoure === "error" && imageSoure) {
       Swal.fire({
         icon: "error",
@@ -101,7 +123,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          // navigate(0);
+          navigate(0);
         });
       } else {
         Swal.fire({
@@ -163,42 +185,46 @@ const ProductCreateForm = ({ show, handleClose }) => {
                   register={register}
                   errors={errors}
                 ></FormInput>
-                <FormInput
-                  inputName={"price"}
-                  inputLabel={"Product Price"}
-                  inputPlaceHolder={"Ennter new price of product"}
-                  register={register}
-                  inputType={"number"}
-                  errors={errors}
-                  step={"0.01"}
-                ></FormInput>
-                <FormInput
-                  inputName={"width"}
-                  inputLabel={"Product Width"}
-                  inputPlaceHolder={"Ennter width of product"}
-                  register={register}
-                  inputType={"number"}
-                  errors={errors}
-                  step={"0.01"}
-                ></FormInput>
-                <FormInput
-                  inputName={"height"}
-                  inputLabel={"Product Height"}
-                  inputPlaceHolder={"Ennter height of product"}
-                  register={register}
-                  inputType={"number"}
-                  errors={errors}
-                  step={"0.01"}
-                ></FormInput>
-                <FormInput
-                  inputName={"length"}
-                  inputLabel={"Product Length"}
-                  inputPlaceHolder={"Ennter length of product"}
-                  register={register}
-                  inputType={"number"}
-                  errors={errors}
-                  step={"0.01"}
-                ></FormInput>
+                <div className="d-flex flex-col flex-md-row justify-content-between">
+                  <FormInput
+                    inputName={"price"}
+                    inputLabel={"Product Price"}
+                    inputPlaceHolder={"Ennter new price of product"}
+                    register={register}
+                    inputType={"number"}
+                    errors={errors}
+                    step={"0.01"}
+                  ></FormInput>
+                  <FormInput
+                    inputName={"width"}
+                    inputLabel={"Product Width"}
+                    inputPlaceHolder={"Ennter width of product"}
+                    register={register}
+                    inputType={"number"}
+                    errors={errors}
+                    step={"0.01"}
+                  ></FormInput>
+                </div>
+                <div className="d-flex flex-col flex-md-row justify-content-between">
+                  <FormInput
+                    inputName={"height"}
+                    inputLabel={"Product Height"}
+                    inputPlaceHolder={"Ennter height of product"}
+                    register={register}
+                    inputType={"number"}
+                    errors={errors}
+                    step={"0.01"}
+                  ></FormInput>
+                  <FormInput
+                    inputName={"length"}
+                    inputLabel={"Product Length"}
+                    inputPlaceHolder={"Ennter length of product"}
+                    register={register}
+                    inputType={"number"}
+                    errors={errors}
+                    step={"0.01"}
+                  ></FormInput>
+                </div>
                 <div className="col-12 d-flex flex-column justtify-content-center align-items-center mt-md-3 gap-3">
                   <div className="col-12">
                     <label htmlFor="category">Category</label>
@@ -223,21 +249,36 @@ const ProductCreateForm = ({ show, handleClose }) => {
                     </select>
                   </div>
                   <div className="col-12 d-flex flex-column">
-                    <label htmlFor="atr">Attributes</label>
+                    <label htmlFor="atr" className="fw-bolder fs-4">
+                      Add-ons Attributes
+                    </label>
                     <div
-                      className="col-12 d-flex flex-row flex-wrap gap-2"
+                      className="col-12 d-flex flex-column flex-wrap gap-2"
                       id="atr"
                     >
                       {currentCategoryData &&
                         currentCategoryData?.attributes?.map((item, index) => {
                           return (
-                            <span
-                              className="badge bg-info d-flex align-items-center justify-content-center"
-                              key={index}
-                            >
-                              {item?.name}
-                              {item?.value?.description}
-                            </span>
+                            <Form.Group className="mb-3" key={index}>
+                              <Form.Label className="form-label">
+                                {item?.name}{" "}
+                                {item?.required ? (
+                                  <b> (Required)</b>
+                                ) : (
+                                  <b> (Not Required)</b>
+                                )}
+                              </Form.Label>
+                              <Form.Control
+                                className="form-control"
+                                type={item?.value?.type}
+                                {...register(
+                                  `attributes.${index}.description`,
+                                  {
+                                    required: item?.required,
+                                  }
+                                )}
+                              />
+                            </Form.Group>
                           );
                         })}
                     </div>

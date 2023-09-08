@@ -51,7 +51,6 @@ const WarehouseUpdateForm = ({ show, handleClose, data }) => {
       }
     });
   };
-  console.log(data);
   return (
     <Modal show={show} onHide={handleClose} className="p-2">
       <Modal.Header closeButton>
