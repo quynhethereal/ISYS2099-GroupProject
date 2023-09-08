@@ -26,6 +26,7 @@ const CustomerOrderPage = () => {
     getTheOrdersOfUsers();
     // eslint-disable-next-line
   }, [state]);
+
   return (
     <>
       <Header user={user}></Header>

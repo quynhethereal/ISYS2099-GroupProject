@@ -6,6 +6,7 @@ import { updateProduct } from "../action/product/product.js";
 import {
   getAllFlatternCategory,
   getCategoryByID,
+  getProductAllAttribute,
 } from "../action/category/category.js";
 import { useAuth } from "../hook/AuthHook.js";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   const [allCategory, setAllCategory] = useState([]);
   const [currentChoice, setCurrentChoice] = useState();
   const [currentCategoryData, setCurrentCategoryData] = useState([]);
+  const [productDefaultAtr, setProductDefaultAtr] = useState([]);
   const {
     register,
     handleSubmit,
@@ -51,7 +53,15 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
         setAllCategory(res);
       });
     }
+    async function getProductAttribute() {
+      await getProductAllAttribute(data?.id).then((res) => {
+        if (res) {
+          setProductDefaultAtr(res);
+        }
+      });
+    }
     getAllCategoryData();
+    getProductAttribute();
     // eslint-disable-next-line
   }, []);
 
@@ -236,9 +246,13 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                                   <b> (Not Required - {item?.type})</b>
                                 )}
                               </Form.Label>
+                              {console.log(productDefaultAtr)}
                               <Form.Control
                                 className="form-control"
                                 type={item?.type}
+                                defaultValue={
+                                  productDefaultAtr[index]?.value?.description
+                                }
                                 {...register(
                                   `attributes.${index}.description`,
                                   {
