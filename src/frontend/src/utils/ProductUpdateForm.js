@@ -75,6 +75,9 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
       });
     }
     getCurrentCategory();
+    if (currentChoice !== data?.category_id) {
+      setProductDefaultAtr(null);
+    }
     // eslint-disable-next-line
   }, [currentChoice, data]);
 
@@ -100,7 +103,6 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
   const handleUpdateProduct = async (value) => {
     var attributesPayload = [];
     value?.attributes?.forEach((element) => {
-      console.log(element);
       let object = {
         name: element?.name,
         required: element?.required,
@@ -235,6 +237,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                       id="atr"
                     >
                       {currentCategoryData &&
+                        !productDefaultAtr &&
                         currentCategoryData?.attributes?.map((item, index) => {
                           return (
                             <Form.Group className="mb-3" key={index}>
@@ -246,10 +249,35 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                                   <b> (Not Required - {item?.type})</b>
                                 )}
                               </Form.Label>
-                              {console.log(productDefaultAtr)}
                               <Form.Control
                                 className="form-control"
                                 type={item?.type}
+                                {...register(
+                                  `attributes.${index}.description`,
+                                  {
+                                    required: item?.required,
+                                  }
+                                )}
+                              />
+                            </Form.Group>
+                          );
+                        })}
+                      {productDefaultAtr &&
+                        productDefaultAtr.map((item, index) => {
+                          console.log(item);
+                          return (
+                            <Form.Group className="mb-3" key={index}>
+                              <Form.Label className="form-label">
+                                {item?.name}{" "}
+                                {item?.required ? (
+                                  <b> (Required - {item?.value?.type})</b>
+                                ) : (
+                                  <b> (Not Required - {item?.value?.type})</b>
+                                )}
+                              </Form.Label>
+                              <Form.Control
+                                className="form-control"
+                                type={item?.value?.type}
                                 defaultValue={
                                   productDefaultAtr[index]?.value?.description
                                 }
