@@ -106,7 +106,7 @@ const ProductDetail = () => {
               <p>{product?.description}</p>
             </div>
             <div className="d-flex flex-row flex-wrap mb-3 gap-1">
-              {attribute?.attributes?.map((item, index) => {
+              {attribute?.map((item, index) => {
                 return (
                   <span
                     className="badge bg-info d-flex align-items-center justify-content-center"
