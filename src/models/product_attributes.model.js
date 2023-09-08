@@ -136,9 +136,9 @@ const findProductAttributes = async (id) => {
     }
 }
 
-const updateCurrentAttributes = async (productId, attributes) => {
+const updateCurrentAttributes = async (productId, categoryId, attributes) => {
     try {
-        const product = await Product.finddById(productId);
+        const product = await Product.findById(productId);
 
         if (!product) {
             console.log('Product Id not found!');
@@ -152,14 +152,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
             throw new Error('Attributes for product Id is not existed.');
         }
 
-        const productCatId = parseInt(product.category_id);
-
-        if (!productCatId) {
-            console.log('Unable to find product category Id!');
-            throw new Error('Unable to find product category Id!')
-        }
-
-        const categoryAttributes = await findAttributes(productCatId);
+        const categoryAttributes = await findAttributes(categoryId);
 
         if (!categoryAttributes) {
             console.log('This product requires no attributes.');
@@ -176,6 +169,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
 
         const data = [];
         let dataCount = 0;
+        console.log('attribute in model', attributes);
         for (const attribute of attributes) {
             const matchValue = categoryAttributes.find(catAttr => catAttr.name === attribute.name);
 
@@ -193,12 +187,12 @@ const updateCurrentAttributes = async (productId, attributes) => {
             }
 
             data.push({
-                name: attribute.name,
+                name: matchValue.name,
                 value: {
                     description: attribute.value.description,
-                    type: attribute.value.type
+                    type: matchValue.type
                 },
-                required: attribute.required
+                required: matchValue.required
             }); 
         }
 
@@ -216,7 +210,7 @@ const updateCurrentAttributes = async (productId, attributes) => {
 
         return updateData;
     } catch (err) {
-        console.log('Unable to update attributes with current cat.');
+        console.log('Unable to update attributes with current cat.', err.stack);
         throw new Error('Unable to update attributes with current cat.');
     }
 }
@@ -226,6 +220,6 @@ module.exports = {
     createAttributes, 
     findAll, 
     findProductAttributes, 
-    updateCurrentAttributes, 
+    updateCurrentAttributes
 };
 
