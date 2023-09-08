@@ -263,9 +263,9 @@ const ProductCreateForm = ({ show, handleClose }) => {
                               <Form.Label className="form-label">
                                 {item?.name}{" "}
                                 {item?.required ? (
-                                  <b> (Required)</b>
+                                  <b> (Required - {item?.value?.type})</b>
                                 ) : (
-                                  <b> (Not Required)</b>
+                                  <b> (Not Required - {item?.value?.type})</b>
                                 )}
                               </Form.Label>
                               <Form.Control
