@@ -102,7 +102,7 @@ const data = [
                     {
                         name: "Official version",
                         type: "number",
-                        type: true
+                        required: true
                     }
                 ]
             }
@@ -920,7 +920,7 @@ const attributes = [
             {
                 name: "Official version",
                 value: {
-                    description: 0,
+                    description: 10,
                     type: "number"
                 },
                 required: true
@@ -974,7 +974,7 @@ const attributes = [
             {
                 name: "Bluetooth connection", 
                 value: {
-                    description: 0,
+                    description: 2,
                     type: "number"
                 },
                 required: true
@@ -1048,7 +1048,7 @@ const attributes = [
             {
                 name: "Official version",
                 value: {
-                    description: 0,
+                    description: 7,
                     type: "number"
                 },
                 required: true
