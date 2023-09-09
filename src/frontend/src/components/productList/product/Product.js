@@ -108,7 +108,7 @@ const Product = ({ info, update }) => {
                 {attribute?.map((item, index) => {
                   return (
                     <div key={index}>
-                      {item?.value?.description && (
+                      {item?.value?.description !== "" && (
                         <span className="badge bg-info d-flex align-items-center justify-content-center text-truncate">
                           {update && item?.name} {item?.value?.description}
                         </span>
