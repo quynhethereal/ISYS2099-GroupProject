@@ -102,7 +102,7 @@ const data = [
                     {
                         name: "Official version",
                         type: "number",
-                        type: true
+                        required: true
                     }
                 ]
             }
