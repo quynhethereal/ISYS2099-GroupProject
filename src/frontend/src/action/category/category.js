@@ -6,7 +6,7 @@ export const getAllCategory = async () => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -16,7 +16,7 @@ export const getCategoryByID = async (id) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -26,7 +26,7 @@ export const getProductAllAttribute = async (id) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -36,7 +36,7 @@ export const updateAttribute = async (token, id, formData) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -46,7 +46,7 @@ export const getAllFlatternCategory = async () => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -56,7 +56,7 @@ export const createCategory = async (token, formData) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -66,7 +66,7 @@ export const updateCategory = async (token, id, formData) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 export const createSubCategory = async (token, id, formData) => {
@@ -75,7 +75,7 @@ export const createSubCategory = async (token, id, formData) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -85,7 +85,7 @@ export const deleteCategory = async (token, id) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
 
@@ -95,6 +95,6 @@ export const deleteSubCategory = async (token, id) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };

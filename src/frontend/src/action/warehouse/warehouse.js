@@ -17,7 +17,7 @@ export const getWarehouseById = async (token, id) => {
       const { data } = res;
       return data;
     } else {
-      return;
+
     }
   } catch (error) {
     console.log(error.message);
@@ -50,7 +50,7 @@ export const createWarehouse = async (token, data) => {
     if (res.status === 200) {
       return res;
     } else {
-      return;
+
     }
   } catch (error) {
     console.log(error.message);
@@ -91,7 +91,7 @@ export const moveTheIventoryToWarehouse = async (token, data) => {
     if (res.status === 200) {
       return res;
     } else {
-      return;
+
     }
   } catch (error) {
     return error?.response?.data?.message;
@@ -105,7 +105,7 @@ export const getPendingInventory = async (token, limit, currentPage) => {
       const { data } = res;
       return data;
     } else {
-      return;
+
     }
   } catch (error) {
     return error?.response?.data?.message;

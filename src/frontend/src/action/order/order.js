@@ -18,7 +18,7 @@ export const getAllOrderByUser = async (token, state) => {
     if (respone.status === 200) {
       return respone?.data;
     } else {
-      return;
+
     }
   } catch (error) {
     console.log(error?.response?.data?.message);
@@ -32,7 +32,7 @@ export const rejectOrder = async (token, id) => {
     if (respone.status === 200) {
       return respone;
     } else {
-      return;
+
     }
   } catch (error) {
     console.log(error?.response?.data?.message);
@@ -46,7 +46,7 @@ export const acceptOrder = async (token, id) => {
     if (respone.status === 200) {
       return respone;
     } else {
-      return;
+
     }
   } catch (error) {
     console.log(error?.response?.data?.message);
@@ -59,7 +59,7 @@ export const getOrderById = async (token, id) => {
     if (respone.status === 200) {
       return respone.data;
     } else {
-      return;
+
     }
   } catch (error) {}
 };

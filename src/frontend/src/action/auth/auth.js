@@ -6,6 +6,6 @@ export const loginUser = async (formData) => {
 
     return data;
   } catch (error) {
-    return;
+
   }
 };
