@@ -239,6 +239,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                       {currentCategoryData &&
                         !productDefaultAtr &&
                         currentCategoryData?.attributes?.map((item, index) => {
+                          console.log(item);
                           return (
                             <Form.Group className="mb-3" key={index}>
                               <Form.Label className="form-label">
@@ -252,6 +253,7 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                               <Form.Control
                                 className="form-control"
                                 type={item?.type}
+                                min="1"
                                 {...register(
                                   `attributes.${index}.description`,
                                   {
@@ -264,7 +266,6 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                         })}
                       {productDefaultAtr &&
                         productDefaultAtr.map((item, index) => {
-                          console.log(item);
                           return (
                             <Form.Group className="mb-3" key={index}>
                               <Form.Label className="form-label">
@@ -276,8 +277,10 @@ const ProductUpdateForm = ({ data, show, handleClose }) => {
                                 )}
                               </Form.Label>
                               <Form.Control
+                                name={index?.name}
                                 className="form-control"
-                                type={item?.value?.type}
+                                type={item?.value?.type.toString()}
+                                min="1"
                                 defaultValue={
                                   productDefaultAtr[index]?.value?.description
                                 }
