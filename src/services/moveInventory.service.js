@@ -86,12 +86,6 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
             }
         }
 
-        // const toWarehouseInventory = await connection.execute('SELECT * FROM `inventory` WHERE warehouse_id = ? AND product_id = ? FOR UPDATE', [toWarehouse, productId]);
-
-        // if (toWarehouseInventory[0].length === 0) {
-        //     await connection.execute('INSERT INTO `inventory` (product_id, warehouse_id, quantity, reserved_quantity) VALUES (?, ?, ?, ?)', [productId, toWarehouse, 0, 0]);
-        // }
-
         // update inventory of toWarehouse
         const moveInventoryQuery = await connection.execute('UPDATE `inventory` SET quantity = quantity + ?, reserved_quantity = reserved_quantity + ? WHERE warehouse_id = ? AND product_id = ?', [quantity, fromWarehouseInventory[0][0].reserved_quantity, toWarehouse, productId]);
 
@@ -122,7 +116,6 @@ exports.moveInventory = async (productId, fromWarehouse, toWarehouse, quantity) 
         }
 
     } catch (err) {
-        console.log(err.stack);
         console.log('Unable to move inventory.');
         await connection.query('ROLLBACK');
 

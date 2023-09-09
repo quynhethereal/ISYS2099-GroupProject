@@ -158,7 +158,6 @@ exports.findFlattenCategory = async (req, res) => {
 
 exports.findAttributes = async (req, res) => {
     try {
-        // TODO: Get attributes of a category
         const id = parseInt(req.params.id);
 
         if (id == null) {
@@ -275,8 +274,7 @@ exports.deleteCategory = async (req, res) => {
                 message: "Invalid request. Empty category Id."
             });
         }
-
-        const deleteValue = await deleteCategory(id);
+        await deleteCategory(id);
 
         res.status(200).send({
             message: "Delete successful."

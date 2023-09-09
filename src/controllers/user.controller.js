@@ -19,7 +19,7 @@ exports.findByUsernamePassword = async (req, res) => {
     }
 };
 
-
+// get all users
 exports.findAll = async (req, res) => {
     res.status(200).send({
         message: "Success"

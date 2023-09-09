@@ -13,7 +13,6 @@ const Order = require('../models/order.model');
 // }
 
 exports.createOrder = async (req, res) => {
-    // TODO: validate params
     try {
         const cart = req.body.cart;
 

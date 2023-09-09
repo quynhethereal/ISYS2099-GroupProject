@@ -8,7 +8,6 @@ class Product {
         this.description = params.description;
         this.price = params.price;
         this.image = params.image;
-        // TODO: add category
         this.category = params.category;
         this.title = params.title;
         this.length = params.length;

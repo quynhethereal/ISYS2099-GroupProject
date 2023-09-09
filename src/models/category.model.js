@@ -665,7 +665,6 @@ const deleteSubcategory = async (id) => {
     }
 }
 
-// TODO: remove category name in subcategoriesNameArray
 const removeSubcategory = async (category, id) => {
     try {
         const newSubcategories = [];
@@ -705,8 +704,6 @@ const removeSubcategory = async (category, id) => {
             console.log(dataNames);
         }
 
-        console.log(dataNames);
-
         return {data, dataNames};
     } catch (err) {
         console.log('Fail to remove subcategory in category');
@@ -733,7 +730,6 @@ const countProduct = async (category) => {
             subcatNames.push(subcategory.name, ...subCount.subcatNames);
         }
 
-        console.log(subcatNames); 
         return {count, subcatIds, subcatNames};
     } catch (err) {
         console.log('Could not count total product for subcategory');

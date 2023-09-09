@@ -27,7 +27,6 @@ module.exports = app => {
     // get a user by username and password
     router.post("/user", users.findByUsernamePassword);
 
-    // TODO: dummy route for testing
     router.get("/user", authMiddleware.verifyToken, users.findAll);
 
     // product-related API

@@ -71,7 +71,7 @@ exports.findByProductId = async (req, res) => {
 
         if (attribute.length > 0) {
             res.status(200).json(attribute);
-        } else if (attribute.length == 0) {
+        } else if (attribute.length === 0) {
             res.status(200).send({
                 message: "No recorded attributes."
             })

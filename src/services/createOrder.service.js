@@ -93,8 +93,7 @@ CreateOrderService.createOrder = async (params) => {
         return transactionResult;
 
     } catch (err) {
-        console.log(err);
-        console.log("Error creating order.Rolling back...")
+        console.log("Error creating order. Rolling back...")
         await connection.query('ROLLBACK');
         throw err;
     } finally {
