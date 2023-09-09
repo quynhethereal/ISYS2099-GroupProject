@@ -272,6 +272,7 @@ const ProductCreateForm = ({ show, handleClose }) => {
                               <Form.Control
                                 className="form-control"
                                 type={item?.type}
+                                min="1"
                                 {...register(
                                   `attributes.${index}.description`,
                                   {
