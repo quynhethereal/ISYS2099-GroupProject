@@ -11,7 +11,7 @@ const mongodb_connection = mongoose.connect(mongodb_uri)
 
 // Create admin connection pool to the MySQL database
 const admin_pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: 5,
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_WH_USER,
     password: process.env.MYSQL_WH_PASSWORD,
@@ -62,7 +62,7 @@ customer_pool.getConnection(function (err, connection) {
 
 // Create a seller connection pool to the MySQL database
 const seller_pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: 5,
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_SELLER_USER,
     password: process.env.MYSQL_SELLER_PASSWORD,
