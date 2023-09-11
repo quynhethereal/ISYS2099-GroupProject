@@ -86,11 +86,11 @@ npm start
 ### Contribution score:
 
 ```bash
-Le Dinh Ngoc Quynh – s3791159 (5)
+Le Dinh Ngoc Quynh – s3791159 (5.5)
 
-Truong Bach Minh – s3891909 (5)
+Truong Bach Minh – s3891909 (5.5)
 
-Nguyen Vu Thuy Duong – s3865443 (5)
+Nguyen Vu Thuy Duong – s3865443 (5.5)
 
-Le Cam Tu – s3915195 (5)
+Le Cam Tu – s3915195 (3.5)
 ```
