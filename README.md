@@ -94,3 +94,6 @@ Nguyen Vu Thuy Duong – s3865443 (5)
 
 Le Cam Tu – s3915195 (5)
 ```
+
+### Video demonstration URL:
+https://rmiteduau-my.sharepoint.com/personal/s3915195_rmit_edu_vn/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fs3915195%5Frmit%5Fedu%5Fvn%2FDocuments%2FDatabase%20Application%20Resources&view=0
