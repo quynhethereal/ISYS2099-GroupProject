@@ -1,5 +1,14 @@
 # ISYS2099 - Database Project
 
+## Table of Contents
+- [Setup instructions](#Setup-instructions)
+  - [Setup MySQL database](#setup-**mysql**-database)
+  - [Setup MongoDB database](#mongoDB)
+  - [Environment variables setup](#secret)
+  - [Start BE locally](#start-be-locally)
+  - [Start FE locally](#start-fe-locally)
+- [Features](#features)
+
 ## Setup instructions
 
 - First, clone the repo:
@@ -45,7 +54,7 @@ cp .env.dev.sample .env
 copy .env.dev.sample .env
 ```
 
-### Start the server locally:
+### Start BE locally:
 
 - Run the server:
 
@@ -86,11 +95,13 @@ npm start
 ### Contribution score:
 
 ```bash
-Le Dinh Ngoc Quynh – s3791159 (5.5)
+Le Dinh Ngoc Quynh – s3791159 (5)
 
-Truong Bach Minh – s3891909 (5.5)
+Truong Bach Minh – s3891909 (5)
 
-Nguyen Vu Thuy Duong – s3865443 (5.5)
+Nguyen Vu Thuy Duong – s3865443 (5)
 
-Le Cam Tu – s3915195 (3.5)
+Le Cam Tu – s3915195 (5)
 ```
+
+## Features
