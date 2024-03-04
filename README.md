@@ -2,9 +2,9 @@
 
 ## Table of Contents
 - [Setup instructions](#Setup-instructions)
-  - [Setup MySQL database](#setup-**mysql**-database)
-  - [Setup MongoDB database](#mongoDB)
-  - [Environment variables setup](#secret)
+  - [Setup MySQL database](#setup-mysql-database)
+  - [Setup MongoDB database](#setup-mongodb-database)
+  - [Environment variables setup](#environment-variables-setup)
   - [Start BE locally](#start-be-locally)
   - [Start FE locally](#start-fe-locally)
 - [Features](#features)
@@ -23,7 +23,7 @@ git clone
 npm install
 ```
 
-### Setup **MySQL** database:
+### Setup MySQL database:
 
 - Login to the mysql shell and create a database called `lazada_ecommerce`
 
