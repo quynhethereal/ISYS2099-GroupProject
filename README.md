@@ -1,13 +1,13 @@
 # ISYS2099 - Database Project
 
 ## Table of Contents
-- [Setup instructions](#Setup-Instructions)
-  - [Setup **MySQL** database](#MySQL)
-  - [Setup MongoDB database](#MongoDB)
-  - [Environment variables setup](#Secret)
-  - [Start BE locally](#Start-Server)
-  - [Start FE locally](#Start-Client)
-- [Features](#Available-Features)
+- [Setup instructions](#Setup-instructions)
+  - [Setup MySQL database](#setup-**mysql**-database)
+  - [Setup MongoDB database](#mongoDB)
+  - [Environment variables setup](#secret)
+  - [Start BE locally](#start-be-locally)
+  - [Start FE locally](#start-fe-locally)
+- [Features](#features)
 
 ## Setup instructions
 
